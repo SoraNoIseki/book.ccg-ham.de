@@ -1,0 +1,19 @@
+{
+    "name": "soranoiseki/core",
+    "description": "Laravel core",
+    "type": "package",
+    "require": {
+        "laravel/framework": "9.*|10.*",
+        "php": "^7.3|^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Soranoiseki\\Core\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Soranoiseki"
+        }
+    ]
+}

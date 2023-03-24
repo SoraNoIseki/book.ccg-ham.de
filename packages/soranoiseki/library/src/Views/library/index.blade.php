@@ -1,0 +1,76 @@
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            Library
+        </h2>
+    </x-slot>
+
+    
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <form method="POST" action="{{ route('library.import.books') }}" enctype="multipart/form-data">
+                    @csrf
+                    <input type="file" name="file" />
+                    <input class="btn btn-lg" type="submit" value="Upload" />
+                </form>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <h3 class="px-6 py-4 font-medium text-xl">Members ({{ $members->count() }})</h3>
+                    <table class="min-w-full text-left font-light">
+                        <thead class="border-b font-medium dark:border-neutral-500">
+                            <tr>
+                                <th scope="col" class="px-6 py-4">Name</th>
+                                <th scope="col" class="px-6 py-4">E-Mail</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($members as $member)
+                                <tr class="border-b dark:border-neutral-500">
+                                    <td class="whitespace-nowrap px-6 py-4">{{ $member->first_name }} {{ $member->last_name }}</td>
+                                    <td class="whitespace-nowrap px-6 py-4">{{ $member->email }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                        
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <h3 class="px-6 py-4 font-medium text-xl">Books ({{ $books->count() }})</h3>
+                    <table class="min-w-full text-left font-light">
+                        <thead class="border-b font-medium dark:border-neutral-500">
+                            <tr>
+                                <th scope="col" class="px-6 py-4">Title</th>
+                                <th scope="col" class="px-6 py-4">Author</th>
+                                <th scope="col" class="px-6 py-4">Copies</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($books as $book)
+                                <tr class="border-b dark:border-neutral-500">
+                                    <td class="whitespace-nowrap px-6 py-4">{{ $book->title }}</td>
+                                    <td class="whitespace-nowrap px-6 py-4">{{ $book->author }}</td>
+                                    <td class="whitespace-nowrap px-6 py-4">
+                                        @foreach ($book->copies as $copy)
+                                            <p>{{ $copy->copy_desc }}</p>
+                                        @endforeach
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                        
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
