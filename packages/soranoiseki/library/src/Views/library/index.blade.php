@@ -7,17 +7,23 @@
 
     
     <div class="py-12">
+
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <form method="POST" action="{{ route('library.import.books') }}" enctype="multipart/form-data">
-                    @csrf
-                    <input type="file" name="file" />
-                    <input class="btn btn-lg" type="submit" value="Upload" />
-                </form>
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    <h3 class="px-6 py-4 font-medium text-xl">Import Books</h3>
+                    <div class="px-6 py-4">
+                        <form method="POST" action="{{ route('library.import.books') }}" enctype="multipart/form-data">
+                            @csrf
+                            <input type="file" name="file" class="shadow appearance-none border border-gray-400 rounded w-full py-3 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" />
+                            <input class="btn btn-lg bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit" value="Upload" />
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h3 class="px-6 py-4 font-medium text-xl">Members ({{ $members->count() }})</h3>
@@ -49,6 +55,8 @@
                     <table class="min-w-full text-left font-light">
                         <thead class="border-b font-medium dark:border-neutral-500">
                             <tr>
+                                <th scope="col" class="px-6 py-4">Category</th>
+                                <th scope="col" class="px-6 py-4">Code</th>
                                 <th scope="col" class="px-6 py-4">Title</th>
                                 <th scope="col" class="px-6 py-4">Author</th>
                                 <th scope="col" class="px-6 py-4">Copies</th>
@@ -57,6 +65,8 @@
                         <tbody>
                             @foreach ($books as $book)
                                 <tr class="border-b dark:border-neutral-500">
+                                    <td class="whitespace-nowrap px-6 py-4">{{ $book->topic1 }}</td>
+                                    <td class="whitespace-nowrap px-6 py-4">{{ $book->call_nmbr1 }}</td>
                                     <td class="whitespace-nowrap px-6 py-4">{{ $book->title }}</td>
                                     <td class="whitespace-nowrap px-6 py-4">{{ $book->author }}</td>
                                     <td class="whitespace-nowrap px-6 py-4">
