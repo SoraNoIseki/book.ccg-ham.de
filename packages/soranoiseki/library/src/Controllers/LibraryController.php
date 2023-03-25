@@ -22,7 +22,7 @@ class LibraryController extends Controller
     {
         $books = Book::with(['copies' => function($query) {
             $query->orderBy('copyid', 'asc');
-        }])->get();
+        }])->orderBy('bibid', 'asc')->get();
         $members = Member::all();
        
         return view('library::library.index', [
