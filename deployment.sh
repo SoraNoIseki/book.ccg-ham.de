@@ -2,5 +2,5 @@
 
 git pull
 composer install
-node install 
-node run prod
+npm install 
+npm run prod
