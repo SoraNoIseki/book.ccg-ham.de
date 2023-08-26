@@ -64,3 +64,10 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+## Submodule py
+
+Add submodule: ``git submodule add https://github.com/jackey-qiu/pyworkship packages/pyworkship``
+
+Update submodule: ``git submodule update``
