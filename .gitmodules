@@ -1,0 +1,3 @@
+[submodule "packages/pyworkship"]
+	path = packages/pyworkship
+	url = https://github.com/jackey-qiu/pyworkship
