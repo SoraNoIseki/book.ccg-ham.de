@@ -12,6 +12,15 @@ class Member extends Model
     protected $connection = 'openbiblio';
 
     protected $table = 'member';
+    
+    protected $appends = [
+        'full_name'
+    ];
+
+    public function getFullNameAttribute() {
+        // TODO: english names?
+        return trim($this->last_name) . trim($this->first_name);
+    }
 
     
 }

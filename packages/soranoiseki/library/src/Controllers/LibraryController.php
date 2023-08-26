@@ -98,4 +98,14 @@ class LibraryController extends Controller
         Excel::import(new ImportBooks, $request->file('file'));
         return Response::redirectToRoute('library.index');
     }
+
+    public function borrowBook($bookId, $copyId)
+    {
+        return Response::redirectToRoute('library.index');
+    }
+
+    public function returnBook($bookId, $copyId)
+    {
+        return Response::redirectToRoute('library.index');
+    }
 }

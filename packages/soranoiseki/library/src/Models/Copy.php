@@ -5,6 +5,7 @@ namespace Soranoiseki\Library\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Soranoiseki\Library\Models\Book;
+use Soranoiseki\Library\Models\Member;
 
 class Copy extends Model
 {
@@ -20,6 +21,10 @@ class Copy extends Model
 
     public function book() {
         return $this->belongsTo(Book::class, 'bibid', 'bibid');
+    }
+
+    public function member() {
+        return $this->belongsTo(Member::class, 'mbrid', 'mbrid');
     }
 
     protected $fillable = [

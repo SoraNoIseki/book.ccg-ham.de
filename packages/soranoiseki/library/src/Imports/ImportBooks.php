@@ -32,6 +32,8 @@ class ImportBooks implements OnEachRow
                 'responsibility_stmt' => $publish,
                 'author' => $author,
                 'topic1' => $category,
+                'last_change_dt' => now(),
+                'last_change_userid' => 1,
             ])->save();
             $existCopies = $book->copies->count();
         } catch (ModelNotFoundException $e) {
