@@ -104,7 +104,10 @@ class PowerpointController extends Controller
 
         $command = implode(' ', [env('PYTHON_PATH', '/usr/bin/python3'), storage_path('pyworship/ppt_worker.py'), '"' . $date . '"']);
         try {
-            shell_exec($command);
+            return redirect()->route('book-group.ppt.index')->with([
+                'success' => true,
+                'message' => shell_exec($command)
+            ]);
         } catch (\Exception $error) {
             return redirect()->route('book-group.ppt.index')->with([
                 'success' => false,
