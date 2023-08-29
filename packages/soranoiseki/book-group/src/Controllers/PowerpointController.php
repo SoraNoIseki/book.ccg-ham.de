@@ -87,6 +87,7 @@ class PowerpointController extends Controller
         }
 
         // run python
+        /*
         // $process = new Process([env('PYTHON_PATH', '/usr/bin/python3'), storage_path('pyworship/ppt_worker.py'), '"' . $date . '"']);
         $command = implode(' ', [env('PYTHON_PATH', '/usr/bin/python3'), storage_path('pyworship/ppt_worker.py'), '"' . $date . '"']);
         $process = Process::fromShellCommandline($command);
@@ -94,6 +95,17 @@ class PowerpointController extends Controller
 
         if (!$process->isSuccessful()) {
             $error =  new ProcessFailedException($process);
+            return redirect()->route('book-group.ppt.index')->with([
+                'success' => false,
+                'message' => $error->getMessage()
+            ]);
+        }
+        */
+
+        $command = implode(' ', [env('PYTHON_PATH', '/usr/bin/python3'), storage_path('pyworship/ppt_worker.py'), '"' . $date . '"']);
+        try {
+            shell_exec($command);
+        } catch (\Exception $error) {
             return redirect()->route('book-group.ppt.index')->with([
                 'success' => false,
                 'message' => $error->getMessage()
