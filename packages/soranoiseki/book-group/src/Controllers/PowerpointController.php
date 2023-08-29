@@ -34,7 +34,7 @@ class PowerpointController extends Controller
      */
     public function index()
     {
-        $date = Carbon::now()->nextWeekendDay()->format('Y-m-d');
+        $date = Carbon::now()->endOfWeek()->format('Y-m-d');
 
         $contentFiles = $this->getContentFiles();
         $content = [];
@@ -47,7 +47,7 @@ class PowerpointController extends Controller
         }
 
         return view('book-group::powerpoint.index', [
-            'date' => Carbon::now()->nextWeekendDay()->format('Y-m-d'),
+            'date' => $date,
             'content' => $content
         ]);
     }
