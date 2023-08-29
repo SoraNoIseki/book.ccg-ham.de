@@ -24,6 +24,27 @@
                 <input type="hidden" name="date" id="dateHidden" value="{{ $date }}">
             </div>
         </div>
+
+        <div class="w-full px-3 sm:w-1/2">
+            <div class="mb-5">
+                <label for="version" class="mb-3 block text-base font-medium text-[#07074D]">
+                     加载其他版本
+                </label>
+                <div class="flex gap-4" x-data="{ selectedDate: '{{ $date }}'}">
+                    <select id="version" x-on:change="selectedDate = $event.target.value"
+                        class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">
+                        <option value="{{ $date }}">选择...</option>
+                        @foreach ($versions as $version)
+                            <option value='{{ $version }}'>{{ $version }}</option>
+                        @endforeach
+                    </select>
+                    <a :href="'{{ route('book-group.ppt.index', ['v' => '']) }}' + selectedDate"
+                        class="block px-5 py-3 w-1/3 text-sm font-medium text-center text-white bg-[#6A64F1] rounded-lg cursor-pointer">
+                        <span class="whitespace-nowrap">加载</span>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="mb-5">

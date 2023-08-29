@@ -32,9 +32,13 @@ class PowerpointController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $date = Carbon::now()->endOfWeek()->format('Y-m-d');
+        if ($request->has('v') && $request->get('v') != '') {
+            $date = $request->get('v');
+        } else {
+            $date = Carbon::now()->endOfWeek()->format('Y-m-d');
+        }
 
         $contentFiles = $this->getContentFiles();
         $content = [];
@@ -48,7 +52,8 @@ class PowerpointController extends Controller
 
         return view('book-group::powerpoint.index', [
             'date' => $date,
-            'content' => $content
+            'content' => $content,
+            'versions' => $this->getOtherVersions($date),
         ]);
     }
 
@@ -138,6 +143,33 @@ class PowerpointController extends Controller
 
         $filename = $contentType . '_list_' . $date . '.txt';
         $this->putContentFile($filename, $content);
+    }
+
+    protected function getOtherVersions(string $currentDate) { 
+        // get content files
+        $contentFiles = $this->getContentFiles();
+        $dates = collect();
+        foreach ($contentFiles as $filePath) {
+            $date = $this->getDateFromFilePath($filePath);
+            if ($date !== '' && $date !== $currentDate && !$dates->contains($date)) {
+                $dates[] = $date;
+            }
+        }
+
+        return $dates;
+    }
+
+    protected function getDateFromFilePath(string $filePath) {
+        $filename = explode('/', $filePath);
+        $filename = end($filename);
+
+        $pattern = '/.*_(\d{4}-\d{2}-\d{2})/';
+        preg_match($pattern, $filename, $matches);
+
+        if (sizeof($matches) > 1) {
+            return $matches[1];
+        }
+        return '';
     }
 
 }
