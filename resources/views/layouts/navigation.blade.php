@@ -15,10 +15,16 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-
-                    <x-nav-link :href="route('library.index')" :active="request()->routeIs('library.index')">
-                        Library
-                    </x-nav-link>
+                    @if (env('FEATURE_LIBRARY', false))
+                        <x-nav-link :href="route('library.index')" :active="request()->routeIs('library.index')">
+                            {{ __('Library ') }}
+                        </x-nav-link>
+                    @endif 
+                    @if (env('FEATURE_PPT', false))
+                        <x-nav-link :href="route('book-group.ppt.index')" :active="request()->routeIs('book-group.ppt.index')">
+                            {{ __('PPT') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -74,10 +80,16 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-
-            <x-responsive-nav-link :href="route('library.index')" :active="request()->routeIs('library.index')">
-                Library
-            </x-responsive-nav-link>
+            @if (env('FEATURE_LIBRARY', false))
+                <x-responsive-nav-link :href="route('library.index')" :active="request()->routeIs('library.index')">
+                    {{ __('Library ') }}
+                </x-responsive-nav-link>
+            @endif
+            @if (env('FEATURE_PPT', false))
+                <x-responsive-nav-link :href="route('book-group.ppt.index')" :active="request()->routeIs('book-group.ppt.index')">
+                    {{ __('PPT') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

@@ -187,6 +187,7 @@ return [
          */
         Soranoiseki\Core\CoreServiceProvider::class,
         Soranoiseki\Library\LibraryServiceProvider::class,
+        Soranoiseki\BookGroup\BookGroupServiceProvider::class,
 
         /*
          * Application Service Providers...

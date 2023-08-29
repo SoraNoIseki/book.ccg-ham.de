@@ -1,0 +1,20 @@
+{
+    "name": "soranoiseki/book-group",
+    "description": "CCG Hamburg book group helpers",
+    "type": "package",
+    "require": {
+        "laravel/framework": "9.*|10.*",
+        "php": "^7.3|^8.0",
+        "soranoiseki/core": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Soranoiseki\\BookGroup\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Soranoiseki"
+        }
+    ]
+}
