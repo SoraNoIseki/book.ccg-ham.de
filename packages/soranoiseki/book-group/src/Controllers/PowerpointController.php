@@ -87,7 +87,7 @@ class PowerpointController extends Controller
         }
 
         // run python
-        $process = new Process([env('PYTHON_PATH', '/usr/bin/python3'), storage_path('pyworship/ppt_worker.py'), '"' . $date . '"']);
+        $process = new Process([env('PYTHON_PATH', '/usr/bin/python3'), storage_path('pyworship/ppt_worker.py'), $date]);
         $process->run();
 
         if (!$process->isSuccessful()) {
