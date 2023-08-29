@@ -87,10 +87,7 @@ class PowerpointController extends Controller
         }
 
         // run python
-        /*
-        // $process = new Process([env('PYTHON_PATH', '/usr/bin/python3'), storage_path('pyworship/ppt_worker.py'), '"' . $date . '"']);
-        $command = implode(' ', [env('PYTHON_PATH', '/usr/bin/python3'), storage_path('pyworship/ppt_worker.py'), '"' . $date . '"']);
-        $process = Process::fromShellCommandline($command);
+        $process = new Process([env('PYTHON_PATH', '/usr/bin/python3'), storage_path('pyworship/ppt_worker.py'), '"' . $date . '"']);
         $process->run();
 
         if (!$process->isSuccessful()) {
@@ -100,21 +97,7 @@ class PowerpointController extends Controller
                 'message' => $error->getMessage()
             ]);
         }
-        */
-
-        $command = implode(' ', [env('PYTHON_PATH', '/usr/bin/python3'), storage_path('pyworship/ppt_worker.py'), '"' . $date . '" 2>&1']);
-        try {
-            return redirect()->route('book-group.ppt.index')->with([
-                'success' => true,
-                'message' => shell_exec($command)
-            ]);
-        } catch (\Exception $error) {
-            return redirect()->route('book-group.ppt.index')->with([
-                'success' => false,
-                'message' => $error->getMessage()
-            ]);
-        }
-
+      
         // download PPT file
         $filename = $date . '.pptx';
         if (!$this->getStorage()->exists($filename)) {
