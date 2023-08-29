@@ -102,7 +102,7 @@ class PowerpointController extends Controller
         }
         */
 
-        $command = implode(' ', [env('PYTHON_PATH', '/usr/bin/python3'), storage_path('pyworship/ppt_worker.py'), '"' . $date . '"']);
+        $command = implode(' ', [env('PYTHON_PATH', '/usr/bin/python3'), storage_path('pyworship/ppt_worker.py'), '"' . $date . '" 2>&1']);
         try {
             return redirect()->route('book-group.ppt.index')->with([
                 'success' => true,
