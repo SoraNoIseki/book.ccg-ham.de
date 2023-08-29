@@ -31,7 +31,7 @@
             代祷（#1代祷、#2姐妹团契1、#3姐妹团契2）
         </label>
         <textarea rows="10" name="pray" id="pray" placeholder="Type the pray texts" 
-            class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">@isset($content['pray']) {{ $content['pray'] }} @endisset</textarea>
+            class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">@isset($content['pray']){{ $content['pray'] }}@endisset</textarea>
     </div>
 
     <div class="mb-5">
@@ -39,7 +39,7 @@
             经文（宣召、启应、读经）
         </label>
         <textarea rows="10" name="preach" id="preach" placeholder="Type the preach texts"
-            class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">@isset($content['preach']) {{ $content['preach'] }} @endisset</textarea>
+            class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">@isset($content['preach']){{ $content['preach'] }}@endisset</textarea>
     </div>
 
     <div class="mb-5">
@@ -47,7 +47,7 @@
             通讯报告
         </label>
         <textarea rows="10" name="report" id="report" placeholder="Type the report texts"
-            class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">@isset($content['report']) {{ $content['report'] }} @endisset</textarea>
+            class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">@isset($content['report']){{ $content['report'] }}@endisset</textarea>
     </div>
 
     <div class="mb-5">
@@ -55,7 +55,7 @@
             讲道
         </label>
         <textarea rows="10" name="scripture" id="scripture" placeholder="Type the scripture texts"
-            class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">@isset($content['scripture']) {{ $content['scripture'] }} @endisset</textarea>
+            class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">@isset($content['scripture']){{ $content['scripture'] }}@endisset</textarea>
     </div>
 
     <div class="mb-5">
@@ -63,7 +63,7 @@
             诗歌（三首敬拜+回应诗歌）
         </label>
         <textarea rows="10" name="song" id="song" placeholder="Type the song texts"
-            class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">@isset($content['song']) {{ $content['song'] }} @endisset</textarea>
+            class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">@isset($content['song']){{ $content['song'] }}@endisset</textarea>
     </div>
 
     <div class="mb-5">
@@ -71,7 +71,7 @@
             服事列表
         </label>
         <textarea rows="10" name="worker" id="worker" placeholder="Type the worker texts"
-            class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">@isset($content['worker']) {{ $content['worker'] }} @endisset</textarea>
+            class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md">@isset($content['worker']){{ $content['worker'] }}@endisset</textarea>
     </div>
 
     <div>
