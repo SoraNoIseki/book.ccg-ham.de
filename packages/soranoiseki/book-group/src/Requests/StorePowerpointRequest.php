@@ -23,12 +23,23 @@ class StorePowerpointRequest extends FormRequest
     {
         return [
             'date' => 'required|date',
-            'pray' => 'required',
-            'preach' => 'required',
-            'report' => 'required',
-            'scripture' => 'required',
-            'song' => 'required',
-            'worker' => 'required',
+            'pray.item1' => 'required',
+            'pray.item2' => 'required',
+            'pray.item3' => 'required',
+            'preach.item0' => 'required',
+            'preach.item1' => 'required',
+            'preach.item2' => 'required',
+            'preach.item3' => 'required',
+            'report.item1' => 'required',
+            'scripture.item1' => 'required',
+            'scripture.item2' => 'required',
+            'scripture.item3' => 'required',
+            'song.item1' => 'required',
+            'song.item2' => 'required',
+            'song.item3' => 'required',
+            'song.item4' => 'required',
+            'worker.item1' => 'required',
+            'worker.item2' => 'required',
         ];
     }
 
@@ -41,12 +52,23 @@ class StorePowerpointRequest extends FormRequest
     {
         return [
             'date.required' => '请选择日期',
-            'pray.required' => '请填写代祷事项',
-            'preach.required' => '请填写讲道大纲',
-            'report.required' => '请填写报告事项',
-            'scripture.required' => '请填写经文',
-            'song.required' => '请填写诗歌',
-            'worker.required' => '请填写服事人员',
+            'pray.item1.required' => '请填写代祷事项（教会）',
+            'pray.item2.required' => '请填写代祷事项（姐妹团契1）',
+            'pray.item3.required' => '请填写代祷事项（姐妹团契2）',
+            'preach.item0.required' => '请填写讲道标题',
+            'preach.item1.required' => '请填写讲道（引言）',
+            'preach.item2.required' => '请填写讲道（经文理解与应用）',
+            'preach.item3.required' => '请填写讲道（总结）',
+            'report.item1.required' => '请填写至少一个报告事项',
+            'scripture.item1.required' => '请填写经文（宣召）',
+            'scripture.item2.required' => '请填写经文（启应经文）',
+            'scripture.item3.required' => '请填写经文（读经）',
+            'song.item1.required' => '请填写诗歌1',
+            'song.item2.required' => '请填写诗歌2',
+            'song.item3.required' => '请填写诗歌3',
+            'song.item4.required' => '请填写回应诗歌',
+            'worker.item1.required' => '请填写服事人员（本周）',
+            'worker.item2.required' => '请填写服事人员（本周）',
         ];
     }
 }

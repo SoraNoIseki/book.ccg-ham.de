@@ -39,14 +39,13 @@ class PowerpointController extends Controller
         } else {
             $date = Carbon::now()->endOfWeek()->format('Y-m-d');
         }
-
-        $contentFiles = $this->getContentFiles();
+        
         $content = [];
         foreach ($this->content as $field) {
             $filename = $field . '_list_' . $date . '.txt';
             $data = $this->readContentFile($filename);
             if ($data) {
-                $content[$field] = $data;
+                $content[$field] = $this->splitContentText($data);
             }
         }
 
@@ -62,9 +61,23 @@ class PowerpointController extends Controller
         // save data
         $validated = $request->validated();
         $date = $validated['date'];
+
         foreach ($this->content as $field) {
             if (isset($validated[$field])) {
-                $this->saveToContentFile($field, $date, $validated[$field]);
+                $input = $validated[$field];
+
+                if (is_array($input)) {
+                    $additionalTexts = [];
+                    if ($field == 'preach') {
+                        $additionalTexts = [1 => '引言', 2 => '经文理解与应用', 3 => '结论'];
+                    } else if ($field == 'preach') {
+                        $additionalTexts = [1 => '宣召', 2 => '启应经文', 3 => '读经'];
+                    }
+                    
+                    $this->saveToContentFile($field, $date, $this->buildContentText($input), $additionalTexts);
+                } else {
+                    $this->saveToContentFile($field, $date, $input);
+                }
             }
         }
 
@@ -156,7 +169,7 @@ class PowerpointController extends Controller
             }
         }
 
-        return $dates;
+        return $dates->sortDesc();;
     }
 
     protected function getDateFromFilePath(string $filePath) {
@@ -170,6 +183,52 @@ class PowerpointController extends Controller
             return $matches[1];
         }
         return '';
+    }
+
+
+    protected function buildContentText(array $inputs, array $additionalTexts = []) {
+        $return = [];
+        foreach ($inputs as $key => $value) {
+            $index = (int)str_replace('item', '', $key);
+
+            $additionalText = '';
+            if (!empty($additionalTexts) && isset($additionalTexts[$index])) {
+                $additionalText = $additionalTexts[$index];
+            }
+
+            $return[] = '#' . (string)$index . $additionalText;
+            $return[] = $value;
+        }
+        return implode(PHP_EOL, $return);
+    }
+
+    protected function splitContentText(string $contentText) {
+        $return = [];
+
+        $lines = explode(PHP_EOL, $contentText);
+        $index = '';
+        $buildTexts = [];
+        foreach ($lines as $line) {
+            $line = str_replace("\r", '', $line);
+
+            $pattern = '/#(\d{1}).*/';
+            preg_match($pattern, $line, $matches);
+            if (sizeof($matches) > 1) {
+                if ($index == '') {
+                    $index = 'item' . $matches[1];
+                } else {
+                    $return[$index] = implode(PHP_EOL, $buildTexts);
+                    $index = 'item' . $matches[1];
+                    $buildTexts = [];
+                }
+                continue;
+            } else {
+                $buildTexts[] = $line;
+            }
+        }
+        $return[$index] = implode(PHP_EOL, $buildTexts);
+
+        return $return;
     }
 
 }

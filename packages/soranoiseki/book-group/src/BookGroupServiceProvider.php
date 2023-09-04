@@ -3,6 +3,12 @@
 namespace Soranoiseki\BookGroup;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Blade;
+use Soranoiseki\BookGroup\View\Components\Tabs\Container;
+use Soranoiseki\BookGroup\View\Components\Tabs\Label;
+use Soranoiseki\BookGroup\View\Components\Tabs\Tab;
+use Soranoiseki\BookGroup\View\Components\Alert;
+
 
 class BookGroupServiceProvider extends ServiceProvider
 {
@@ -22,6 +28,12 @@ class BookGroupServiceProvider extends ServiceProvider
             __DIR__ . '/Config/disks.php',
             'filesystems.disks'
         );
+
+        // register view components
+        Blade::component('tabs-container', Container::class);
+        Blade::component('tabs-label', Label::class);
+        Blade::component('tabs-tab', Tab::class);
+        Blade::component('alert', Alert::class);
 
         $this->commands([]);
     }
