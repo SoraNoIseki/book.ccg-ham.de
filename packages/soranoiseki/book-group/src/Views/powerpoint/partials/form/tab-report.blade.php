@@ -15,7 +15,7 @@
                 <x-slot name="title">格式范例：（无需编号）</x-slot>
                 <x-slot name="content">
                     <ul class="mt-1.5 list-none list-inside">
-                        <li>每个输入框一个报告事项</li>
+                        <li>每个输入框为一页报告事项</li>
                         <li>可以换行</li>
                     </ul>
                 </x-slot>
