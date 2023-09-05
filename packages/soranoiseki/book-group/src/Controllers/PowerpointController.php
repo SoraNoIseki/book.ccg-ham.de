@@ -61,24 +61,7 @@ class PowerpointController extends Controller
         // save data
         $validated = $request->validated();
         $date = $validated['date'];
-
-        foreach ($this->content as $field) {
-            if (isset($validated[$field])) {
-                $input = $validated[$field];
-
-                if (is_array($input)) {
-                    $additionalTexts = [];
-                    if ($field == 'preach') {
-                        $additionalTexts = [1 => '引言', 2 => '经文理解与应用', 3 => '结论'];
-                    } else if ($field == 'scripture') {
-                        $additionalTexts = [1 => '宣召', 2 => '启应经文', 3 => '读经'];
-                    }
-                    $this->saveToContentFile($field, $date, $this->buildContentText($input, $additionalTexts));
-                } else {
-                    $this->saveToContentFile($field, $date, $input);
-                }
-            }
-        }
+        $this->saveContent($validated);
 
         // redirect back
         return redirect()->route('book-group.ppt.index', ['v' => $date])->with([
@@ -86,7 +69,6 @@ class PowerpointController extends Controller
             'message' => '已保存'
         ]);
     }
-
 
     /**
      * Create a powerpoint 
@@ -97,11 +79,7 @@ class PowerpointController extends Controller
         // save data
         $validated = $request->validated();
         $date = $validated['date'];
-        foreach ($this->content as $field) {
-            if (isset($validated[$field])) {
-                $this->saveToContentFile($field, $date, $validated[$field]);
-            }
-        }
+        $this->saveContent($validated);
 
         // run python
         $process = new Process([env('PYTHON_PATH', '/usr/bin/python3'), storage_path('pyworship/ppt_worker.py'), $date]);
@@ -128,6 +106,27 @@ class PowerpointController extends Controller
     }
 
 
+    protected function saveContent(array $validated) {
+        $date = $validated['date'];
+        foreach ($this->content as $field) {
+            if (isset($validated[$field])) {
+                $input = $validated[$field];
+
+                if (is_array($input)) {
+                    $additionalTexts = [];
+                    if ($field == 'preach') {
+                        $additionalTexts = [1 => '引言', 2 => '经文理解与应用', 3 => '结论'];
+                    } else if ($field == 'scripture') {
+                        $additionalTexts = [1 => '宣召', 2 => '启应经文', 3 => '读经'];
+                    }
+                    $this->saveToContentFile($field, $date, $this->buildContentText($input, $additionalTexts));
+                } else {
+                    $this->saveToContentFile($field, $date, $input);
+                }
+            }
+        }
+    }
+
     protected function getStorage() {
         return Storage::disk('pyworship');
     }
@@ -148,7 +147,7 @@ class PowerpointController extends Controller
         return false;
     }
 
-    protected function saveToContentFile(string $contentType, string $date, string $content) {
+    protected function saveToContentFile(string $contentType, string $date, string | array $content) {
         if (!$contentType || $contentType == '' || !$date || $date == '') {
             return;
         }
