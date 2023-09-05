@@ -70,11 +70,10 @@ class PowerpointController extends Controller
                     $additionalTexts = [];
                     if ($field == 'preach') {
                         $additionalTexts = [1 => '引言', 2 => '经文理解与应用', 3 => '结论'];
-                    } else if ($field == 'preach') {
+                    } else if ($field == 'scripture') {
                         $additionalTexts = [1 => '宣召', 2 => '启应经文', 3 => '读经'];
                     }
-                    
-                    $this->saveToContentFile($field, $date, $this->buildContentText($input), $additionalTexts);
+                    $this->saveToContentFile($field, $date, $this->buildContentText($input, $additionalTexts));
                 } else {
                     $this->saveToContentFile($field, $date, $input);
                 }
@@ -82,7 +81,7 @@ class PowerpointController extends Controller
         }
 
         // redirect back
-        return redirect()->route('book-group.ppt.index')->with([
+        return redirect()->route('book-group.ppt.index', ['v' => $date])->with([
             'success' => true,
             'message' => '已保存'
         ]);
@@ -189,17 +188,22 @@ class PowerpointController extends Controller
     protected function buildContentText(array $inputs, array $additionalTexts = []) {
         $return = [];
         foreach ($inputs as $key => $value) {
-            $index = (int)str_replace('item', '', $key);
+            if (trim($value) == '') {
+                continue;
+            }
 
+            $index = (int)str_replace('item', '', $key);
             $additionalText = '';
             if (!empty($additionalTexts) && isset($additionalTexts[$index])) {
                 $additionalText = $additionalTexts[$index];
+                $return[] = '#' . (string)$index . '(' . $additionalText . ')';
+            } else {
+                $return[] = '#' . (string)$index;
             }
-
-            $return[] = '#' . (string)$index . $additionalText;
-            $return[] = $value;
+            
+            $return[] = trim($value);
         }
-        return implode(PHP_EOL, $return);
+        return implode("\r\n", $return);
     }
 
     protected function splitContentText(string $contentText) {
@@ -209,24 +213,24 @@ class PowerpointController extends Controller
         $index = '';
         $buildTexts = [];
         foreach ($lines as $line) {
-            $line = str_replace("\r", '', $line);
+            $line = str_replace(["\r", "\n", "\u{A0}"], '', $line);
 
-            $pattern = '/#(\d{1}).*/';
+            $pattern = '/^#(\d{1,2}).*/';
             preg_match($pattern, $line, $matches);
             if (sizeof($matches) > 1) {
                 if ($index == '') {
                     $index = 'item' . $matches[1];
                 } else {
-                    $return[$index] = implode(PHP_EOL, $buildTexts);
+                    $return[$index] = implode("\r\n", $buildTexts);
                     $index = 'item' . $matches[1];
                     $buildTexts = [];
                 }
                 continue;
             } else {
-                $buildTexts[] = $line;
+                $buildTexts[] = trim($line);
             }
         }
-        $return[$index] = implode(PHP_EOL, $buildTexts);
+        $return[$index] = implode("\r\n", $buildTexts);
 
         return $return;
     }

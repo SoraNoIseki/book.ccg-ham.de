@@ -30,7 +30,7 @@ class StorePowerpointRequest extends FormRequest
             'preach.item1' => 'required',
             'preach.item2' => 'required',
             'preach.item3' => 'required',
-            'report.item1' => 'required',
+            'report' => 'required',
             'scripture.item1' => 'required',
             'scripture.item2' => 'required',
             'scripture.item3' => 'required',
