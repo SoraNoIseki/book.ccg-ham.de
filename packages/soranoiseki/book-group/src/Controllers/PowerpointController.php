@@ -34,10 +34,11 @@ class PowerpointController extends Controller
      */
     public function index(Request $request)
     {
+        $defaultDate = Carbon::now()->endOfWeek()->format('Y-m-d');
         if ($request->has('v') && $request->get('v') != '') {
             $date = $request->get('v');
         } else {
-            $date = Carbon::now()->endOfWeek()->format('Y-m-d');
+            $date = $defaultDate;
         }
         
         $content = [];
@@ -51,6 +52,7 @@ class PowerpointController extends Controller
 
         return view('book-group::powerpoint.index', [
             'date' => $date,
+            'defaultDate' => $defaultDate,
             'content' => $content,
             'versions' => $this->getOtherVersions($date),
         ]);
