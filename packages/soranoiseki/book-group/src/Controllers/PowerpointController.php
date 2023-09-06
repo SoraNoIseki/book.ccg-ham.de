@@ -87,7 +87,7 @@ class PowerpointController extends Controller
 
         if (!$process->isSuccessful()) {
             $error =  new ProcessFailedException($process);
-            return redirect()->route('book-group.ppt.index')->with([
+            return redirect()->route('book-group.ppt.index', ['v' => $date])->with([
                 'success' => false,
                 'message' => $error->getMessage()
             ]);
@@ -96,7 +96,7 @@ class PowerpointController extends Controller
         // download PPT file
         $filename = $date . '.pptx';
         if (!$this->getStorage()->exists($filename)) {
-            return redirect()->route('book-group.ppt.index')->with([
+            return redirect()->route('book-group.ppt.index', ['v' => $date])->with([
                 'success' => false,
                 'message' => '无法找到文件：' . $filename
             ]);
