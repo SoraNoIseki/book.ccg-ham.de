@@ -4,6 +4,7 @@
     @if ($errors->any())
         <div class="mb-5 bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
             <div class="alert alert-danger">
+                <p class="font-bold">发生错误。改动暂存中，请勿刷新页面！</p>
                 <ul>
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>

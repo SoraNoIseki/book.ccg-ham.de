@@ -1,3 +1,9 @@
+@php
+    if (old('pray')) {
+        $content['pray'] = old('pray');
+    }
+@endphp
+
 <div class="mb-5">
     <label for="pray1" class="mb-3 block text-base font-medium text-[#07074D]">
         代祷事项（汉堡教会）

@@ -1,3 +1,9 @@
+@php
+    if (old('worker')) {
+        $content['worker'] = old('worker');
+    }
+@endphp
+
 <div class="mb-5">
     <label for="worker1" class="mb-3 block text-base font-medium text-[#07074D]">
         服事列表（本周）

@@ -1,3 +1,9 @@
+@php
+    if (old('scripture')) {
+        $content['scripture'] = old('scripture');
+    }
+@endphp
+
 <div class="mb-5">
     <label for="scripture1" class="mb-3 block text-base font-medium text-[#07074D]">
         经文（宣召）
@@ -23,8 +29,8 @@
                 <x-slot name="title">格式范例2：</x-slot>
                 <x-slot name="content">
                     <ul class="mt-1.5 list-none list-inside">
-                        <li>1. 第一节经文</li>
-                        <li>2. 第二节经文</li>
+                        <li>1 第一节经文</li>
+                        <li>2 第二节经文</li>
                     </ul>
                 </x-slot>
             </x-alert>
@@ -33,7 +39,7 @@
                 <x-slot name="content">
                     <ul class="mt-1.5 list-none list-inside">
                         <li>方括号及其中所有字符均<span class="font-semibold mx-1">必须</span>为英文字符</li>
-                        <li>编号数字后请输入空格</li>
+                        <li>经文编号后请输入空格</li>
                     </ul>
                 </x-slot>
             </x-alert>

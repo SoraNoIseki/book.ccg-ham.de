@@ -1,3 +1,9 @@
+@php
+    if (old('song')) {
+        $content['song'] = old('song');
+    }
+@endphp
+
 <div class="mb-5">
     <label for="song1" class="mb-3 block text-base font-medium text-[#07074D]">
         诗歌1

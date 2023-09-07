@@ -1,3 +1,9 @@
+@php
+    if (old('preach')) {
+        $content['preach'] = old('preach');
+    }
+@endphp
+
 <div class="mb-5">
     <label for="preach0" class="mb-3 block text-base font-medium text-[#07074D]">
         讲道标题
@@ -29,7 +35,7 @@
                 <div>
                     <span class="font-medium">注意事项：</span>
                     <ul class="mt-1.5 list-none list-inside">
-                        <li>第一行为讲道标题，之后几行为附加信息</li>
+                        <li>第一行为讲道标题，之后几行均为副标题</li>
                     </ul>
                 </div>
             </div>

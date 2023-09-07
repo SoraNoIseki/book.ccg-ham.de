@@ -1,3 +1,9 @@
+@php
+    if (old('report')) {
+        $content['report'] = old('report');
+    }
+@endphp
+
 <div class="mb-5">
     <label class="mb-3 block text-base font-medium text-[#07074D]">
         报告
