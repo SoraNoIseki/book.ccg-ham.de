@@ -186,7 +186,6 @@ return [
          * Package Service Providers...
          */
         Soranoiseki\Core\CoreServiceProvider::class,
-        Soranoiseki\Library\LibraryServiceProvider::class,
         Soranoiseki\BookGroup\BookGroupServiceProvider::class,
 
         /*

@@ -11,6 +11,8 @@ use Soranoiseki\BookGroup\Requests\StorePowerpointRequest;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
+use Soranoiseki\BookGroup\Models\Worship\Song;
+
 class PowerpointController extends Controller
 {
     protected $content = [
@@ -42,6 +44,17 @@ class PowerpointController extends Controller
                 $content[$field] = $this->splitContentText($data);
             }
         }
+
+        // $file = Storage::disk('dropbox')->get('test.txt');
+        // dd($file);
+        
+        // try {
+        //     $users = Song::query()->get();
+        //     dd($users);
+        // } catch (\Throwable $th) {
+        //     dd($th->getMessage());
+        // }
+       
 
         return view('book-group::powerpoint.index', [
             'date' => $date,

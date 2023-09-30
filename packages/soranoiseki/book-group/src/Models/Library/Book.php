@@ -1,10 +1,10 @@
 <?php
 
-namespace Soranoiseki\Library\Models;
+namespace Soranoiseki\BookGroup\Models\Library;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Soranoiseki\Library\Models\Copy;
+use Soranoiseki\BookGroup\Models\Library\Copy;
 
 class Book extends Model
 {

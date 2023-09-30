@@ -1,9 +1,9 @@
 <?php
 
-namespace Soranoiseki\Library\Imports;
+namespace Soranoiseki\BookGroup\Imports;
 
-use Soranoiseki\Library\Models\Book;
-use Soranoiseki\Library\Models\Copy;
+use Soranoiseki\BookGroup\Models\Library\Book;
+use Soranoiseki\BookGroup\Models\Library\Copy;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Row;
 use Maatwebsite\Excel\Concerns\OnEachRow;

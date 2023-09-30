@@ -1,15 +1,14 @@
 <?php
 
-namespace Soranoiseki\Library\Controllers;
+namespace Soranoiseki\BookGroup\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Soranoiseki\Core\Controllers\Controller;
-use Soranoiseki\Library\Models\Book;
-use Soranoiseki\Library\Models\Member;
+use Soranoiseki\BookGroup\Models\Library\Book;
+use Soranoiseki\BookGroup\Models\Library\Member;
 use Maatwebsite\Excel\Facades\Excel;
-use Soranoiseki\Library\Imports\ImportBooks;
-use Soranoiseki\Library\Models\Copy;
+use Soranoiseki\BookGroup\Imports\ImportBooks;
 
 class LibraryController extends Controller
 {
@@ -25,7 +24,7 @@ class LibraryController extends Controller
         }])->orderBy('bibid', 'asc')->get();
         $members = Member::all();
        
-        return view('library::library.index', [
+        return view('book-group::library.index', [
             'books' => $books,
             'members' => $members,
         ]);

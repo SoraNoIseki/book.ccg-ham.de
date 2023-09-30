@@ -5,7 +5,7 @@ namespace App\Http\Livewire\Library;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-use Soranoiseki\Library\Models\Book;
+use Soranoiseki\BookGroup\Models\Library\Book;
 
 class ShowBooks extends Component
 {

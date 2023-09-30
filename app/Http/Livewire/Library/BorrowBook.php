@@ -3,8 +3,8 @@
 namespace App\Http\Livewire\Library;
 
 use LivewireUI\Modal\ModalComponent;
-use Soranoiseki\Library\Models\Copy;
-use Soranoiseki\Library\Models\Member;
+use Soranoiseki\BookGroup\Models\Library\Copy;
+use Soranoiseki\BookGroup\Models\Library\Member;
 
 class BorrowBook extends ModalComponent
 {

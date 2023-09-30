@@ -1,11 +1,11 @@
 <?php
 
-namespace Soranoiseki\Library\Models;
+namespace Soranoiseki\BookGroup\Models\Library;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Soranoiseki\Library\Models\Book;
-use Soranoiseki\Library\Models\Member;
+use Soranoiseki\BookGroup\Models\Library\Book;
+use Soranoiseki\BookGroup\Models\Library\Member;
 
 class Copy extends Model
 {

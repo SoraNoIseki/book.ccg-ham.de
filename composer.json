@@ -12,6 +12,7 @@
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^2.12",
         "maatwebsite/excel": "^3.1",
+        "mongodb/laravel-mongodb": "dev-master",
         "symfony/process": "^6.3",
         "wire-elements/modal": "^1.0"
     },
@@ -35,13 +36,6 @@
         },
         {
             "type": "path",
-            "url": "packages/soranoiseki/library",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
             "url": "packages/soranoiseki/book-group",
             "options": {
                 "symlink": true
@@ -54,7 +48,6 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
             "Soranoiseki\\Core\\": "packages/soranoiseki/core/src/",
-            "Soranoiseki\\Library\\": "packages/soranoiseki/library/src/",
             "Soranoiseki\\BookGroup\\": "packages/soranoiseki/book-group/src/"
         }
     },
