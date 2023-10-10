@@ -33,30 +33,52 @@ class PowerpointController extends Controller
         } else {
             $date = $defaultDate;
         }
-        
+
+        // load otherversions
+        $versions = $this->getOtherVersions($date);
+
+        // read content from files
         $content = [];
+        $versionExists = false;
         foreach ($this->content as $field) {
             $filename = $field . '_list_' . $date . '.txt';
             $data = $this->readContentFile($filename);
-            if ($data) {
+            if ($data !== false) {
+                $versionExists = true;
                 $content[$field] = $this->splitContentText($data);
             }
+        }
+
+        // copy last version if this version not exists
+        if (!$versionExists) {
+            $lastVersion = $versions->first();
+            foreach ($this->content as $field) {
+                $filename = $field . '_list_' . $lastVersion . '.txt';
+                $data = $this->readContentFile($filename);
+                // dump($this->splitContentText($data));
+                if ($data !== false) {
+                    $versionExists = true;
+                    $content[$field] = $this->splitContentText($data);
+                }
+            }
+            session()->flash('infoMessage', 'PPT内容已从版本 ' . $lastVersion . ' 复制并加载。');
         }
 
         return view('book-group::powerpoint.index', [
             'date' => $date,
             'defaultDate' => $defaultDate,
             'content' => $content,
-            'versions' => $this->getOtherVersions($date),
+            'versions' => $versions,
+            'saveEnabled' => $defaultDate == $date,
         ]);
     }
 
     public function store(StorePowerpointRequest $request)
     {
         // save data
-        $validated = $request->validated();
-        $date = $validated['date'];
-        $this->saveContent($validated);
+        $requestData = $request->all();
+        $date = $requestData['date'];
+        $this->saveContent($requestData);
 
         // redirect back
         return redirect()->route('book-group.ppt.index', ['v' => $date])->with([
@@ -69,12 +91,12 @@ class PowerpointController extends Controller
      * Create a powerpoint 
      *
      */
-    public function download(StorePowerpointRequest $request)
+    public function storeAndDownload(StorePowerpointRequest $request)
     {
         // save data
-        $validated = $request->validated();
-        $date = $validated['date'];
-        $this->saveContent($validated);
+        $requestData = $request->all();
+        $date = $requestData['date'];
+        $this->saveContent($requestData);
 
         // run python
         $process = new Process([env('PYTHON_PATH', '/usr/bin/python3'), storage_path('pyworship/ppt_worker.py'), $date]);
@@ -100,12 +122,29 @@ class PowerpointController extends Controller
         return $this->getStorage()->download($filename);
     }
 
+    public function download(StorePowerpointRequest $request)
+    {
+        $requestData = $request->all();
+        $date = $requestData['date'];
+      
+        // download PPT file
+        $filename = $date . '.pptx';
+        if (!$this->getStorage()->exists($filename)) {
+            return redirect()->route('book-group.ppt.index', ['v' => $date])->with([
+                'success' => false,
+                'message' => '无法找到文件：' . $filename
+            ]);
+        }
+        
+        return $this->getStorage()->download($filename);
+    }
 
-    protected function saveContent(array $validated) {
-        $date = $validated['date'];
+
+    protected function saveContent(array $requestData) {
+        $date = $requestData['date'];
         foreach ($this->content as $field) {
-            if (isset($validated[$field])) {
-                $input = $validated[$field];
+            if (isset($requestData[$field])) {
+                $input = $requestData[$field];
 
                 if (is_array($input)) {
                     $additionalTexts = [];

@@ -1,4 +1,4 @@
-<form method="POST">
+<form method="POST" id="pptGenerator">
     @csrf
 
     @if ($errors->any())
@@ -79,16 +79,29 @@
                 @include('book-group::powerpoint.partials.form.tab-worker')
             </x-tabs-tab>
         </x-slot>
-
+        
         <div>
-            <button type="submit" formaction="{{ route('book-group.ppt.store') }}"
-                class="hover:shadow-form rounded-md bg-indigo-600 py-3 px-8 text-center text-base font-semibold text-white outline-none">
-                保存
-            </button>
-            <button type="submit" formaction="{{ route('book-group.ppt.download') }}"
-                class="hover:shadow-form rounded-md bg-[#c88437] py-3 px-8 text-center text-base font-semibold text-white outline-none">
-                保存并下载
-            </button>
+            @if ($saveEnabled)
+                <button type="submit" formaction="{{ route('book-group.ppt.store') }}" id="saveButton"
+                    class="hover:shadow-form rounded-md bg-indigo-600 py-3 px-8 text-center text-base font-semibold text-white outline-none">
+                    保存
+                </button>
+                <button type="submit" formaction="{{ route('book-group.ppt.store-download') }}" id="downloadButton"
+                    class="hover:shadow-form rounded-md bg-[#c88437] py-3 px-8 text-center text-base font-semibold text-white outline-none">
+                    保存并下载
+                </button>
+            @else
+                <button type="submit" formaction="{{ route('book-group.ppt.download') }}" id="downloadButton"
+                    class="hover:shadow-form rounded-md bg-[#c88437] py-3 px-8 text-center text-base font-semibold text-white outline-none">
+                    下载
+                </button>
+            @endif
+            <button class="hidden opacity-50 cursor-not-allowed" disabled></button>
+            
         </div>
     </x-tabs-container>
 </form>
+
+<script>
+
+</script>

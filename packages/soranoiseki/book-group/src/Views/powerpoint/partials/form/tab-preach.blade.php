@@ -12,7 +12,7 @@
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="5" name="preach[item0]" id="preach0" placeholder="讲道标题"
-                class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['preach']['item0']){{ $content['preach']['item0'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['preach']['item0']){{ $content['preach']['item0'] }}@endisset</textarea>
         </div>
         <div>
             <div class="flex p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
@@ -51,7 +51,7 @@
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="10" name="preach[item1]" id="preach1" placeholder="讲道（引言）"
-                class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['preach']['item1']){{ $content['preach']['item1'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['preach']['item1']){{ $content['preach']['item1'] }}@endisset</textarea>
         </div>
         <div>
             <x-alert type="info">
@@ -84,7 +84,7 @@
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="10" name="preach[item2]" id="preach2" placeholder="讲道（经文理解与应用）"
-                class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['preach']['item2']){{ $content['preach']['item2'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['preach']['item2']){{ $content['preach']['item2'] }}@endisset</textarea>
         </div>
         <div>
             <x-alert type="info">
@@ -117,7 +117,7 @@
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="10" name="preach[item3]" id="preach3" placeholder="讲道（总结）"
-                class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['preach']['item3']){{ $content['preach']['item3'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['preach']['item3']){{ $content['preach']['item3'] }}@endisset</textarea>
         </div>
         <div>
             <x-alert type="danger">

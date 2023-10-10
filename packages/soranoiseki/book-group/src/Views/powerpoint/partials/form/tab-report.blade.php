@@ -13,7 +13,7 @@
         <div class="col-span-3">
             @for ($i = 1; $i <= 12; $i++)
             <textarea rows="3" name="report[item{{ $i }}]" id="report{{ $i }}" placeholder="报告事项 {{ $i }}"
-                class="w-full mb-3 resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['report']['item'.$i]){{ $content['report']['item'.$i] }}@endisset</textarea>
+                class="w-full mb-3 resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md @if($i == 0) required @endif">@isset($content['report']['item'.$i]){{ $content['report']['item'.$i] }}@endisset</textarea>
             @endfor
         </div>
         <div>

@@ -12,7 +12,7 @@
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="12" name="worker[item1]" id="worker1" placeholder="服事列表（本周）"
-                class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['worker']['item1']){{ $content['worker']['item1'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['worker']['item1']){{ $content['worker']['item1'] }}@endisset</textarea>
         </div>
         <div>
             <x-alert type="info">
@@ -49,7 +49,7 @@
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="12" name="worker[item2]" id="worker2" placeholder="服事列表（下周）"
-                class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['worker']['item2']){{ $content['worker']['item2'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['worker']['item2']){{ $content['worker']['item2'] }}@endisset</textarea>
         </div>
     </div>
 </div>

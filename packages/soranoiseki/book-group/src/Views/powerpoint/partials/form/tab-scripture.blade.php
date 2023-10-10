@@ -12,7 +12,7 @@
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="10" name="scripture[item1]" id="scripture1" placeholder="经文（宣召）"
-                class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['scripture']['item1']){{ $content['scripture']['item1'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['scripture']['item1']){{ $content['scripture']['item1'] }}@endisset</textarea>
         </div>
         <div>
             <x-alert type="info">
@@ -55,7 +55,7 @@
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="10" name="scripture[item2]" id="scripture2" placeholder="经文（启应经文）"
-                class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['scripture']['item2']){{ $content['scripture']['item2'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['scripture']['item2']){{ $content['scripture']['item2'] }}@endisset</textarea>
         </div>
         <div>
             <div class="flex p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
@@ -84,7 +84,7 @@
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="10" name="scripture[item3]" id="scripture3" placeholder="经文（读经）"
-        class="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['scripture']['item3']){{ $content['scripture']['item3'] }}@endisset</textarea>
+        class="required w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['scripture']['item3']){{ $content['scripture']['item3'] }}@endisset</textarea>
         </div>
         <div>
             <div class="flex p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
