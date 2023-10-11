@@ -23,8 +23,17 @@ $( document ).ready(function() {
         }
 
         updateDownloadButton();
-        $(requires).on('change', () => {
+        $(requires).on('change', function () {
             updateDownloadButton();
+        });
+    }
+
+    // bible selector
+    if ($('.bible-selector').length) {
+        $('.bible-selector').on('change', function () {
+            var value = $(this).val();
+            $(this).siblings('textarea').text(value + ':1[*]');
+            $(this).val('');
         });
     }
 });
