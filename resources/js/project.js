@@ -14,10 +14,8 @@ $( document ).ready(function() {
                 }
             });
             if (enable) {
-                console.log('enable button');
                 $(button).removeClass('opacity-50 cursor-not-allowed').attr('disabled', false);
             } else {
-                console.log('disable button');
                 $(button).addClass('opacity-50 cursor-not-allowed').attr('disabled', true);
             }
         }
