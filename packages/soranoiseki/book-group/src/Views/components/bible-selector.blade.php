@@ -1,5 +1,5 @@
 <select class="bible-selector bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-32 mb-3 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-    <option value="" selected>-- 请选择 --</option>
+    <option value="" selected>-- 选择经卷 --</option>
     <optgroup label="旧约 - 摩西五经">
         <option value="创世记">创世记</option>
         <option value="出埃及记">出埃及记</option>
