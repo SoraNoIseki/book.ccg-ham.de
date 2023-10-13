@@ -5,14 +5,14 @@
 @endphp
 
 <div class="mb-5">
-    <label for="pray1" class="mb-3 block text-base font-medium text-[#07074D]">
+    <label for="pray1" class="mb-3 block text-base font-medium text-main">
         代祷事项（汉堡教会）
     </label>
 
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="15" name="pray[item1]" property="item1" id="pray1" placeholder="代祷事项（汉堡教会）" 
-                class="required w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['pray']['item1']){{ $content['pray']['item1'] }}@endisset</textarea>    
+                class="required w-full resize-none rounded-md border border-gray-200 bg-white py-3 px-6 text-base font-medium text-main outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['pray']['item1']){{ $content['pray']['item1'] }}@endisset</textarea>    
         </div>
         <div>
             <x-alert type="info">
@@ -30,14 +30,14 @@
 </div>
 
 <div class="mb-5">
-    <label for="pray2" class="mb-3 block text-base font-medium text-[#07074D]">
+    <label for="pray2" class="mb-3 block text-base font-medium text-main">
         代祷事项（姐妹团契1）
     </label>
 
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="10" name="pray[item2]" property="item2" id="pray2" placeholder="代祷事项（姐妹团契1）" 
-                class="required w-full col-span-3 resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['pray']['item2']){{ $content['pray']['item2'] }}@endisset</textarea>
+                class="required w-full col-span-3 resize-none rounded-md border border-gray-200 bg-white py-3 px-6 text-base font-medium text-main outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['pray']['item2']){{ $content['pray']['item2'] }}@endisset</textarea>
         </div>
         <div>
             <x-alert type="info">
@@ -65,14 +65,14 @@
 </div>
 
 <div class="mb-5">
-    <label for="pray3" class="mb-3 block text-base font-medium text-[#07074D]">
+    <label for="pray3" class="mb-3 block text-base font-medium text-main">
         代祷事项（姐妹团契2）
     </label>
 
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="10" name="pray[item3]" property="item3" id="pray3" placeholder="代祷事项（姐妹团契2）" 
-                class="required w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-indigo-600 focus:shadow-md">@isset($content['pray']['item3']){{ $content['pray']['item3'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-gray-200 bg-white py-3 px-6 text-base font-medium text-main outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['pray']['item3']){{ $content['pray']['item3'] }}@endisset</textarea>
         </div>
         <div>
             <x-alert type="info">

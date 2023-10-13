@@ -34,4 +34,41 @@ $( document ).ready(function() {
             $(this).val('');
         });
     }
+    
+    // report list
+    var reportList = $('#reportList');
+    if ($(reportList).length) {
+        function sortReports() {
+            $(reportList).find('.report-item').each((index, report) => {
+                $(report).find('textarea').attr('name', 'report[item' + (index + 1).toString() + ']')
+            });
+        }
+
+        // sort list
+        var sortable = Sortable.create(reportList[0], {
+            onEnd: function (/**Event*/evt) {
+                sortReports();
+            },
+        });
+
+        // delete
+        $(reportList).find('.report-item .delete').on('click', function () {
+            if (confirm("确认要删除吗？")) {
+                $(this).parents('.report-item').remove();
+                sortReports();
+            }
+        });
+
+        // add
+        $(reportList).on('click', '.report-item .add', function () {
+            var reportItem = $(this).parents('.report-item').clone();
+                console.log(reportItem);
+                $(reportItem).find('textarea').val('');
+                $(this).parents('.report-item').after(reportItem);
+                sortReports();
+        });
+
+    }
+
+   
 });
