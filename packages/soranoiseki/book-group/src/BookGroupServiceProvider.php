@@ -8,6 +8,7 @@ use Soranoiseki\BookGroup\View\Components\Tabs\Container;
 use Soranoiseki\BookGroup\View\Components\Tabs\Label;
 use Soranoiseki\BookGroup\View\Components\Tabs\Tab;
 use Soranoiseki\BookGroup\View\Components\Alert;
+use Soranoiseki\BookGroup\View\Components\BibleSelector;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\FilesystemAdapter;
@@ -47,6 +48,7 @@ class BookGroupServiceProvider extends ServiceProvider
         Blade::component('tabs-label', Label::class);
         Blade::component('tabs-tab', Tab::class);
         Blade::component('alert', Alert::class);
+        Blade::component('bible-selector', BibleSelector::class);
 
         $this->commands([]);
     }
