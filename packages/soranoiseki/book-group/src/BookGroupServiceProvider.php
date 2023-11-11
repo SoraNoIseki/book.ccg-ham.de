@@ -9,6 +9,7 @@ use Soranoiseki\BookGroup\View\Components\Tabs\Label;
 use Soranoiseki\BookGroup\View\Components\Tabs\Tab;
 use Soranoiseki\BookGroup\View\Components\Alert;
 use Soranoiseki\BookGroup\View\Components\BibleSelector;
+use Soranoiseki\BookGroup\View\Components\PdfLayout;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\FilesystemAdapter;
@@ -28,7 +29,7 @@ class BookGroupServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadRoutesFrom(__DIR__ . '/Routes/web.php');
-        // $this->loadMigrationsFrom(__DIR__ . '/Migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/Migrations');
         $this->loadViewsFrom(__DIR__.'/Views', 'book-group');
 
         // $this->initDropboxApp();
@@ -49,6 +50,7 @@ class BookGroupServiceProvider extends ServiceProvider
         Blade::component('tabs-tab', Tab::class);
         Blade::component('alert', Alert::class);
         Blade::component('bible-selector', BibleSelector::class);
+        Blade::component('pdf-layout', PdfLayout::class);
 
         $this->commands([]);
     }
@@ -62,6 +64,7 @@ class BookGroupServiceProvider extends ServiceProvider
     {
         $this->app->make('Soranoiseki\BookGroup\Controllers\PowerpointController');
         $this->app->make('Soranoiseki\BookGroup\Controllers\LibraryController');
+        $this->app->make('Soranoiseki\BookGroup\Controllers\CalendarController');
     }
 
 

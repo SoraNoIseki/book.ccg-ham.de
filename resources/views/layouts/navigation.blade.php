@@ -25,6 +25,11 @@
                             {{ __('PPT') }}
                         </x-nav-link>
                     @endif
+                    @if (env('FEATURE_CALENDAR', false))
+                        <x-nav-link :href="route('book-group.calendar.index')" :active="request()->routeIs('book-group.ppt.index')">
+                            {{ __('Calendar') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -88,6 +93,11 @@
             @if (env('FEATURE_PPT', false))
                 <x-responsive-nav-link :href="route('book-group.ppt.index')" :active="request()->routeIs('book-group.ppt.index')">
                     {{ __('PPT') }}
+                </x-responsive-nav-link>
+            @endif
+            @if (env('FEATURE_CALENDAR', false))
+                <x-responsive-nav-link :href="route('book-group.ppt.index')" :active="request()->routeIs('book-group.calendar.index')">
+                    {{ __('Calendar') }}
                 </x-responsive-nav-link>
             @endif
         </div>

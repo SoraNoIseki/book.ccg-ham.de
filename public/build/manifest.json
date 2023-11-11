@@ -1,11 +1,16 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-a77bd2db.css",
+    "file": "assets/app-58b12c38.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
+  "resources/css/calendar.css": {
+    "file": "assets/calendar-ce5c0101.css",
+    "isEntry": true,
+    "src": "resources/css/calendar.css"
+  },
   "resources/js/app.js": {
-    "file": "assets/app-fb8058c7.js",
+    "file": "assets/app-ce879b9b.js",
     "isEntry": true,
     "src": "resources/js/app.js"
   }
