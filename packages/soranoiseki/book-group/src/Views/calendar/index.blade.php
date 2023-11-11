@@ -30,7 +30,7 @@
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="md:flex">
                         <div class="p-6 text-gray-900 dark:text-gray-100 w-full">
-                            <div class="px-6 py-4">
+                            <div class="px-6 py-4" x-data="{ fileName: '' }">
                                 <form method="POST" action="{{ route('book-group.calendar.import-events', ['calendar' => $calendar->id]) }}" enctype="multipart/form-data">
                                     @csrf
                                     <div class="flex place-content-between mb-2">
@@ -47,10 +47,11 @@
                                                 <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                                                 </svg>
-                                                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">点击上传</span> 或 将文件拖入输入框</p>
+                                                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">点击上传</span></p>
                                                 <p class="text-xs text-gray-500 dark:text-gray-400">仅限 CSV 文件</p>
                                             </div>
-                                            <input id="file-events" type="file" name="file" class="hidden" />
+                                            <input id="file-events" type="file" name="file" class="hidden" x-ref="file" accept=".csv" @change="fileName = $refs.file.value.split('\\').slice(-1)[0]" />
+                                            <p class="text-green-800" x-text="fileName" />
                                         </label>
                                     </div> 
                                 </form>
@@ -74,8 +75,8 @@
                                                 <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                                                 </svg>
-                                                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">点击上传</span> 或 将文件拖入输入框</p>
-                                                <p class="text-xs text-gray-500 dark:text-gray-400">仅限CSV</p>
+                                                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">点击上传</span></p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">仅限 CSV 文件</p>
                                             </div>
                                             <input id="file-bible-texts" type="file" name="file" class="hidden" />
                                         </label>
