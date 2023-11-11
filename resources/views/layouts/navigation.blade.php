@@ -26,7 +26,7 @@
                         </x-nav-link>
                     @endif
                     @if (env('FEATURE_CALENDAR', false))
-                        <x-nav-link :href="route('book-group.calendar.index')" :active="request()->routeIs('book-group.ppt.index')">
+                        <x-nav-link :href="route('book-group.calendar.index')" :active="request()->routeIs('book-group.calendar.index')">
                             {{ __('Calendar') }}
                         </x-nav-link>
                     @endif
