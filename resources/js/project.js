@@ -90,7 +90,7 @@ $( document ).ready(function() {
                     if (res.success) {
                         $('#' + target).val(res.data.script);
                     }
-                }).error(function(error) {
+                }).fail(function(error) {
                     hideLoading();
                     console.log(error);
                 });

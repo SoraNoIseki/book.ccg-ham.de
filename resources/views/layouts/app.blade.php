@@ -35,7 +35,7 @@
             </main>
         </div>
 
-        <div id="loading" class="absolute top-0 left-0 w-screen h-screen bg-black bg-opacity-10 hidden">
+        <div id="loading" class="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-5 hidden">
             <div class="flex items-center justify-center w-full h-full">
                 <img class="w-8 h-8" src={{ Vite::asset('resources/images/loading.gif') }}>
             </div>
