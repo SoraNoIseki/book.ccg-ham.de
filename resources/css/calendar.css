@@ -5,8 +5,8 @@
 }
 
 * {
-    /* -webkit-print-color-adjust: exact !important;
-    color-adjust: exact !important; */
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
     box-sizing: border-box;
 }
 
@@ -74,22 +74,26 @@ body {
     @page {
         /*size A3 DPI 300: 3508px 4961px;*/
         /*size A4 DPI 300: 2480px 3508px;*/
-        size: 3508px 4961px;
+        /* size: 3508px 4961px; */
+        size: 2480px 3508px;
         margin: 0;
     }
 
     #mainContent {
         /* A3 DPI 300 = font-size 35.36px */
         /* A4 DPI 300 = font-size 25px */
-        width: 3508px;
-        height: 4961px;
+        /* width: 3508px;
+        height: 4961px; */
+        width: 2480px;
+        height: 3508px;
 
         margin: 0 auto;
     }
 
     html,
     body {
-        font-size: 35.36px;
+        /* font-size: 35.36px; */
+        font-size: 25px;
     }
 }
 

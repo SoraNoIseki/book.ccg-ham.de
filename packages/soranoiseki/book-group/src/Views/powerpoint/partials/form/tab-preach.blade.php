@@ -5,14 +5,14 @@
 @endphp
 
 <div class="mb-5">
-    <label for="preach0" class="mb-3 block text-base font-medium text-main">
+    <label for="preach0" class="mb-3 block text-base font-medium text-main dark:text-light">
         讲道标题
     </label>
 
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="5" name="preach[item0]" id="preach0" placeholder="讲道标题"
-                class="required w-full resize-none rounded-md border border-gray-200 bg-white py-3 px-6 text-base font-medium text-main outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['preach']['item0']){{ $content['preach']['item0'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-gray-200 bg-white dark:bg-gray-900 py-3 px-6 text-base font-medium text-main dark:text-light outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['preach']['item0']){{ $content['preach']['item0'] }}@endisset</textarea>
         </div>
         <div>
             <div class="flex p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
@@ -44,14 +44,14 @@
 </div>
 
 <div class="mb-5">
-    <label for="preach1" class="mb-3 block text-base font-medium text-main">
+    <label for="preach1" class="mb-3 block text-base font-medium text-main dark:text-light">
         讲道（引言）
     </label>
 
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="10" name="preach[item1]" id="preach1" placeholder="讲道（引言）"
-                class="required w-full resize-none rounded-md border border-gray-200 bg-white py-3 px-6 text-base font-medium text-main outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['preach']['item1']){{ $content['preach']['item1'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-gray-200 bg-white dark:bg-gray-900 py-3 px-6 text-base font-medium text-main dark:text-light outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['preach']['item1']){{ $content['preach']['item1'] }}@endisset</textarea>
         </div>
         <div>
             <x-alert type="info">
@@ -77,14 +77,14 @@
 </div>
 
 <div class="mb-5">
-    <label for="preach2" class="mb-3 block text-base font-medium text-main">
+    <label for="preach2" class="mb-3 block text-base font-medium text-main dark:text-light">
         讲道（经文理解与应用）
     </label>
 
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="10" name="preach[item2]" id="preach2" placeholder="讲道（经文理解与应用）"
-                class="required w-full resize-none rounded-md border border-gray-200 bg-white py-3 px-6 text-base font-medium text-main outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['preach']['item2']){{ $content['preach']['item2'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-gray-200 bg-white dark:bg-gray-900 py-3 px-6 text-base font-medium text-main dark:text-light outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['preach']['item2']){{ $content['preach']['item2'] }}@endisset</textarea>
         </div>
         <div>
             <x-alert type="info">
@@ -110,14 +110,14 @@
 </div>
 
 <div class="mb-5">
-    <label for="preach3" class="mb-3 block text-base font-medium text-main">
+    <label for="preach3" class="mb-3 block text-base font-medium text-main dark:text-light">
         讲道（总结）
     </label>
 
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="10" name="preach[item3]" id="preach3" placeholder="讲道（总结）"
-                class="required w-full resize-none rounded-md border border-gray-200 bg-white py-3 px-6 text-base font-medium text-main outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['preach']['item3']){{ $content['preach']['item3'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-gray-200 bg-white dark:bg-gray-900 py-3 px-6 text-base font-medium text-main dark:text-light outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['preach']['item3']){{ $content['preach']['item3'] }}@endisset</textarea>
         </div>
         <div>
             <x-alert type="danger">

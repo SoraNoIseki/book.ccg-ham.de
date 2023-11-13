@@ -32,10 +32,10 @@ return [
     //     //     'appname' => 'homestead',
     //     // ],
     // ],  
-    'mongodb' => [
+    'mongodb-ppt' => [
         'driver' => 'mongodb',
         'dsn' => env('MONGODB_DSN'),
-        'database' => env('MONGODB_DATABASE', 'cluster0'),
+        'database' => 'ccg-PPT',
         'username' => env('MONGODB_USERNAME', 'homestead'),
         'password' => env('MONGODB_PASSWORD', 'secret'),
     ],

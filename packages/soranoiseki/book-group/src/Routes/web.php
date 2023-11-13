@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Soranoiseki\BookGroup\Controllers\PowerpointController;
+use Soranoiseki\BookGroup\Controllers\PowerpointAjaxController;
 use Soranoiseki\BookGroup\Controllers\LibraryController;
 use Soranoiseki\BookGroup\Controllers\CalendarController;
 
@@ -12,6 +13,10 @@ Route::middleware('web', 'auth')->group(function () {
         Route::post('/save', [PowerpointController::class, 'store'])->name('book-group.ppt.store');
         Route::post('/download', [PowerpointController::class, 'download'])->name('book-group.ppt.download');
         Route::post('/save-download', [PowerpointController::class, 'storeAndDownload'])->name('book-group.ppt.store-download');
+
+        Route::group(['prefix' => 'ajax'], function() {
+            Route::get('/song', [PowerpointAjaxController::class, 'getSong'])->name('book-group.ppt.ajax.get-song');
+        });
     });
     
     Route::group(['prefix' => 'library'], function() {
@@ -24,7 +29,6 @@ Route::middleware('web', 'auth')->group(function () {
         Route::get('/import', [LibraryController::class, 'importBooks'])->name('library.import');
         Route::post('/import/books', [LibraryController::class, 'importBooks'])->name('library.import.books');
         Route::post('/import/members', [LibraryController::class, 'importMembers'])->name('library.import.members');
-       
     });
 
     Route::group(['prefix' => 'calendar'], function() {

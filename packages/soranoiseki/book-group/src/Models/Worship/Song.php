@@ -6,7 +6,7 @@ use MongoDB\Laravel\Eloquent\Model;
 
 class Song extends Model
 {
-    protected $connection = 'mongodb';
+    protected $connection = 'mongodb-ppt';
 
     protected $collection = 'song_info';
 

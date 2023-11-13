@@ -1,5 +1,13 @@
 $( document ).ready(function() {
 
+    window.showLoading = function() {
+       $('#loading').show();
+    }
+    window.hideLoading = function() {
+        $('#loading').hide();
+    }
+
+
     // validation of ppt generator
     if ($('#pptGenerator').length) {
         var form = $('#pptGenerator');
@@ -62,7 +70,6 @@ $( document ).ready(function() {
         // add
         $(reportList).on('click', '.report-item .add', function () {
             var reportItem = $(this).parents('.report-item').clone();
-                console.log(reportItem);
                 $(reportItem).find('textarea').val('');
                 $(this).parents('.report-item').after(reportItem);
                 sortReports();
@@ -70,5 +77,26 @@ $( document ).ready(function() {
 
     }
 
-   
+    if ($('.song-selector[data-ajax-load]').length) {
+        $('.song-selector[data-ajax-load]').on('change', function() {
+            var target = $(this).data('target');
+
+            if ($(this).val() !== '') {
+                showLoading();
+                $.ajax({
+                    url: $(this).data('url') + '?id=' + $(this).val(),
+                }).done(function(res) {
+                    hideLoading();
+                    if (res.success) {
+                        $('#' + target).val(res.data.script);
+                    }
+                }).error(function(error) {
+                    hideLoading();
+                    console.log(error);
+                });
+            } else {
+                $('#' + target).val('');
+            }
+        })
+    }
 });

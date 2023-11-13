@@ -294,8 +294,6 @@ class CalendarController extends Controller
             $event['name'] = str_replace("|", "<br>", $event['name']);
             $this->events[$event['date']][] = $event;
         }
-
-        // echo json_encode($this->events);die();
     }
 
     /**

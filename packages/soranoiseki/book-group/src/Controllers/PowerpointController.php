@@ -68,14 +68,6 @@ class PowerpointController extends Controller
 
         // $file = Storage::disk('dropbox')->get('test.txt');
         // dd($file);
-        
-        // try {
-        //     $users = Song::query()->get();
-        //     dd($users);
-        // } catch (\Throwable $th) {
-        //     dd($th->getMessage());
-        // }
-       
 
         return view('book-group::powerpoint.index', [
             'date' => $date,
@@ -83,6 +75,7 @@ class PowerpointController extends Controller
             'content' => $content,
             'versions' => $versions,
             'saveEnabled' => $defaultDate == $date,
+            // 'songs' => Song::select(['id', 'song_id'])->orderBy('song_id', 'ASC')->get(),
         ]);
     }
 

@@ -14,9 +14,9 @@
             <div class="calendar-cover">
                 <div class="image">
                     @php
-                        //$url_image = "images/calendar/" . $calendar['year'] . "/cover.jpg";
+                        $url_image = "/images/calendar/" . $year . "/cover.jpg";
                     @endphp
-                    {{-- <img src="{{ route('file.id', '3') }}" /> --}}
+                    <img src="{{ $url_image }}" />
                 </div>
             </div>
         </div>
