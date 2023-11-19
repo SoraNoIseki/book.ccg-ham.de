@@ -8,7 +8,7 @@
     <div class="px-6">
         <div class="w-full flex space-x-3 justify-between">
             <button class="whitespace-norwrap w-full rounded-lg p-2 text-sm {{ !$returnMode ? 'text-primary-600 border border-primary-600' : 'bg-primary-600 border text-white'}}" wire:click="toggleReturnMode()">
-                {{ !$returnMode ? '还书模式' : '所有书籍' }}
+                {{ !$returnMode ? '还书模式' : '列表模式' }}
             </button>
             <button class="whitespace-norwrap w-full rounded-lg p-2 text-sm {{ !$externalMode ? 'text-primary-600 border border-primary-600' : 'bg-primary-600 border text-white'}}" wire:click="toggleExternalMode()">
                 {{ !$externalMode ? '只显示中文图书馆书籍' : '显示全部书籍' }}
@@ -70,7 +70,7 @@
         </table>
     @else
         <div class="w-full px-6">
-            <p class="text-md w-full text-center"> ╮(╯▽╰)╭<br>没有搜索到符合的书籍</p>
+            <p class="text-md w-full text-center"> ╮(╯▽╰)╭<br>没有找到符合的书籍</p>
         </div>
     @endif
 

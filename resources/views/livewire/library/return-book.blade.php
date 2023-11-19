@@ -1,5 +1,5 @@
 <div class="w-full p-5">
-    <form wire:submit.prevent="create">
+    <form wire:submit.prevent="submit">
         <h3 class="block uppercase tracking-wide text-gray-700 text-xl font-bold mb-3">{{ __('library.modal.title_return') }}</h3>
         <div class="block mb-3">
             <p class="block uppercase tracking-wide text-gray-700 text-normal font-bold">{{ __('library.modal.book_title') }}{{ $book->title }} ({{ $book->call_nmbr1 }})</p>
