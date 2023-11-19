@@ -41,6 +41,11 @@ class AddBooks extends Component
     }
 
     public function create() {
+        $this->validate([
+            'isbn' => 'required',
+            'title' => 'required',
+        ]);
+
         $isbn = trim($this->isbn);
         $code = trim($this->code);
         $title = trim($this->title);
