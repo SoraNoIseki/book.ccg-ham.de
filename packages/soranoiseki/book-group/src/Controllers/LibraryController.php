@@ -14,11 +14,11 @@ class LibraryController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $currentUser = $request->user();
+
         $books = Book::with(['copies' => function($query) {
             $query->orderBy('copyid', 'asc');
         }])->orderBy('bibid', 'asc')->get();
@@ -27,6 +27,7 @@ class LibraryController extends Controller
         return view('book-group::library.index', [
             'books' => $books,
             'members' => $members,
+            'manageEnabled' => in_array($currentUser->id, [1, 5]),
         ]);
     }
 

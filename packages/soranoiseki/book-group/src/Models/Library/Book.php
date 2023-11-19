@@ -16,7 +16,9 @@ class Book extends Model
 
     protected $primaryKey = 'bibid';
 
-    public $timestamps = false;
+    const CREATED_AT = 'create_dt';
+    
+    const UPDATED_AT = 'last_change_dt';
 
     public function copies() {
         return $this->hasMany(Copy::class, 'bibid', 'bibid');

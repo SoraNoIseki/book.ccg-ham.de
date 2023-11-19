@@ -12,6 +12,12 @@ class Member extends Model
     protected $connection = 'openbiblio';
 
     protected $table = 'member';
+
+    protected $primaryKey = 'mbrid';
+
+    const CREATED_AT = 'create_dt';
+
+    const UPDATED_AT = 'last_change_dt';
     
     protected $appends = [
         'full_name'

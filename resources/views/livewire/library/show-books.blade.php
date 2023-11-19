@@ -1,55 +1,84 @@
 <div class="flex-col space-y-4">
     <div class="px-6">
-        <input type="text" class="w-1/3" placeholder="Search books" wire:model.debounce.500ms="search">
+        <div class="w-full md:max-w-[400px] flex space-x-3 justify-between">
+            <input type="text" class="w-full rounded-md border-gray-300" placeholder="搜索书名/编号/ISBN/作者" wire:model.debounce.500ms="search">
+        </div>
+    </div>
+
+    <div class="px-6">
+        <div class="w-full flex space-x-3 justify-between">
+            <button class="whitespace-norwrap w-full rounded-lg p-2 text-sm {{ !$returnMode ? 'text-primary-600 border border-primary-600' : 'bg-primary-600 border text-white'}}" wire:click="toggleReturnMode()">
+                {{ !$returnMode ? '还书模式' : '所有书籍' }}
+            </button>
+            <button class="whitespace-norwrap w-full rounded-lg p-2 text-sm {{ !$externalMode ? 'text-primary-600 border border-primary-600' : 'bg-primary-600 border text-white'}}" wire:click="toggleExternalMode()">
+                {{ !$externalMode ? '只显示中文图书馆书籍' : '显示全部书籍' }}
+            </button>
+        </div>
+       
+    </div>
+
+    <div class="px-6">
+        {{ $books->links() }}
     </div>
     
-    <table class="min-w-full text-left font-normal">
-        <thead class="border-b font-medium dark:border-neutral-500">
-            <tr>
-                <th scope="col" class="px-6 py-4">Code</th>
-                <th scope="col" class="px-6 py-4">Book</th>
-                <th scope="col" class="px-6 py-4">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($books as $book)
-                <tr class="border-b dark:border-neutral-500" wire:loading.class="opacity-75">
-                    <td class="whitespace-nowrap px-6 py-4">{{ $book->call_nmbr1 }}</td>
-                    <td class="whitespace-nowrap px-6 py-4">
-                        <p class="text-sm font-normal text-gray-600 dark:text-gray-400">{{ $book->topic1 }}</p>
-                        <p class="text-normal font-normal text-gray-900 dark:text-gray-100">{{ $book->title }}</p>
-                        <p class="text-sm font-normal text-gray-900 dark:text-gray-400">{{ $book->author }} | {{ $book->responsibility_stmt }} </p>
-                    </td>
-                    <td class="whitespace-nowrap px-6 py-4">
-                        @foreach ($book->copies as $copy)
-                            <button
-                                class="inline-flex flex-col @if($copy->mbrid) bg-red-700 @else bg-green-700 @endif text-gray-50 p-5 rounded-lg mr-2"
-                                wire:click="onClickCopy({{$copy->bibid}}, {{$copy->copyid}}, {{$copy->mbrid}})"
-                            >
-                                <span class="mx-auto">
-                                    <svg class="w-6 h-6 text-gray-50 m-auto" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                        <path d="M96 0C43 0 0 43 0 96V416c0 53 43 96 96 96H384h32c17.7 0 32-14.3 32-32s-14.3-32-32-32V384c17.7 0 32-14.3 32-32V32c0-17.7-14.3-32-32-32H384 96zm0 384H352v64H96c-17.7 0-32-14.3-32-32s14.3-32 32-32zm32-240c0-8.8 7.2-16 16-16H336c8.8 0 16 7.2 16 16s-7.2 16-16 16H144c-8.8 0-16-7.2-16-16zm16 48H336c8.8 0 16 7.2 16 16s-7.2 16-16 16H144c-8.8 0-16-7.2-16-16s7.2-16 16-16z"></path>
-                                    </svg>
-                                </span>
-                                @if ($copy->member)
-                                    <span class="mt-2">
-                                        {{ $copy->member->full_name }}
-                                    </span>
-                                @else
-                                    <span class="mt-2">
-                                        {{ $copy->copy_desc }}
-                                    </span>
-                                @endif
-                                
-                            </button>
-                        @endforeach
-                    </td>
+    @if ($books->count() > 0)
+        <table class="min-w-full text-left font-normal">
+            <thead class="border-b font-medium dark:border-neutral-500">
+                <tr>
+                    <th scope="col" class="px-6 py-4 w-24">编码</th>
+                    <th scope="col" class="px-6 py-4">书籍</th>
                 </tr>
-            @endforeach
-        </tbody>
-        
-    </table>
+            </thead>
+            <tbody>
+                @foreach ($books as $book)
+                    <tr class="border-b dark:border-neutral-500" wire:loading.class="opacity-75">
+                        <td class="whitespace-nowrap px-6 py-4 align-top">
+                            <p class="text-sm font-normal text-gray-600 dark:text-gray-400">{{ $book->topic1 }}</p>
+                            <p class="text-base font-normal text-gray-600 dark:text-gray-400">{{ $book->call_nmbr1 }}</p>
+                        </td>
+                        <td class="px-6 py-4 align-top">
+                            <p class="text-base font-normal text-gray-900 dark:text-gray-100">{{ $book->title }}</p>
+                            @if ($book->author != '' && $book->responsibility_stmt != '')
+                                <p class="text-sm font-normal text-gray-900 dark:text-gray-400">
+                                    <span>{{ $book->author }}</span>
+                                    @if ($book->author != '' && $book->responsibility_stmt != '')
+                                        <span> | </span>
+                                    @endif
+                                    <span>{{ $book->responsibility_stmt }}</span>
+                                </p>
+                            @endif
+                        
+                        
+                            <div class="w-full mt-2 flex flex-wrap flex-row gap-2">
+                                @foreach ($book->copies as $copy)
+                                    <button
+                                        class="text-sm inline-flex flex-col {{ $copy->mbrid ? 'bg-red-700' : 'bg-green-700' }} text-gray-50 p-2 rounded-lg"
+                                        wire:click="onClickCopy({{$copy->bibid}}, {{$copy->copyid}}, {{$copy->mbrid}})"
+                                    >
+                                        @if ($copy->member)
+                                            <span>{{ $copy->member->full_name }}</span>
+                                        @else
+                                            <span class="">{{ $copy->copy_desc }}</span>
+                                        @endif
+                                    </button>
+                                @endforeach
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @else
+        <div class="w-full px-6">
+            <p class="text-md w-full text-center"> ╮(╯▽╰)╭<br>没有搜索到符合的书籍</p>
+        </div>
+    @endif
 
-    {{ $books->links() }}
+    
+
+    <div class="px-6 mb-4">
+        {{ $books->links() }}
+    </div>
+    
    
 </div>
