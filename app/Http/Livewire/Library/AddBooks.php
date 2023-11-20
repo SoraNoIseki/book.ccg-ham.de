@@ -119,8 +119,7 @@ class AddBooks extends Component
     }
 
     public function onInputISBN($isbn) {
-        $apiKey = env('ISBN_API_KEY', '');
-        if ($apiKey !== '' && (strlen($isbn) === 13 || strlen($isbn) === 10)) {
+        if (strlen($isbn) === 13 || strlen($isbn) === 10) {
             $this->category = $isbn;
             $bookDatabase = BookDatabase::where(["isbn" => $isbn])->first();
             if ($bookDatabase) {
