@@ -41,9 +41,9 @@ class ImportEvents implements OnEachRow, WithHeadingRow
             ])->save();
         } catch (ModelNotFoundException $e) {
             $event = Event::create([
-                'year' => $date->format('Y'),
+                'year' => $this->calendar->year,
                 'date' => $date->format('Y-m-d'),
-                'name' => $name,
+                'name' => trim($name),
                 'type' => 'yearly',
                 'calendar_id' => $this->calendar->id,
             ]);

@@ -269,17 +269,15 @@ class CalendarController extends Controller
             $this->insertEvent($year, $month, "third friday", "福音查经", $eventType);
             $this->insertEvent($year, $month, "fourth friday", "福音查经", $eventType);
             $this->insertEvent($year, $month, "fifth  friday", "福音查经", $eventType);
-
-            $this->insertEvent($year, $month, "first saturday", "青年团契", $eventType);
+            
             $this->insertEvent($year, $month, "second saturday", "青年团契", $eventType);
-            $this->insertEvent($year, $month, "third saturday", "青年团契", $eventType);
             $this->insertEvent($year, $month, "fourth saturday", "青年团契", $eventType);
-            $this->insertEvent($year, $month, "fifth  saturday", "青年团契", $eventType);
 
             $this->insertEvent($year, $month, "first friday", "长青团契", $eventType);
             $this->insertEvent($year, $month, "third friday", "长青团契", $eventType);
 
             $this->insertEvent($year, $month, "second saturday", "伉俪团契", $eventType);
+            $this->insertEvent($year, $month, "fourth saturday", "伉俪团契", $eventType);
 
             $this->insertEvent($year, $month, "first thursday", "妈妈小组", $eventType);
             $this->insertEvent($year, $month, "third thursday", "妈妈小组", $eventType);
@@ -287,6 +285,7 @@ class CalendarController extends Controller
             $this->insertEvent($year, $month, "first sunday", "圣餐礼拜", $eventType);
             $this->insertEvent($year, $month, "second sunday", "诗班排练", $eventType);
         }
+        $this->insertEvent($year, 2, "first sunday", "诗班排练", $eventType);
 
         // get yearly events from database
         $events = Event::where('year', '=', $year)->get();

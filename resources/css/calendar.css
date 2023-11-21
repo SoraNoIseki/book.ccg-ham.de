@@ -192,7 +192,7 @@ body {
 }
 
 .calendar-footer {
-    padding: 0 30px;
+    padding: 0 4rem;
     margin: 1.5rem 0;
     flex: 0 1 auto;
     background: #fff;
@@ -389,18 +389,16 @@ body {
 /**
  * special styles
  */
-.day-item-2022-01-01 .event-weekly,
-.day-item-2022-05-08 .event-weekly,
-.day-item-2022-06-04 .event-weekly,
-.day-item-2022-08-20 .event-weekly,
-.day-item-2022-09-11 .event-weekly,
-.day-item-2022-12-10 .event-weekly,
-.day-item-2022-12-24 .event-weekly,
-.day-item-2022-12-30 .event-weekly,
-.day-item-2022-12-31 .event-weekly {
-    /* display: none; */
+.day-item-2024-02-11 .event-weekly
+{
+    display: none;
 }
 
 .day-item-2022-04-17 .event-yearly:first-child {
     /* color: #c90202; */
+}
+
+.day-item-2024-02-10 .lunar-day 
+{
+    color: #c90202;
 }
