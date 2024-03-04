@@ -286,6 +286,7 @@ class CalendarController extends Controller
             $this->insertEvent($year, $month, "second sunday", "诗班排练", $eventType);
         }
         $this->insertEvent($year, 2, "first sunday", "诗班排练", $eventType);
+        $this->insertEvent($year, 5, "first sunday", "诗班排练", $eventType);
 
         // get yearly events from database
         $events = Event::where('year', '=', $year)->get();

@@ -75,7 +75,7 @@ body {
         /*size A3 DPI 300: 3508px 4961px;*/
         /*size A4 DPI 300: 2480px 3508px;*/
         /* size: 3508px 4961px; */
-        size: 2480px 3508px;
+        size: 3508px 4961px;
         margin: 0;
     }
 
@@ -84,16 +84,16 @@ body {
         /* A4 DPI 300 = font-size 25px */
         /* width: 3508px;
         height: 4961px; */
-        width: 2480px;
-        height: 3508px;
+        width: 3508px;
+        height: 4961px;
 
         margin: 0 auto;
     }
 
     html,
     body {
-        /* font-size: 35.36px; */
-        font-size: 25px;
+        font-size: 35.36px;
+        /* font-size: 25px; */
     }
 }
 
@@ -127,7 +127,7 @@ body {
     width: 100%;
     height: auto;
     display: flex;
-    padding: 1.5rem 4rem;
+    padding: 1.5rem 5rem;
     background: linear-gradient(#0000, #0004 30%, #0009);
     display: flex;
     justify-content: space-between;
@@ -184,16 +184,16 @@ body {
 
 .calendar-content {
     margin-top: 2rem;
-    padding-left: 4rem;
-    padding-right: 4rem;
+    padding-left: 5rem;
+    padding-right: 5rem;
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
 }
 
 .calendar-footer {
-    padding: 0 4rem;
-    margin: 1.5rem 0;
+    padding: 0 5rem;
+    margin: 1.5rem 0 4rem;
     flex: 0 1 auto;
     background: #fff;
 }
@@ -389,7 +389,8 @@ body {
 /**
  * special styles
  */
-.day-item-2024-02-11 .event-weekly
+.day-item-2024-02-11 .event-weekly,
+.day-item-2024-05-12 .event-weekly
 {
     display: none;
 }
