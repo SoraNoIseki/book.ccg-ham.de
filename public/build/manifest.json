@@ -1,11 +1,25 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-a77bd2db.css",
+    "file": "assets/app-16d419b1.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
+  "resources/css/calendar.css": {
+    "file": "assets/calendar-88b04676.css",
+    "isEntry": true,
+    "src": "resources/css/calendar.css"
+  },
+  "resources/css/project.css": {
+    "file": "assets/project-4ed993c7.js",
+    "isEntry": true,
+    "src": "resources/css/project.css"
+  },
+  "resources/images/loading.gif": {
+    "file": "assets/loading-65c2fc8c.gif",
+    "src": "resources/images/loading.gif"
+  },
   "resources/js/app.js": {
-    "file": "assets/app-fb8058c7.js",
+    "file": "assets/app-8bb72a7d.js",
     "isEntry": true,
     "src": "resources/js/app.js"
   }

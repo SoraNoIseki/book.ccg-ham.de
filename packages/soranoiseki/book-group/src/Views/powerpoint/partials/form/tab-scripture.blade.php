@@ -5,7 +5,7 @@
 @endphp
 
 <div class="mb-5">
-    <label for="scripture1" class="mb-3 block text-base font-medium text-main">
+    <label for="scripture1" class="mb-3 block text-base font-medium text-main dark:text-light">
         经文（宣召）
     </label>
 
@@ -13,7 +13,7 @@
         <div class="col-span-3">
             <x-bible-selector></x-bible-selector>
             <textarea rows="10" name="scripture[item1]" id="scripture1" placeholder="经文（宣召）"
-                class="required w-full resize-none rounded-md border border-gray-200 bg-white py-3 px-6 text-base font-medium text-main outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['scripture']['item1']){{ $content['scripture']['item1'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-gray-200 bg-white dark:bg-gray-900 py-3 px-6 text-base font-medium text-main dark:text-light outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['scripture']['item1']){{ $content['scripture']['item1'] }}@endisset</textarea>
         </div>
         <div>
             <x-alert type="info">
@@ -49,14 +49,14 @@
 </div>
 
 <div class="mb-5">
-    <label for="scripture2" class="mb-3 block text-base font-medium text-main">
+    <label for="scripture2" class="mb-3 block text-base font-medium text-main dark:text-light">
         经文（启应经文）
     </label>
 
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="10" name="scripture[item2]" id="scripture2" placeholder="经文（启应经文）"
-                class="required w-full resize-none rounded-md border border-gray-200 bg-white py-3 px-6 text-base font-medium text-main outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['scripture']['item2']){{ $content['scripture']['item2'] }}@endisset</textarea>
+                class="required w-full resize-none rounded-md border border-gray-200 bg-white dark:bg-gray-900 py-3 px-6 text-base font-medium text-main dark:text-light outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['scripture']['item2']){{ $content['scripture']['item2'] }}@endisset</textarea>
         </div>
         <div>
             <div class="flex p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
@@ -78,7 +78,7 @@
 </div>
 
 <div class="mb-5">
-    <label for="scripture3" class="mb-3 block text-base font-medium text-main">
+    <label for="scripture3" class="mb-3 block text-base font-medium text-main dark:text-light">
         经文（读经）
     </label>
 
@@ -86,7 +86,7 @@
         <div class="col-span-3">
             <x-bible-selector></x-bible-selector>
             <textarea rows="10" name="scripture[item3]" id="scripture3" placeholder="经文（读经）"
-        class="required w-full resize-none rounded-md border border-gray-200 bg-white py-3 px-6 text-base font-medium text-main outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['scripture']['item3']){{ $content['scripture']['item3'] }}@endisset</textarea>
+        class="required w-full resize-none rounded-md border border-gray-200 bg-white dark:bg-gray-900 py-3 px-6 text-base font-medium text-main dark:text-light outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['scripture']['item3']){{ $content['scripture']['item3'] }}@endisset</textarea>
         </div>
         <div>
             <div class="flex p-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">

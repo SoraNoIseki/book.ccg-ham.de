@@ -11,6 +11,8 @@ use Soranoiseki\BookGroup\Requests\StorePowerpointRequest;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
+use Soranoiseki\BookGroup\Models\Worship\Song;
+
 class PowerpointController extends Controller
 {
     protected $content = [
@@ -64,12 +66,16 @@ class PowerpointController extends Controller
             session()->flash('infoMessage', 'PPT内容已从版本 ' . $lastVersion . ' 复制并加载。');
         }
 
+        // $file = Storage::disk('dropbox')->get('test.txt');
+        // dd($file);
+
         return view('book-group::powerpoint.index', [
             'date' => $date,
             'defaultDate' => $defaultDate,
             'content' => $content,
             'versions' => $versions,
             'saveEnabled' => $defaultDate == $date,
+            // 'songs' => Song::select(['id', 'song_id'])->orderBy('song_id', 'ASC')->get(),
         ]);
     }
 

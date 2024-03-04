@@ -6,12 +6,16 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "barryvdh/laravel-dompdf": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^2.12",
         "maatwebsite/excel": "^3.1",
+        "mongodb/laravel-mongodb": "^4.0",
+        "mongodb/mongodb": "^1.16",
+        "overtrue/chinese-calendar": "^1.0",
         "symfony/process": "^6.3",
         "wire-elements/modal": "^1.0"
     },
@@ -35,13 +39,6 @@
         },
         {
             "type": "path",
-            "url": "packages/soranoiseki/library",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "path",
             "url": "packages/soranoiseki/book-group",
             "options": {
                 "symlink": true
@@ -54,7 +51,6 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
             "Soranoiseki\\Core\\": "packages/soranoiseki/core/src/",
-            "Soranoiseki\\Library\\": "packages/soranoiseki/library/src/",
             "Soranoiseki\\BookGroup\\": "packages/soranoiseki/book-group/src/"
         }
     },
