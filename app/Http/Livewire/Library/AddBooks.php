@@ -20,7 +20,7 @@ class AddBooks extends Component
 
     public $author;
 
-    public $publishing;
+    public $publisher;
 
     public $category;
 
@@ -50,7 +50,7 @@ class AddBooks extends Component
         $code = trim($this->code);
         $title = trim($this->title);
         $author = trim($this->author);
-        $publishing =trim($this->publishing);
+        $publisher =trim($this->publisher);
         $category = trim($this->category);
         $quantity = $this->quantity;
         $existCopies = 0;
@@ -60,7 +60,7 @@ class AddBooks extends Component
             $book = Book::where('call_nmbr2', $isbn)->firstOrFail();
             $book->fill([
                 'title' => $title,
-                'responsibility_stmt' => $publishing,
+                'responsibility_stmt' => $publisher,
                 'author' => $author,
                 'topic1' => $category,
                 // 'last_change_dt' => now(),
@@ -87,7 +87,7 @@ class AddBooks extends Component
                 'call_nmbr3' => '',
                 'title' => $title,
                 'title_remainder' => '',
-                'responsibility_stmt' => $publishing,
+                'responsibility_stmt' => $publisher,
                 'author' => $author,
                 'topic1' => $category,
                 'topic2' => '',
@@ -124,7 +124,7 @@ class AddBooks extends Component
             $bookDatabase = BookDatabase::where(["isbn" => $isbn])->first();
             if ($bookDatabase) {
                 // read from database
-                $this->apiStatus = -1;
+                $this->apiStatus = 2;
                 $data = json_decode($bookDatabase->data, true);
 
                 if (isset($data['title'])) {
@@ -137,8 +137,8 @@ class AddBooks extends Component
                 if (isset($data['authors'])) {
                     $this->author = implode(', ', $data['authors']);
                 }
-                if (isset($data['publishing'])) {
-                    $this->publishing = $data['publishing'];
+                if (isset($data['publisher'])) {
+                    $this->publisher = $data['publisher'];
                 }
             } else {
                 $url = "https://www.googleapis.com/books/v1/volumes?q=isbn:" . $isbn;
@@ -167,8 +167,8 @@ class AddBooks extends Component
                     if (isset($data['authors'])) {
                         $this->author = implode(', ', $data['authors']);
                     }
-                    if (isset($data['publishing'])) {
-                        $this->publishing = $data['publishing'];
+                    if (isset($data['publisher'])) {
+                        $this->publisher = $data['publisher'];
                     }
                 }
             }
@@ -179,7 +179,7 @@ class AddBooks extends Component
         $this->isbn = '';
         $this->title = '';
         $this->author = '';
-        $this->publishing = '';
+        $this->publisher = '';
         $this->code = '';
         $this->apiStatus = -1;
     }

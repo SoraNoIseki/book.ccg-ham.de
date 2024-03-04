@@ -4,7 +4,7 @@
             <div class="mb-3">
                 <label for="isbn" class="block mb-2 font-medium text-gray-900 dark:text-white">
                     ISBN<span class="text-red-700 ml-1">*</span>
-                    <span class="inline-block w-4 h-4 rounded-[50%] {{ $apiStatus < 0 ? 'bg-gray-600' : ($apiStatus == 0 ? 'bg-red-600' : 'bg-green-600') }}"></span>
+                    <span class="inline-block w-4 h-4 rounded-[50%] {{ $apiStatus < 0 ? 'bg-gray-600' : ($apiStatus == 0 ? 'bg-red-600' : ($apiStatus == 1 ? 'bg-green-600' : 'bg-yellow-600')) }}"></span>
                 </label>
                 <input type="text" id="isbn" wire:model.debounce.1000ms="isbn" wire:input.debounce.1000ms="onInputISBN($event.target.value)" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                 @error('isbn') <p class="text-sm text-red-600 mt-1 block">{{ $message }}</p> @enderror
@@ -20,9 +20,9 @@
                 @error('author') <p class="text-sm text-red-600 mt-1 block">{{ $message }}</p> @enderror
             </div>
             <div class="mb-3">
-                <label for="publishing" class="block mb-2 font-medium text-gray-900 dark:text-white">出版社</label>
-                <input type="text" id="publishing" wire:model.debounce.1000ms="publishing" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                @error('publishing') <p class="text-sm text-red-600 mt-1 block">{{ $message }}</p> @enderror
+                <label for="publisher" class="block mb-2 font-medium text-gray-900 dark:text-white">出版社</label>
+                <input type="text" id="publisher" wire:model.debounce.1000ms="publisher" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                @error('publisher') <p class="text-sm text-red-600 mt-1 block">{{ $message }}</p> @enderror
             </div>
             <div class="mb-3">
                 <label for="code" class="block mb-2 font-medium text-gray-900 dark:text-white">内部编号</label>
