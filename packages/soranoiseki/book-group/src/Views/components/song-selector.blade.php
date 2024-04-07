@@ -4,6 +4,8 @@
     @foreach ($songs as $song)
         <option value="{{ $song->_id }}">
             {{ $song->name }}
-            {{ ($song->album !== '' && strtolower($song->album) !== 'na') ? ' | ' . $song->album : '' }} </option>
+            {{ ($song->album !== '' && strtolower($song->album) !== 'na') ? ' | ' . $song->album : '' }}
+            {{ $song->checked ? ' ✅' : ''}}
+        </option>
     @endforeach
 </select>
