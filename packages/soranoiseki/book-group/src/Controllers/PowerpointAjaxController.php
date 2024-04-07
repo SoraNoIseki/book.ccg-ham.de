@@ -20,7 +20,6 @@ class PowerpointAjaxController extends Controller
         $id = $request->id;
        
         try {
-            $songs = Song::query()->get();
             return response()->json([
                 'success' => true,
                 'data' => Song::where('_id', $id)->first()

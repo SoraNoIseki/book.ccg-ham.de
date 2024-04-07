@@ -6,8 +6,8 @@ use MongoDB\Laravel\Eloquent\Model;
 
 class Song extends Model
 {
-    protected $connection = 'mongodb-ppt';
+    protected $connection = 'mongodb-hymn';
 
-    protected $collection = 'song_info';
+    protected $collection = 'hymn_info';
 
 }
