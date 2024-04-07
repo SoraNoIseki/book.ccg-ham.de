@@ -88,7 +88,7 @@ $( document ).ready(function() {
                 }).done(function(res) {
                     hideLoading();
                     if (res.success) {
-                        $('#' + target).val(res.data.script);
+                        $('#' + target).val(res.data.script_text_for_ppt_worker);
                     }
                 }).fail(function(error) {
                     hideLoading();

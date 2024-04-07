@@ -18,7 +18,9 @@ class SongSelector extends Component
         public string $target,
     )
     {
-        $this->songs = Song::orderBy('song_id', 'ASC')->get();
+        $this->songs = Song::raw(function($collection) {
+            return $collection->find([], ['sort' => ['name' => 1], 'collation' => ['locale' => 'zh', 'strength' => 1]])->toArray();
+        });
     }
 
     /**
