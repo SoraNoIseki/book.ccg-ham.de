@@ -68,6 +68,11 @@ class BookGroupServiceProvider extends ServiceProvider
         $this->app->make('Soranoiseki\BookGroup\Controllers\LibraryController');
         $this->app->make('Soranoiseki\BookGroup\Controllers\CalendarController');
         $this->app->make('Soranoiseki\BookGroup\Controllers\PowerpointAjaxController');
+        $this->app->make('Soranoiseki\BookGroup\Controllers\SongController');
+
+        $this->commands([
+            \Soranoiseki\BookGroup\Console\Commands\SyncSongs::class,
+        ]);
     }
 
 

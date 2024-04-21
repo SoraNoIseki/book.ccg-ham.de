@@ -5,6 +5,7 @@ use Soranoiseki\BookGroup\Controllers\PowerpointController;
 use Soranoiseki\BookGroup\Controllers\PowerpointAjaxController;
 use Soranoiseki\BookGroup\Controllers\LibraryController;
 use Soranoiseki\BookGroup\Controllers\CalendarController;
+use Soranoiseki\BookGroup\Controllers\SongController;
 
 
 Route::middleware('web', 'auth')->group(function () {
@@ -17,6 +18,14 @@ Route::middleware('web', 'auth')->group(function () {
         Route::group(['prefix' => 'ajax'], function() {
             Route::get('/song', [PowerpointAjaxController::class, 'getSong'])->name('book-group.ppt.ajax.get-song');
         });
+    });
+
+    Route::group(['prefix' => 'songs'], function() {
+        Route::get('/', [SongController::class, 'index'])->name('book-group.song.index');
+        Route::get('/{song}', [SongController::class, 'edit'])->name('book-group.song.edit');
+        Route::post('/{song}', [SongController::class, 'save'])->name('book-group.song.save');
+        Route::get('/{song}/delete', [SongController::class, 'delete'])->name('book-group.song.delete');
+        Route::get('/upload/{songContent}', [SongController::class, 'upload'])->name('book-group.song-content.upload');
     });
     
     Route::group(['prefix' => 'library'], function() {
