@@ -83,11 +83,16 @@
                             </table>
                         </div>
 
+                        @php
+                            $countAll = $songs->count();
+                            $count = 0;
+                        @endphp
 
                         <div class="relative overflow-x-auto">
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                     <tr>
+                                        <th scope="col" class="px-6 py-3"></th>
                                         <th scope="col" class="px-6 py-3">
                                             诗歌名称
                                         </th>
@@ -96,9 +101,6 @@
                                         </th>
                                         <th scope="col" class="px-6 py-3">
                                             专辑
-                                        </th>
-                                        <th scope="col" class="px-6 py-3">
-                                            ID
                                         </th>
                                         <th scope="col" class="px-6 py-3">
                                             已校对
@@ -111,20 +113,23 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($songs as $song)
+                                        @php
+                                            $count++;
+                                        @endphp
+
                                         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700" id="{{ $song->_id }}">
-                                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                                <a href="{{ route('book-group.song.edit', ['song' => $song->_id]) }}">
-                                                    {{ $song->name }}
-                                                </a>
-                                            </th>
+                                            <td class="px-6 py-4">
+                                                {{ $count }} / {{ $countAll }}
+                                            </td>
+                                            <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                                <a href="{{ route('book-group.song.edit', ['song' => $song->_id]) }}">{{ $song->name }}</a><br>
+                                                <span class="text-xs text-gray-500"> {{ $song->group_id }}</span>
+                                            </td>
                                             <td class="px-6 py-4">
                                                 {{ $song->band }}
                                             </td>
                                             <td class="px-6 py-4">
                                                 {{ $song->album }}
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                {{ $song->group_id }}
                                             </td>
                                             <td class="px-6 py-4">
                                                 {{ $song->checked ? '是' : '否' }}
