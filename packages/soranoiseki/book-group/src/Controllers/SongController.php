@@ -32,7 +32,7 @@ class SongController extends Controller
     public function index(Request $request)
     {
         $songs = Song::raw(function($collection) {
-            return $collection->find([], ['sort' => ['name' => 1], 'collation' => ['locale' => 'zh', 'strength' => 1]])->toArray();
+            return $collection->find([], ['sort' => ['name' => 1], 'collation' => ['locale' => 'zh', 'strength' => 1]]);
         });
        
         $songContentsCount = SongContent::select('name', DB::raw('count(*) as countSong'))->groupBy('name')->get()->pluck('countSong', 'name');
@@ -101,8 +101,8 @@ class SongController extends Controller
 
         $song->group_id = implode('_', [
             $song->name,
-            $song->band,
             $song->album,
+            $song->band,
         ]);
 
         $song->checked = isset($data['checked']) && $data['checked'] === 'on';
@@ -137,8 +137,8 @@ class SongController extends Controller
         $song->album = $songContent->album ?? 'NA';
         $song->group_id = implode('_', [
             $song->name,
-            $song->band,
             $song->album,
+            $song->band,
         ]);
         $song->script_text_for_ppt_worker = $songContent->text;
 
