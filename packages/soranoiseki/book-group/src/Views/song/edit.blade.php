@@ -67,6 +67,7 @@
 
                             <div class="w-full flex gap-4">
                                 <div class="{{ $songContents->count() > 0 ? 'w-1/2' : 'w-full'}}">
+                                    <button type="button" class="beauty-song-content mb-2 text-sm w-full px-3 py-2 bg-blue-100 rounded-md font-semibold" data-target="main-song-content">自动优化格式</button>
                                     <textarea name="text" class="w-full border border-gray-300 bg-gray-50 rounded-md p-4 text-sm font-semibold" rows="50" id="main-song-content">{{$song->script_text_for_ppt_worker}}</textarea>
                                 </div>
     

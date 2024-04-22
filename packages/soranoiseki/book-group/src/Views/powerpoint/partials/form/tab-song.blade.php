@@ -17,8 +17,12 @@
     <label for="song1" class="mb-3 block text-base font-medium text-main dark:text-light">
         诗歌1
     </label>
+    
+    <div class="w-full flex gap-4">
+        <x-song-selector target="song1"></x-song-selector>
+        <button type="button" class="beauty-song-content text-sm w-32 px-3 py-2.5 mb-3 bg-blue-100 rounded-md font-semibold border border-gray-300" data-target="song1">自动优化格式</button>
+    </div>
 
-    <x-song-selector target="song1"></x-song-selector>
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="15" name="song[item1]" id="song1" placeholder="诗歌1"
@@ -56,7 +60,11 @@
         诗歌2
     </label>
 
-    <x-song-selector target="song2"></x-song-selector>
+    <div class="w-full flex gap-4">
+        <x-song-selector target="song2"></x-song-selector>
+        <button type="button" class="beauty-song-content text-sm w-32 px-3 py-2.5 mb-3 bg-blue-100 rounded-md font-semibold border border-gray-300" data-target="song2">自动优化格式</button>
+    </div>
+   
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="15" name="song[item2]" id="song2" placeholder="诗歌2"
@@ -70,7 +78,11 @@
         诗歌3
     </label>
 
-    <x-song-selector target="song3"></x-song-selector>
+    <div class="w-full flex gap-4">
+        <x-song-selector target="song3"></x-song-selector>
+        <button type="button" class="beauty-song-content text-sm w-32 px-3 py-2.5 mb-3 bg-blue-100 rounded-md font-semibold border border-gray-300" data-target="song3">自动优化格式</button>
+    </div>
+
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="15" name="song[item3]" id="song3" placeholder="诗歌3"
@@ -84,7 +96,11 @@
         回应诗歌
     </label>
 
-    <x-song-selector target="song4"></x-song-selector>
+    <div class="w-full flex gap-4">
+        <x-song-selector target="song4"></x-song-selector>
+        <button type="button" class="beauty-song-content text-sm w-32 px-3 py-2.5 mb-3 bg-blue-100 rounded-md font-semibold border border-gray-300" data-target="song4">自动优化格式</button>
+    </div>
+    
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
             <textarea rows="15" name="song[item4]" id="song4" placeholder="回应诗歌"
