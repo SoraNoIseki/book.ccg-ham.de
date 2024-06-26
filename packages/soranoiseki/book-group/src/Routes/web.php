@@ -6,6 +6,7 @@ use Soranoiseki\BookGroup\Controllers\PowerpointAjaxController;
 use Soranoiseki\BookGroup\Controllers\LibraryController;
 use Soranoiseki\BookGroup\Controllers\CalendarController;
 use Soranoiseki\BookGroup\Controllers\SongController;
+use Soranoiseki\BookGroup\Controllers\SongApiController;
 
 
 Route::middleware('web', 'auth')->group(function () {
@@ -54,4 +55,11 @@ Route::middleware('web', 'auth')->group(function () {
         Route::get('/update-holidays', [CalendarController::class, 'updateHolidays'])->name('book-group.calendar.update-holidays');
     });
     
+});
+
+
+Route::middleware('web')->group(function () {
+    Route::get('/worship-songs', [SongController::class, 'list'])->name('book-group.song.list');
+    Route::get('/api/songs', [SongApiController::class, 'index']);
+    Route::get('/api/songs/{groupId}', [SongApiController::class, 'show']);
 });

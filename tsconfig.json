@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "commonjs",
+        "noImplicitAny": false,
+        "sourceMap": false,
+        "strict": true,
+        "jsx": "preserve",
+        "moduleResolution": "node",
+        "noImplicitThis": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
+    },
+    "include": ["./**/*.ts", "./**/*.d.ts", "./**/*.vue"]
+}

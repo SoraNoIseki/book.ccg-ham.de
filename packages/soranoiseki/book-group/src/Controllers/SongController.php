@@ -4,6 +4,7 @@ namespace Soranoiseki\BookGroup\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Storage;
@@ -44,6 +45,20 @@ class SongController extends Controller
             'songs' => $songs,
             'songContentsCount' => $songContentsCount,
             'unsavedSongContents' => $unsavedSongContents,
+        ]);
+    }
+
+    public function list(Request $request)
+    {
+        $songs = Song::raw(function($collection) {
+            return $collection->find([], ['sort' => ['name' => 1], 'collation' => ['locale' => 'zh', 'strength' => 1]]);
+        });
+       
+        $songContentsCount = SongContent::select('name', DB::raw('count(*) as countSong'))->groupBy('name')->get()->pluck('countSong', 'name');
+
+        return view('book-group::song.list', [
+            'songs' => $songs,
+            'songContentsCount' => $songContentsCount,
         ]);
     }
 
