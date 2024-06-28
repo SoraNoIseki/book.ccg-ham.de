@@ -131,7 +131,7 @@
                                             <td class="px-6 py-4">
                                                 {{ $song->album }}
                                             </td>
-                                            <td class="px-6 py-4">
+                                            <td class="px-6 py-4 {{ $song->checked ? 'text-green-700' : 'text-red-600'}}">
                                                 {{ $song->checked ? '是' : '否' }}
                                             </td>
                                             <td class="px-6 py-4">
