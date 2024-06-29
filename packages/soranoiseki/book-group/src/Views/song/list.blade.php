@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
     
-    <div class="py-12">
+    <div class="sm:py-12">
         <div id="app-songs"></div>
     </div>
 </x-public-layout>
