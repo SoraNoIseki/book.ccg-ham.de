@@ -17,15 +17,22 @@
                             <thead
                                 class="font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
-                                    <th colspan="3" class="px-2 py-2 md:px-3 md:py-4 ">
-                                        <p>共 {{ filteredSongs.length }} / {{ songs.length }} 首诗歌</p>
+                                    <th colspan="3" class="px-2 py-2 md:px-3 md:py-4">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <div class="w-full">共 {{ filteredSongs.length }} / {{ songs.length }} 首诗歌</div>
+                                            <div class="w-full bg-red-500 rounded-md h-5 dark:bg-gray-700 relative">
+                                                <div class="bg-green-600 h-5 rounded-md" :style="{ width: progress + '%' }">
+                                                    <span class="absolute w-full text-center font-semibold text-white text-sm">校对进度 {{ progress }}%</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <template v-for="(song, index) in filteredSongs" :key="index">    
                                     <tr class="bg-white border-b text-gray-700 dark:text-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                                        <td class="px-2 py-2 md:px-3 md:py-4 cursor-pointer" @click="toggleSongText(song)">
+                                        <td class="px-2 py-2 md:px-3 md:py-4 cursor-pointer w-10" @click="toggleSongText(song)">
                                             <ChevronDownIcon class="w-4 h-4 text-gray-600"></ChevronDownIcon>
                                         </td>
                                         <td class="px-2 py-2 md:px-4 md:py-4">
@@ -43,8 +50,9 @@
                                             </a>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td colspan="3" class="px-2 py-2 md:px-6 md:py-4 text-left" v-show="currentToggleSong?.group_id === song.group_id">
+                                    <tr v-show="currentToggleSong?.group_id === song.group_id" class="border-b">
+                                        <td class="px-2 py-2 md:px-3 md:py-4"></td>
+                                        <td colspan="2" class="px-2 py-2 md:px-4 md:py-4 text-left">
                                             <div v-if="loading">
                                                 <LoadingIcon class="w-6 h-6 text-gray-700"></LoadingIcon>
                                             </div>
@@ -95,11 +103,13 @@ const currentSongText: Ref<SongText | null> = ref(null);
 const currentToggleSong: Ref<Song | null> = ref(null);
 const search: Ref<string> = ref('');
 
+let progress = 0;
 let debounceTimeouts: any = null;
 
 onMounted(async () => {
     const response = await Promise.resolve(axios.get<ApiResponse<Song[]>>('/api/songs'));;
     songs.value = await response.data.data;
+    progress = parseFloat((songs.value.filter((song) => song.checked).length / songs.value.length * 100).toFixed(1));
     filterSongs();
 });
 
