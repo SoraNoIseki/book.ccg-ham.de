@@ -10,7 +10,7 @@ use Soranoiseki\BookGroup\Controllers\SongApiController;
 
 
 Route::middleware('web', 'auth')->group(function () {
-    Route::group(['prefix' => 'ppt'], function() {
+    Route::group(['prefix' => 'ppt', 'middleware' => 'role:ppt'], function() {
         Route::get('/', [PowerpointController::class, 'index'])->name('book-group.ppt.index');
         Route::post('/save', [PowerpointController::class, 'store'])->name('book-group.ppt.store');
         Route::post('/download', [PowerpointController::class, 'download'])->name('book-group.ppt.download');
@@ -21,7 +21,7 @@ Route::middleware('web', 'auth')->group(function () {
         });
     });
 
-    Route::group(['prefix' => 'songs'], function() {
+    Route::group(['prefix' => 'songs', 'middleware' => 'role:songs_management'], function() {
         Route::get('/', [SongController::class, 'index'])->name('book-group.song.index');
         Route::get('/{song}', [SongController::class, 'edit'])->name('book-group.song.edit');
         Route::post('/{song}', [SongController::class, 'save'])->name('book-group.song.save');
@@ -29,7 +29,7 @@ Route::middleware('web', 'auth')->group(function () {
         Route::get('/upload/{songContent}', [SongController::class, 'upload'])->name('book-group.song-content.upload');
     });
     
-    Route::group(['prefix' => 'library'], function() {
+    Route::group(['prefix' => 'library', 'middleware' => 'role:library'], function() {
         Route::get('/', [LibraryController::class, 'index'])->name('library.index');
 
         Route::get('/book/{bookId}/{copyId}/borrow', [LibraryController::class, 'borrowBook'])->name('library.book.borrow');
@@ -41,7 +41,7 @@ Route::middleware('web', 'auth')->group(function () {
         Route::post('/import/members', [LibraryController::class, 'importMembers'])->name('library.import.members');
     });
 
-    Route::group(['prefix' => 'calendar'], function() {
+    Route::group(['prefix' => 'calendar', 'middleware' => 'role:calendar'], function() {
         Route::get('/', [CalendarController::class, 'index'])->name('book-group.calendar.index');
         Route::get('/{calendar}', [CalendarController::class, 'show'])->where('calendar', '[0-9]+')->name('book-group.calendar.show');
         Route::put('/{calendar}', [CalendarController::class, 'update'])->where('calendar', '[0-9]+')->name('book-group.calendar.update');
@@ -57,7 +57,7 @@ Route::middleware('web', 'auth')->group(function () {
     
 });
 
-
+// Public routes
 Route::middleware('web')->group(function () {
     Route::get('/worship-songs', [SongController::class, 'list'])->name('book-group.song.list');
     Route::get('/api/songs', [SongApiController::class, 'index']);

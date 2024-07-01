@@ -15,19 +15,29 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    @if (env('FEATURE_LIBRARY', false))
+                    @if (Auth::user()->hasRole('library'))
                         <x-nav-link :href="route('library.index')" :active="request()->routeIs('library.index')">
                             {{ __('Library ') }}
                         </x-nav-link>
                     @endif 
-                    @if (env('FEATURE_PPT', false))
+                    @if (Auth::user()->hasRole('ppt'))
                         <x-nav-link :href="route('book-group.ppt.index')" :active="request()->routeIs('book-group.ppt.index')">
                             {{ __('PPT') }}
                         </x-nav-link>
                     @endif
-                    @if (env('FEATURE_CALENDAR', false))
+                    @if (Auth::user()->hasRole('calendar'))
                         <x-nav-link :href="route('book-group.calendar.index')" :active="request()->routeIs('book-group.calendar.index')">
                             {{ __('Calendar') }}
+                        </x-nav-link>
+                    @endif
+                    @if (Auth::user()->hasRole('songs_management'))
+                        <x-nav-link :href="route('book-group.song.index')" :active="request()->routeIs('book-group.song.index')">
+                            {{ __('Songs') }}
+                        </x-nav-link>
+                    @endif
+                    @if (Auth::user()->hasRole('admin'))
+                        <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
+                            {{ __('Admin') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -85,19 +95,29 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            @if (env('FEATURE_LIBRARY', false))
+            @if (Auth::user()->hasRole('library'))
                 <x-responsive-nav-link :href="route('library.index')" :active="request()->routeIs('library.index')">
                     {{ __('Library ') }}
                 </x-responsive-nav-link>
-            @endif
-            @if (env('FEATURE_PPT', false))
+            @endif 
+            @if (Auth::user()->hasRole('ppt'))
                 <x-responsive-nav-link :href="route('book-group.ppt.index')" :active="request()->routeIs('book-group.ppt.index')">
                     {{ __('PPT') }}
                 </x-responsive-nav-link>
             @endif
-            @if (env('FEATURE_CALENDAR', false))
-                <x-responsive-nav-link :href="route('book-group.ppt.index')" :active="request()->routeIs('book-group.calendar.index')">
+            @if (Auth::user()->hasRole('calendar'))
+                <x-responsive-nav-link :href="route('book-group.calendar.index')" :active="request()->routeIs('book-group.calendar.index')">
                     {{ __('Calendar') }}
+                </x-responsive-nav-link>
+            @endif
+            @if (Auth::user()->hasRole('songs_management'))
+                <x-responsive-nav-link :href="route('book-group.song.index')" :active="request()->routeIs('book-group.song.index')">
+                    {{ __('Songs') }}
+                </x-responsive-nav-link>
+            @endif
+            @if (Auth::user()->hasRole('admin'))
+                <x-responsive-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
+                    {{ __('Admin') }}
                 </x-responsive-nav-link>
             @endif
         </div>

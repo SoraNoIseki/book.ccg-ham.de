@@ -41,4 +41,20 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    /**
+     * Check if the user has a specific role.
+     *
+     * @param string $roleInternalName The internal name of the role to check.
+     * @return bool
+     */
+    public function hasRole($roleInternalName)
+    {
+        return $this->roles()->where('internal_name', $roleInternalName)->exists();
+    }
 }
