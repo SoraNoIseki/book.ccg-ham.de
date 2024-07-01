@@ -107,8 +107,8 @@ let progress = 0;
 let debounceTimeouts: any = null;
 
 onMounted(async () => {
-    const response = await Promise.resolve(axios.get<ApiResponse<Song[]>>('/api/songs'));;
-    songs.value = await response.data.data;
+    const response = await Promise.resolve(axios.get<ApiResponse<Song[]>>('/api/songs'));
+    songs.value = response.data.data;
     progress = parseFloat((songs.value.filter((song) => song.checked).length / songs.value.length * 100).toFixed(1));
     filterSongs();
 });
