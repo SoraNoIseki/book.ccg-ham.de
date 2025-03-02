@@ -19,6 +19,7 @@ body {
     height: 100%;
     min-height: 100vh;
     min-height: -webkit-fill-available;
+    font-family: "Roboto", sans-serif;
 }
 
 html,
@@ -142,11 +143,11 @@ body {
 
 .calendar-header .overlay .header-month .label {
     font-size: 1rem;
-    font-weight: bold;
+    font-weight: semibold;
     padding-bottom: 0.3rem;
     border-bottom: 1px solid #fffb;
     margin-bottom: 0.5rem;
-    letter-spacing: 0.1rem;
+    letter-spacing: 0.2rem;
     display: flex;
     justify-content: space-between;
 }
@@ -157,12 +158,12 @@ body {
     text-align: center;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: auto;
-    gap: 0 10px;
+    gap: 5px 10px;
     font-size: 1rem;
 }
 
 .calendar-header .overlay .header-month .weekdays {
-    font-weight: bold;
+    margin-bottom: 0.5rem;
 }
 
 .calendar-header .day-item.prev-month *,
@@ -300,7 +301,7 @@ body {
 .calendar-weekdays .weekday-item {
     width: 100%;
     height: 100%;
-    background: #0D1282bb;
+    background: #023e8a;
     color: #fff;
     font-size: 1.5rem;
     display: flex;
@@ -309,7 +310,7 @@ body {
 }
 
 .calendar-weekdays .weekday-item.weekend {
-    background: #D71313;
+    background: #c1121f;
 }
 
 .calendar-days {
@@ -338,25 +339,26 @@ body {
 
 .calendar-days .day-item .day {
     position: absolute;
-    right: 1.2rem;
+    left: 1.2rem;
     top: 1rem;
-    font-size: 1.8rem;
+    font-size: 2.4rem;
+    font-weight: 300;
 }
 
 .calendar-days .day-item .lunar-day {
     text-align: left;
     position: absolute;
     top: 1.3rem;
-    left: 1.2rem;
-    font-size: 1.4rem;
+    right: 1.2rem;
+    font-size: 1.2rem;
 }
 
 .calendar-days .day-item .holiday {
-    text-align: right;
+    text-align: left;
     position: absolute;
     right: 1.2rem;
     left: 1.2rem;
-    top: 3.6rem;
+    top: 4rem;
     font-size: 1.2rem;
 }
 
@@ -369,11 +371,11 @@ body {
     text-align: right;
     position: absolute;
     right: 1.2rem;
-    left: 1.2rem;
+    left: 0;
     bottom: 1rem;
     line-height: 1.2;
-    font-size: 0.9rem;
-    color: #333;
+    font-size: 1.1rem;
+    color: #343a40;
 }
 
 /*
@@ -389,8 +391,8 @@ body {
 /**
  * special styles
  */
-.day-item-2024-02-11 .event-weekly,
-.day-item-2024-05-12 .event-weekly
+.day-item-2025-05-11 .event-weekly:first-child,
+.day-item-2025-06-08 .event-weekly:first-child
 {
     display: none;
 }
@@ -399,7 +401,7 @@ body {
     /* color: #c90202; */
 }
 
-.day-item-2024-02-10 .lunar-day 
+.day-item-2025-01-29 .lunar-day 
 {
     color: #c90202;
 }
