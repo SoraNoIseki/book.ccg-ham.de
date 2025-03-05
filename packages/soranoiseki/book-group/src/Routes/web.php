@@ -62,13 +62,13 @@ Route::middleware('web', 'auth')->group(function () {
     });
 
     Route::group(['prefix' => 'api/task-plan'], function() {
-        Route::get('/members', [TaskPlanApiController::class, 'getMembers'])->name('book-group.task-plan.get-members');
-        Route::post('/members/delete', [TaskPlanApiController::class, 'deleteMember'])->name('book-group.task-plan.delete-member');
-        Route::get('/groups', [TaskPlanApiController::class, 'getGroups'])->name('book-group.task-plan.get-groups');
-        Route::post('/groups/roles/toggle', [TaskPlanApiController::class, 'toggleGroupRole'])->name('book-group.task-plan.toggle-group-role');
+        Route::get('/members', [TaskPlanApiController::class, 'getMembers'])->name('book-group.task-plan.api.get-members');
+        Route::post('/members/delete', [TaskPlanApiController::class, 'deleteMember'])->name('book-group.task-plan.api.delete-member');
+        Route::get('/groups', [TaskPlanApiController::class, 'getGroups'])->name('book-group.task-plan.api.get-groups');
+        Route::post('/groups/roles/toggle', [TaskPlanApiController::class, 'toggleGroupRole'])->name('book-group.task-plan.api.toggle-group-role');
 
-        Route::get('/plans', [TaskPlanApiController::class, 'getTaskPlans'])->name('book-group.task-plan.index');
-        Route::put('/plans', [TaskPlanApiController::class, 'updateTaskPlan'])->name('book-group.task-plan.update');
+        Route::get('/plans', [TaskPlanApiController::class, 'getTaskPlans'])->name('book-group.task-plan.api.index');
+        Route::put('/plans', [TaskPlanApiController::class, 'updateTaskPlan'])->name('book-group.task-plan.api.update');
     });
     
 });

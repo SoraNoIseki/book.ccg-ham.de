@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 
 const apiClient: AxiosInstance = axios.create({
-    baseURL: import.meta.env.BASE_URL,
+    baseURL: '/api/task-plan',
     headers: {
         "Content-type": "application/json",
         "X-Requested-With": "XMLHttpRequest",
