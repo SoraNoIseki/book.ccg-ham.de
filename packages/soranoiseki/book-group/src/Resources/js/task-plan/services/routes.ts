@@ -13,7 +13,6 @@ const routes = {
         index: "/groups",
         toggle: "/groups/roles/toggle",
     },
-    
 };
 
 class RouteHelper {

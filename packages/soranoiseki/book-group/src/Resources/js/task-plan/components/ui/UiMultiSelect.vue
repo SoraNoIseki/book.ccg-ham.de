@@ -1,22 +1,13 @@
 <template>
     <div class="flex flex-row items-center min-w-[180px] w-full">
-        <Multiselect
-            :options="options"
-            mode="tags"
-            :close-on-select="true"
-            :create-option="false"
-            :placeholder=placeholder
-            noResultsText="Keine Ergebnisse gefunden"
-            noOptionsText="Keine Optionen verfügbar"
-            :searchable="true"
-            v-model="selectedValues"
-            class="w-full"
-            :classes="{
-                containerActive:'',
-                search:'multiselect-search cursor-pointer focus-within:ring-2 focus-within:ring-blue-600',
-                optionSelected:'bg-white',
-                optionPointed:'bg-gray-100',
-                optionSelectedPointed:'bg-gray-100',
+        <Multiselect :options="options" mode="tags" :close-on-select="true" :create-option="false"
+            :placeholder=placeholder noResultsText="Keine Ergebnisse gefunden" noOptionsText="Keine Optionen verfügbar"
+            :searchable="true" v-model="selectedValues" class="w-full" :classes="{
+                containerActive: '',
+                search: 'multiselect-search cursor-pointer focus-within:ring-2 focus-within:ring-blue-600',
+                optionSelected: 'bg-white',
+                optionPointed: 'bg-gray-100',
+                optionSelectedPointed: 'bg-gray-100',
                 container: 'relative flex items-center justify-end border-0 p-[1px] ring-1 ring-inset ring-gray-600 focus-within:ring-2 focus-within:ring-blue-600 bg-white text-sm leading-6 outline-none',
                 tagsSearch: 'absolute inset-0 border-0 outline-none focus:ring-0 appearance-none p-0 text-sm font-sans box-border w-full',
                 dropdown: 'max-h-60 absolute left-0 right-0 bottom-0 transform translate-y-full border border-gray-300 -mt-px overflow-y-scroll z-50 bg-white flex flex-col rounded-b text-sm',
@@ -27,18 +18,12 @@
                 tagDisabled: 'pr-2 opacity-50 rtl:pl-2',
                 optionDisabled: 'text-gray-300 opacity-20 cursor-not-allowed',
                 containerDisabled: 'cursor-default bg-gray-100',
-            }"
-            @change="onChange"
-            @clear="onClear"
-            :id="id"
-            :disabled="props.disabled"
-        >
+            }" @change="onChange" @clear="onClear" :id="id" :disabled="props.disabled">
             <template v-slot:tag="{ option, handleTagRemove, disabled }">
                 <slot name="tag" :option="option" :handleTagRemove="handleTagRemove" :disabled="disabled"></slot>
             </template>
         </Multiselect>
     </div>
-
 </template>
 
 <script lang="ts" setup>
@@ -120,7 +105,6 @@ watch(() => props.modelValue, (newValue) => {
 
 
 <style scoped>
-
 :deep(.multiselect-option) {
     @apply text-sm text-gray-700;
 }
@@ -128,5 +112,4 @@ watch(() => props.modelValue, (newValue) => {
 :deep(.is-disabled .multiselect-wrapper) {
     @apply !cursor-not-allowed;
 }
-
 </style>

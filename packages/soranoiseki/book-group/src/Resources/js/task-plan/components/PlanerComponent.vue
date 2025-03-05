@@ -12,20 +12,19 @@
             <tbody>
                 <template v-for="group in groups">
                     <template v-for="role in group.roles">
-                        <tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
+                        <tr
+                            class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
                             <td class="p-2 font-medium text-gray-900 whitespace-nowrap dark:text-white w-auto">
                                 {{ role.name }}
                             </td>
                             <template v-for="(date, index) in sundays">
                                 <td class="p-2 font-bold text-lg cursor-pointer relative w-1/{{ sundays.length }}">
                                     <div class="h-full w-full flex items-center justify-center">
-                                        <UiMultiSelect
-                                            placeholder="请选择"
+                                        <UiMultiSelect placeholder="请选择"
                                             v-model="planForm[role.role]['week' + (index + 1).toString()]"
                                             :options="selectItemsByRole(role.role)"
-                                            @change="onChange($event, role.role, date, index)"
-                                            class="mb-4"
-                                        ></UiMultiSelect>
+                                            @change="onChange($event, role.role, date, index)" class="mb-4">
+                                        </UiMultiSelect>
                                     </div>
                                 </td>
                             </template>
@@ -60,12 +59,10 @@ onMounted(async () => {
     const daysInMonth = now.daysInMonth;
     for (let day = 1; day <= daysInMonth; day++) {
         const date = DateTime.local(now.year, now.month, day);
-        if (date.weekday === 7) { 
+        if (date.weekday === 7) {
             sundays.value.push(date);
         }
     }
-
-    console.log('Sundays in this month:', sundays.value.map(date => date.toISODate()));
 });
 
 
@@ -78,7 +75,6 @@ const selectItemsByRole = computed(() => {
 });
 
 const onChange = (value: string[], role: string, date: DateTime, index: number) => {
-    console.log('onChange:', value, role, date);
     taskPlanStore.updateTaskPlan(role, value.join('+'), date.toISODate() ?? '');
 };
 

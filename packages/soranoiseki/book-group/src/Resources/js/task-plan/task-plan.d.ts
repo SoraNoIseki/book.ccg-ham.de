@@ -6,15 +6,14 @@ interface SuccessApiResponse<T> {
 
 interface ErrorApiResponse {
     success: false;
-    status: 'error';
+    status: "error";
     message: string;
-
 }
 
 interface FailApiResponse {
     success: false;
     data: Record<string, string[]>;
-    status: 'fail';
+    status: "fail";
 }
 
 // Error code 500
@@ -24,15 +23,10 @@ interface ServerErrorApiResponse {
 
 type ApiResponse<T> = SuccessApiResponse<T> | ErrorApiResponse;
 
-
-
 interface SelectOption {
     value: string | number;
     label: string;
 }
-
-
-
 
 interface NameResult {
     role: string;
@@ -63,7 +57,7 @@ interface TaskPlanItem {
     group_id: string;
     week1: string;
     week2: string;
-    week3: string;   
+    week3: string;
     week4: string;
     week5: string;
 }
@@ -71,7 +65,7 @@ interface TaskPlanItem {
 interface TaskPlanFormItem {
     week1: string[];
     week2: string[];
-    week3: string[];   
+    week3: string[];
     week4: string[];
     week5: string[];
 }
