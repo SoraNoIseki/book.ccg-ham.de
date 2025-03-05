@@ -7,6 +7,8 @@ use Soranoiseki\BookGroup\Controllers\LibraryController;
 use Soranoiseki\BookGroup\Controllers\CalendarController;
 use Soranoiseki\BookGroup\Controllers\SongController;
 use Soranoiseki\BookGroup\Controllers\SongApiController;
+use Soranoiseki\BookGroup\Controllers\TaskPlanController;
+use Soranoiseki\BookGroup\Controllers\TaskPlanApiController;
 
 
 Route::middleware('web', 'auth')->group(function () {
@@ -53,6 +55,20 @@ Route::middleware('web', 'auth')->group(function () {
         Route::post('/import/events/{calendar}', [CalendarController::class, 'importEvents'])->where('calendar', '[0-9]+')->name('book-group.calendar.import-events');
         Route::post('/import/bible-texts/{calendar}', [CalendarController::class, 'importBibleTexts'])->where('calendar', '[0-9]+')->name('book-group.calendar.import-bible-texts');
         Route::get('/update-holidays', [CalendarController::class, 'updateHolidays'])->name('book-group.calendar.update-holidays');
+    });
+
+    Route::group(['prefix' => 'task-plan'], function() {
+        Route::get('/', [TaskPlanController::class, 'index'])->name('book-group.task-plan.index');
+    });
+
+    Route::group(['prefix' => 'api/task-plan'], function() {
+        Route::get('/members', [TaskPlanApiController::class, 'getMembers'])->name('book-group.task-plan.get-members');
+        Route::post('/members/delete', [TaskPlanApiController::class, 'deleteMember'])->name('book-group.task-plan.delete-member');
+        Route::get('/groups', [TaskPlanApiController::class, 'getGroups'])->name('book-group.task-plan.get-groups');
+        Route::post('/groups/roles/toggle', [TaskPlanApiController::class, 'toggleGroupRole'])->name('book-group.task-plan.toggle-group-role');
+
+        Route::get('/plans', [TaskPlanApiController::class, 'getTaskPlans'])->name('book-group.task-plan.index');
+        Route::put('/plans', [TaskPlanApiController::class, 'updateTaskPlan'])->name('book-group.task-plan.update');
     });
     
 });

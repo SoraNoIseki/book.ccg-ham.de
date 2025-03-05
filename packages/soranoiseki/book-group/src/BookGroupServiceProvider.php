@@ -44,7 +44,12 @@ class BookGroupServiceProvider extends ServiceProvider
             __DIR__ . '/Config/connections.php',
             'database.connections'
         );
+        $this->mergeConfigFrom(
+            __DIR__ . '/Config/groups.php',
+            'book.groups'
+        );
 
+       
         // register view components
         Blade::component('tabs-container', Container::class);
         Blade::component('tabs-label', Label::class);
@@ -69,6 +74,7 @@ class BookGroupServiceProvider extends ServiceProvider
         $this->app->make('Soranoiseki\BookGroup\Controllers\CalendarController');
         $this->app->make('Soranoiseki\BookGroup\Controllers\PowerpointAjaxController');
         $this->app->make('Soranoiseki\BookGroup\Controllers\SongController');
+        $this->app->make('Soranoiseki\BookGroup\Controllers\TaskPlanController');
 
         $this->commands([
             \Soranoiseki\BookGroup\Console\Commands\SyncSongs::class,
