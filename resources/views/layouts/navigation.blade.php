@@ -36,6 +36,11 @@
                         </x-nav-link>
                     @endif
                     @if (Auth::user()->hasRole('admin'))
+                        <x-nav-link :href="route('book-group.task-plan.index')" :active="request()->routeIs('book-group.task-plan.index')">
+                            {{ __('Plans') }}
+                        </x-nav-link>
+                    @endif
+                    @if (Auth::user()->hasRole('admin'))
                         <x-nav-link :href="route('admin.index')" :active="request()->routeIs('admin.index')">
                             {{ __('Admin') }}
                         </x-nav-link>
@@ -113,6 +118,11 @@
             @if (Auth::user()->hasRole('songs_management'))
                 <x-responsive-nav-link :href="route('book-group.song.index')" :active="request()->routeIs('book-group.song.index')">
                     {{ __('Songs') }}
+                </x-responsive-nav-link>
+            @endif
+            @if (Auth::user()->hasRole('admin'))
+                <x-responsive-nav-link :href="route('book-group.task-plan.index')" :active="request()->routeIs('book-group.task-plan.index')">
+                    {{ __('Plans') }}
                 </x-responsive-nav-link>
             @endif
             @if (Auth::user()->hasRole('admin'))

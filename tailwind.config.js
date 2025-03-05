@@ -7,6 +7,7 @@ module.exports = {
         './storage/framework/views/*.php',
         './**/*.blade.php',
         './**/*.vue',
+        "./node_modules/flowbite/**/*.js",
     ],
 
     theme: {
@@ -36,6 +37,7 @@ module.exports = {
     },
 
     plugins: [
-        require('@tailwindcss/forms')
+        require('@tailwindcss/forms'),
+        // require('flowbite/plugin')
     ],
 };

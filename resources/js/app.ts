@@ -1,6 +1,9 @@
 import './bootstrap';
 
 import Alpine from 'alpinejs';
+import 'flowbite';
+
+import "@vueform/multiselect/themes/default.css";
 
 (window as any).Alpine = Alpine;
 
@@ -19,6 +22,7 @@ import { createPinia } from "pinia";
 import VueDatePicker from '@vuepic/vue-datepicker';
 
 import * as AppSongs from "../../packages/soranoiseki/book-group/src/Resources/js/songs";
+import * as AppTaskPlan from "../../packages/soranoiseki/book-group/src/Resources/js/task-plan";
 import * as AppAdmin from "./admin";
 
 import '@vuepic/vue-datepicker/dist/main.css';
@@ -29,3 +33,7 @@ appSongs.mount("#app-songs");
 
 const appAdmin = createApp(AppAdmin.App);
 appAdmin.mount("#app-admin");
+
+const taskPlan = createApp(AppTaskPlan.App);;
+taskPlan.use(createPinia());
+taskPlan.mount("#app-task-plan");

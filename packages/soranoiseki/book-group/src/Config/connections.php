@@ -46,4 +46,11 @@ return [
         'username' => env('MONGODB_USERNAME', 'homestead'),
         'password' => env('MONGODB_PASSWORD', 'secret'),
     ],
+    'mongodb-task' => [
+        'driver' => 'mongodb',
+        'dsn' => env('MONGODB_DSN'),
+        'database' => 'ccg-task',
+        'username' => env('MONGODB_USERNAME', 'homestead'),
+        'password' => env('MONGODB_PASSWORD', 'secret'),
+    ],
 ];

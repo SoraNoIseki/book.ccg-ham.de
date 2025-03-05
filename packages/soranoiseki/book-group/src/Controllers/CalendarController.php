@@ -259,34 +259,33 @@ class CalendarController extends Controller
         $this->events = array();
 
         // create weekly events
-        $eventType = "weekly";
-        for ($month = 1; $month <= 12; $month++) {
-            $this->insertEvent($year, $month, "second wednesday", "信徒查经", $eventType);
-            $this->insertEvent($year, $month, "fourth wednesday", "信徒查经", $eventType);
+        // $eventType = "weekly";
+        // for ($month = 1; $month <= 12; $month++) {
+        //     $this->insertEvent($year, $month, "second wednesday", "线上查经", $eventType);
+        //     $this->insertEvent($year, $month, "fourth wednesday", "线上查经", $eventType);
 
-            $this->insertEvent($year, $month, "first friday", "福音查经", $eventType);
-            $this->insertEvent($year, $month, "second friday", "福音查经", $eventType);
-            $this->insertEvent($year, $month, "third friday", "福音查经", $eventType);
-            $this->insertEvent($year, $month, "fourth friday", "福音查经", $eventType);
-            $this->insertEvent($year, $month, "fifth  friday", "福音查经", $eventType);
+        //     $this->insertEvent($year, $month, "first friday", "福音查经", $eventType);
+        //     $this->insertEvent($year, $month, "second friday", "福音查经", $eventType);
+        //     $this->insertEvent($year, $month, "third friday", "福音查经", $eventType);
+        //     $this->insertEvent($year, $month, "fourth friday", "福音查经", $eventType);
+        //     $this->insertEvent($year, $month, "fifth  friday", "福音查经", $eventType);
             
-            $this->insertEvent($year, $month, "second saturday", "青年团契", $eventType);
-            $this->insertEvent($year, $month, "fourth saturday", "青年团契", $eventType);
+        //     $this->insertEvent($year, $month, "second saturday", "青年团契", $eventType);
+        //     $this->insertEvent($year, $month, "fourth saturday", "青年团契", $eventType);
 
-            $this->insertEvent($year, $month, "first friday", "长青团契", $eventType);
-            $this->insertEvent($year, $month, "third friday", "长青团契", $eventType);
+        //     $this->insertEvent($year, $month, "first friday", "长青团契", $eventType);
+        //     $this->insertEvent($year, $month, "third friday", "长青团契", $eventType);
 
-            $this->insertEvent($year, $month, "second saturday", "伉俪团契", $eventType);
-            $this->insertEvent($year, $month, "fourth saturday", "伉俪团契", $eventType);
+        //     $this->insertEvent($year, $month, "second saturday", "伉俪团契", $eventType);
 
-            $this->insertEvent($year, $month, "first thursday", "妈妈小组", $eventType);
-            $this->insertEvent($year, $month, "third thursday", "妈妈小组", $eventType);
+        //     $this->insertEvent($year, $month, "first thursday", "妈妈小组", $eventType);
+        //     $this->insertEvent($year, $month, "third thursday", "妈妈小组", $eventType);
 
-            $this->insertEvent($year, $month, "first sunday", "圣餐礼拜", $eventType);
-            $this->insertEvent($year, $month, "second sunday", "诗班排练", $eventType);
-        }
-        $this->insertEvent($year, 2, "first sunday", "诗班排练", $eventType);
-        $this->insertEvent($year, 5, "first sunday", "诗班排练", $eventType);
+        //     $this->insertEvent($year, $month, "first sunday", "圣餐礼拜", $eventType);
+        //     $this->insertEvent($year, $month, "second sunday", "诗班排练", $eventType);
+        // }
+        // $this->insertEvent($year, 5, "first sunday", "诗班排练", $eventType);
+        // $this->insertEvent($year, 6, "first sunday", "诗班排练", $eventType);
 
         // get yearly events from database
         $events = Event::where('year', '=', $year)->get();
