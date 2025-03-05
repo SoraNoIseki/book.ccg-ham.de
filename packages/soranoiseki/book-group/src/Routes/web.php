@@ -63,6 +63,7 @@ Route::middleware('web', 'auth')->group(function () {
 
     Route::group(['prefix' => 'api/task-plan'], function() {
         Route::get('/members', [TaskPlanApiController::class, 'getMembers'])->name('book-group.task-plan.api.get-members');
+        Route::post('/members', [TaskPlanApiController::class, 'createMember'])->name('book-group.task-plan.api.create-member');
         Route::post('/members/delete', [TaskPlanApiController::class, 'deleteMember'])->name('book-group.task-plan.api.delete-member');
         Route::get('/groups', [TaskPlanApiController::class, 'getGroups'])->name('book-group.task-plan.api.get-groups');
         Route::post('/groups/roles/toggle', [TaskPlanApiController::class, 'toggleGroupRole'])->name('book-group.task-plan.api.toggle-group-role');

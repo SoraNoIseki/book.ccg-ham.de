@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-row items-center min-w-[180px] w-full">
-        <Multiselect :options="options" mode="tags" :close-on-select="true" :create-option="false"
+        <Multiselect :options="options" mode="single" :close-on-select="true" :create-option="false"
             :placeholder=placeholder noResultsText="Keine Ergebnisse gefunden" noOptionsText="Keine Optionen verfügbar"
             :searchable="searchable" :groups="groups" v-model="selectedValues" class="w-full" :classes="{
                 containerActive: '',
@@ -8,7 +8,7 @@
                 optionSelected: 'bg-white',
                 optionPointed: 'bg-gray-100',
                 optionSelectedPointed: 'bg-gray-100',
-                container: 'relative flex items-center justify-end bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                container: 'relative flex items-center justify-end bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
                 tagsSearch: 'absolute inset-0 border-0 outline-none focus:ring-0 appearance-none p-0 text-sm font-sans box-border w-full',
                 dropdown: 'max-h-80 absolute left-0 right-0 bottom-0 transform translate-y-full border border-gray-300 -mt-px overflow-y-scroll z-50 bg-gray-50 flex flex-col rounded-b text-sm z-10 rounded-lg',
                 dropdownTop: '-translate-y-full top-px bottom-auto rounded-b-none rounded-t',
@@ -33,7 +33,7 @@ import Multiselect from '@vueform/multiselect';
 
 const props = defineProps({
     modelValue: {
-        type: Array as PropType<string[] | number[]>,
+        type: String,
         default: ''
     },
     label: {
@@ -47,7 +47,7 @@ const props = defineProps({
         default: 'Bitte wählen...',
     },
     options: {
-        type: Array as PropType<SelectOption[]>,
+        type: Array as PropType<SelectOption[] | SelectOptionGroup[]>,
         required: true,
         default: () => []
     },
@@ -89,8 +89,8 @@ const onChange = (newValue) => {
 }
 
 const onClear = () => {
-    selectedValues.value = [];
-    emit('change', []);
+    selectedValues.value = '';
+    emit('change', '');
 }
 
 const generateId = (): string => {
