@@ -5,9 +5,8 @@ const routes = {
     },
     member: {
         index: "/members",
+        create: "/members",
         delete: "/members/delete",
-        update: "/members/update",
-        create: "/members/create",
     },
     group: {
         index: "/groups",

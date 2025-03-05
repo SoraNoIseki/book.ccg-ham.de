@@ -26,6 +26,14 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
             });
         },
 
+        async addMember(name: string, role: string) {
+            TaskPlanService.addMember(name, role).then((result) => { 
+                if (result) {
+                    this.names = result;
+                }
+            });
+        },
+
         async deleteMember(name: string) {
             TaskPlanService.deleteMember(name).then((result) => {
                 if (result) {

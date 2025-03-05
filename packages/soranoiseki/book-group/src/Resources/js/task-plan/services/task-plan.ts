@@ -11,6 +11,15 @@ export class TaskPlanService {
         });
     }
 
+    static addMember(name: string, role: string): Promise<NameResult[] | undefined> {
+        const url = routes.member.create;
+        return new Promise((resolve, reject) => {
+            ApiClient.post<NameResult[]>(url, { name, role })
+                .then((result) => resolve(result))
+                .catch((error) => reject(error));
+        });
+    }
+
     static deleteMember(name: string): Promise<NameResult[] | undefined> {
         const url = routes.member.delete;
         return new Promise((resolve, reject) => {

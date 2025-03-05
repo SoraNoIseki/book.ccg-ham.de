@@ -28,6 +28,11 @@ interface SelectOption {
     label: string;
 }
 
+interface SelectOptionGroup {
+    label: string;
+    options: SelectOption[];
+}
+
 interface NameResult {
     role: string;
     names: string[];

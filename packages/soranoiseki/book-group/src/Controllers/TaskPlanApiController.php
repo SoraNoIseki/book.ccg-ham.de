@@ -13,6 +13,7 @@ use Soranoiseki\Core\Controllers\Controller;
 use Soranoiseki\Core\Traits\ApiResponser;
 use Soranoiseki\BookGroup\Http\Resources\TaskPlan\NameResource;
 use Soranoiseki\BookGroup\Http\Resources\TaskPlan\TaskInfoResource;
+use Soranoiseki\BookGroup\Http\Requests\CreateMemberRequest;
 use Soranoiseki\BookGroup\Http\Requests\DeleteMemberRequest;
 use Soranoiseki\BookGroup\Http\Requests\ToggleGroupRoleRequest;
 use Soranoiseki\BookGroup\Http\Requests\UpdateTaskPlanRequest;
@@ -53,6 +54,43 @@ class TaskPlanApiController extends Controller
     public function getGroups(Request $request)
     {
         return $this->respondSuccess(config('book.groups', []));
+    }
+
+    public function createMember(CreateMemberRequest $request)
+    {
+        try {
+            $data = $request->validated();
+
+            $nameInfo = NameInfo::raw(function($collection) use ($data) {
+                return $collection->findOne([
+                    'role' => $data['role'],
+                ], ['sort' => ['name' => 1], 'collation' => ['locale' => 'zh', 'strength' => 1]]);
+            });
+            
+            $members = explode('+', $nameInfo->name);
+
+            // Cleanup: trim names
+            $members = array_map(function($member) {
+                return trim($member);
+            }, $members);;
+
+            // Search for the name and remove it
+            $key = array_search($data['name'], $members);
+            if ($key === false) {
+                $members[] = $data['name'];
+                $nameInfo->name = implode('+', $members);
+                $nameInfo->save();
+            }
+
+            // Reload the names
+            $names = NameInfo::raw(function($collection) {
+                return $collection->find([], ['sort' => ['name' => 1], 'collation' => ['locale' => 'zh', 'strength' => 1]]);
+            });
+        } catch (\Exception $e) {
+            return $this->respondError($e->getMessage());
+        }
+        
+        return $this->respondSuccessWithResource(NameResource::collection($names));
     }
 
     public function deleteMember(DeleteMemberRequest $request)

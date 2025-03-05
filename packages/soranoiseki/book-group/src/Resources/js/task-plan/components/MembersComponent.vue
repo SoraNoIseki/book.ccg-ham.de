@@ -1,10 +1,15 @@
 <template>
-    <div class="relative shadow-md sm:rounded-lg">
-        <p>
-            共 {{ groupMembers.length }} 人
+    <div class="relative py-2 sm:px-4 sm:py-6">
+        <h2 class="my-4 text-gray-700 dark:text-gray-400 font-semibold">
+            组员管理（共 {{ groupMembers.length }} 人）
+        </h2>
+
+        <p class="my-4 text-gray-700 dark:text-gray-400 font-semibold text-sm">
+            请将组员分配到对应的小组和角色中，每个组员至少有一个角色。已分配的组员名字将会作为选项显示在计划表中。<br>
+            添加新组员请前往<a href="#add-member-component" class="text-blue-600 hover:underline px-0.5">添加组员</a>模块。
         </p>
 
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-700 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="p-2"></th>
@@ -68,7 +73,7 @@
 
                     <td class="p-2">
                         <button type="button" @click="deleteMember(member.name)"
-                            class="block text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                            class="block text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 disabled:opacity-50 disabled:cursor-not-allowed">
                             删除
                         </button>
                     </td>
@@ -98,7 +103,7 @@
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>
-                    <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                    <h3 class="mb-5 text-lg font-normal text-gray-700 dark:text-gray-400">
                         即将删除：<strong>{{ toDelete }}</strong>，删除后无法撤销操作，是否要进行删除？
                     </h3>
                     <button type="button" @click="confirmDelete"
@@ -111,15 +116,11 @@
             </div>
         </div>
     </div>
-
-
-
 </template>
 
 <script setup lang="ts">
 
-import { ref, Ref, onMounted, nextTick } from 'vue';
-import { LoadingIcon, ChevronDownIcon } from '../../icons';
+import { ref, Ref, onMounted } from 'vue';
 import { useTaskPlanStore } from '../stores';
 import { storeToRefs } from 'pinia';
 import { Modal } from 'flowbite';
@@ -134,7 +135,6 @@ onMounted(async () => {
     targetEl.value = document.getElementById('delete-popup-modal');
     modal.value = new Modal(targetEl.value);
 });
-
 
 const toDelete = ref<string>("");
 const deleteMember = (name: string) => {
@@ -157,7 +157,6 @@ const closeModal = () => {
         modal.value.hide();
     }
 };
-
 
 const isMemberInGroup = (member: GroupMember, groupRole: string) => {
     return member.roles.some((role: string) => role === groupRole);
@@ -186,6 +185,5 @@ const hideTooltip = (id: string) => {
         tooltip.classList.add('invisible', 'opacity-0');
     }
 };
-
 
 </script>
