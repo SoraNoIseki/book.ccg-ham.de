@@ -6,56 +6,69 @@
 
         <p class="my-4 text-gray-700 dark:text-gray-400 font-semibold text-sm">
             请将组员分配到对应的小组和角色中，每个组员至少有一个角色。已分配的组员名字将会作为选项显示在计划表中。<br>
-            添加新组员请前往<a href="#add-member-component" class="text-blue-600 hover:underline px-0.5">添加组员</a>模块。
+            添加新组员请前往<span @click="scrollToId('add-member-component')" class="text-primary-600 hover:underline px-0.5 cursor-pointer">添加组员</span>模块。
         </p>
 
-        <table class="w-full text-sm text-left rtl:text-right text-gray-700 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <GroupFilterComponent class="my-4" />
+        
+        <div class="relative mb-4">
+            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                </svg>
+            </div>
+            <input type="search" v-model="search" placeholder="搜索名字..."
+                class="block w-full px-4 py-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
+        </div>
+
+        <table class="w-full text-sm text-left rtl:text-right text-gray-700 dark:text-gray-400 rounded-md overflow-hidden">
+            <thead class="text-sm font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 text-center">
                 <tr>
-                    <th scope="col" class="p-2"></th>
+                    <th scope="col" class="p-2 bg-primary-400"></th>
                     <template v-for="group in groups">
-                        <th scope="col" :colspan="group.roles.length" class="p-2">
+                        <th scope="col" :colspan="group.roles.length" class="p-2" v-show="isGroupVisible(group)" :style="`background-color: ${group.color}55;`">
                             {{ group.group }}
                         </th>
                     </template>
-                    <th scope="col" class="p-2"></th>
+                    <th scope="col" class="p-2 bg-red-500"></th>
                 </tr>
-                <tr>
-                    <th scope="col" class="p-2">
+                <tr class="border-b dark:border-gray-700 border-gray-200">
+                    <th scope="col" class="py-2 px-4 bg-primary-400 text-left">
                         名字
                     </th>
                     <template v-for="group in groups">
                         <template v-for="role in group.roles">
-                            <th scope="col" class="p-2">
+                            <th scope="col" class="p-2" v-show="isGroupVisible(group)" :style="`background-color: ${group.color}55;`">
                                 {{ role.name }}
                             </th>
                         </template>
                     </template>
-                    <th scope="col" class="p-2">操作</th>
+                    <th scope="col" class="p-2 bg-red-500 text-white">操作</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="member in groupMembers"
+                <tr v-for="member in groupMembers" :id="member.name" :key="member.name" v-show="isMemberShown(member)"
                     class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
-                    <th scope="row" class="p-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <th scope="row" class="py-2 px-4 font-medium text-gray-900 whitespace-nowrap dark:text-white bg-primary-400">
                         {{ member.name }}
                     </th>
 
                     <template v-for="group in groups">
                         <template v-for="role in group.roles">
-                            <td class="p-2 font-bold text-lg cursor-pointer relative"
+                            <td class="p-2 font-bold text-lg cursor-pointer relative" :style="`background-color: ${group.color}55; color: ${group.color};`"
+                                v-show="isGroupVisible(group)"
                                 @click="toggleRole(member, role.role)">
                                 <div class="h-full w-full flex items-center justify-center"
                                     @mouseenter="showTooltip(member.name + role.role)"
                                     @mouseleave="hideTooltip(member.name + role.role)">
                                     <i v-if="isMemberInGroup(member, role.role)"
-                                        class="w-6 h-6 text-gray-700 fill-current">
+                                        class="w-6 h-6 fill-current">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                                             <path
                                                 d="M64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z" />
                                         </svg>
                                     </i>
-                                    <i v-else class="w-6 h-6 text-gray-200 fill-current">
+                                    <i v-else class="w-6 h-6 fill-current opacity-70">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                                             <path
                                                 d="M0 96C0 60.7 28.7 32 64 32H384c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96z" />
@@ -71,9 +84,9 @@
                         </template>
                     </template>
 
-                    <td class="p-2">
+                    <td class="p-2 bg-red-500 text-white">
                         <button type="button" @click="deleteMember(member.name)"
-                            class="block text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="block text-white bg-red-500 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-1.5 py-2.5 w-full text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 disabled:opacity-50 disabled:cursor-not-allowed">
                             删除
                         </button>
                     </td>
@@ -82,7 +95,6 @@
             </tbody>
         </table>
     </div>
-
 
     <div id="delete-popup-modal" tabindex="-1"
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
@@ -107,11 +119,11 @@
                         即将删除：<strong>{{ toDelete }}</strong>，删除后无法撤销操作，是否要进行删除？
                     </h3>
                     <button type="button" @click="confirmDelete"
-                        class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                        class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center w-full">
                         删除
                     </button>
                     <button type="button" @click="closeModal"
-                        class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">取消</button>
+                        class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">取消</button>
                 </div>
             </div>
         </div>
@@ -124,12 +136,14 @@ import { ref, Ref, onMounted } from 'vue';
 import { useTaskPlanStore } from '../stores';
 import { storeToRefs } from 'pinia';
 import { Modal } from 'flowbite';
+import { GroupFilterComponent } from './';
 
 const taskPlanStore = useTaskPlanStore();
-const { groupMembers, groups } = storeToRefs(taskPlanStore);
+const { groupMembers, groups, groupFilter } = storeToRefs(taskPlanStore);
 
 const targetEl: Ref<HTMLElement | null> = ref(null);
 const modal: Ref<Modal | null> = ref(null);
+const search = ref<string>("");
 
 onMounted(async () => {
     targetEl.value = document.getElementById('delete-popup-modal');
@@ -185,5 +199,21 @@ const hideTooltip = (id: string) => {
         tooltip.classList.add('invisible', 'opacity-0');
     }
 };
+
+const scrollToId = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+};
+
+const isGroupVisible = (group: Group) => {
+    return groupFilter.value.find((filter: GroupFilterItem) => filter.name === group.group)?.enabled ?? true;
+};
+
+const isMemberShown = (member: GroupMember) => {
+    return member.name.toLowerCase().includes(search.value.toLowerCase());
+};
+
 
 </script>

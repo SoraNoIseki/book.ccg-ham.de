@@ -50,6 +50,7 @@ interface GroupRole {
 
 interface Group {
     group: string;
+    color: string;
     roles: GroupRole[];
 }
 
@@ -73,4 +74,10 @@ interface TaskPlanFormItem {
     week3: string[];
     week4: string[];
     week5: string[];
+}
+
+interface GroupFilterItem {
+    name: string;
+    color: string;
+    enabled: boolean;
 }

@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-row items-center min-w-[180px] w-full">
-        <Multiselect :options="options" mode="single" :close-on-select="true" :create-option="false"
+        <Multiselect :options="options" mode="single" :close-on-select="true" :create-option="false" :can-deselect="false"
             :placeholder=placeholder noResultsText="Keine Ergebnisse gefunden" noOptionsText="Keine Optionen verfügbar"
             :searchable="searchable" :groups="groups" v-model="selectedValues" class="w-full" :classes="{
                 containerActive: '',

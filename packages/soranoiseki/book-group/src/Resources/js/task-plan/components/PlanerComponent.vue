@@ -4,10 +4,12 @@
             服事安排
         </h2>
 
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-fixed">
+        <GroupFilterComponent class="my-4" />
+
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-fixed rounded-md overflow-hidden">
             <thead class="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                    <th scope="col" class="p-2 w-36"></th>
+                <tr class="bg-primary-200 border-b dark:border-gray-700 border-gray-200">
+                    <th scope="col" class="w-36 h-12"></th>
                     <template v-for="date in sundays">
                         <th scope="col" class="p-2 w-1/{{ sundays.length }}">{{ date.toISODate() }}</th>
                     </template>
@@ -16,8 +18,8 @@
             <tbody>
                 <template v-for="group in groups">
                     <template v-for="role in group.roles">
-                        <tr
-                            class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
+                        <tr v-show="isGroupVisible(group)" :style="`background-color: ${group.color}55;`"
+                            class="border-b dark:border-gray-700 border-gray-200">
                             <td class="p-2 font-medium text-gray-900 whitespace-nowrap dark:text-white w-auto">
                                 {{ role.name }}
                             </td>
@@ -49,12 +51,13 @@ import { useTaskPlanStore } from '../stores';
 import { storeToRefs } from 'pinia';
 import { DateTime } from 'luxon';
 import { UiMultiSelect } from './';
+import { GroupFilterComponent } from './';
 
 
 const sundays = ref<DateTime[]>([]);
 
 const taskPlanStore = useTaskPlanStore();
-const { groupMembers, groups, sortedMembersByRole, planForm } = storeToRefs(taskPlanStore);
+const { groups, sortedMembersByRole, planForm, groupFilter } = storeToRefs(taskPlanStore);
 
 
 onMounted(async () => {
@@ -69,7 +72,6 @@ onMounted(async () => {
     }
 });
 
-
 const selectItemsByRole = computed(() => {
     return (role: string) => {
         return sortedMembersByRole.value.find((item: any) => item.role === role)?.names.map((name) => {
@@ -80,6 +82,10 @@ const selectItemsByRole = computed(() => {
 
 const onChange = (value: string[], role: string, date: DateTime, index: number) => {
     taskPlanStore.updateTaskPlan(role, value.join('+'), date.toISODate() ?? '');
+};
+
+const isGroupVisible = (group: Group) => {
+    return groupFilter.value.find((filter: GroupFilterItem) => filter.name === group.group)?.enabled ?? true;
 };
 
 </script>

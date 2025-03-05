@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 
-import { ref, Ref, onMounted } from 'vue';
+import { ref, Ref, onMounted, watch } from 'vue';
 import { LoadingIcon, ChevronDownIcon } from '../icons';
 import { useTaskPlanStore } from './stores';
 import { MembersComponent, PlanerComponent, AddMemberComponent } from './components';
@@ -50,6 +50,11 @@ const taskPlanStore = useTaskPlanStore();
 onMounted(async () => {
     taskPlanStore.init();
 });
+
+watch(() => taskPlanStore.groupFilter, () => {
+    // save to local storage
+    localStorage.setItem('groupFilter', JSON.stringify(taskPlanStore.groupFilter));
+}, { deep: true });
 
 
 </script>

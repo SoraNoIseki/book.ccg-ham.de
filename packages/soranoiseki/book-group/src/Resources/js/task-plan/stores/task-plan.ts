@@ -8,6 +8,8 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
         names: [] as NameResult[],
         groups: [] as Group[],
         taskPlans: [] as TaskPlan[],
+        groupFilter: [] as GroupFilterItem[],
+        groupFilterInit: false,
     }),
     actions: {
         init() {
@@ -16,6 +18,13 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
             this.getTaskPlans();
             this.getGroups();
             this.getMembers();
+
+            // load from local storage
+            const groupFilter = localStorage.getItem('groupFilter');
+            if (groupFilter) {
+                this.groupFilter = JSON.parse(groupFilter);
+                this.groupFilterInit = true;
+            }
         },
 
         async getMembers() {
@@ -46,6 +55,9 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
             TaskPlanService.getGroups().then((result) => {
                 if (result) {
                     this.groups = result;
+                    if (!this.groupFilterInit) {
+                        this.initGroupFilter();
+                    }
                 }
             });
         },
@@ -77,6 +89,16 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
                 }
             );
         },
+        
+        initGroupFilter() {
+            this.groupFilter = this.groups.map((group) => {
+                return {
+                    name: group.group,
+                    color: group.color,
+                    enabled: true,
+                }
+            });
+        }
     },
     getters: {
         groupMembers(): GroupMember[] {
