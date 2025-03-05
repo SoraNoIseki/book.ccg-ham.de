@@ -5,7 +5,7 @@
                 <tr>
                     <th scope="col" class="p-2 w-auto"></th>
                     <template v-for="date in sundays">
-                        <th scope="col" class="p-2 w-1/{{ sundays.length }}"></th>
+                        <th scope="col" class="p-2 w-1/{{ sundays.length }}">{{ date.toISODate() }}</th>
                     </template>
                 </tr>
             </thead>
