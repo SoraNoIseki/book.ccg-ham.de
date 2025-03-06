@@ -35,9 +35,9 @@
                             {{ __('Songs') }}
                         </x-nav-link>
                     @endif
-                    @if (Auth::user()->hasRole('admin'))
+                    @if (Auth::user()->matchRoles('planer*'))
                         <x-nav-link :href="route('book-group.task-plan.index')" :active="request()->routeIs('book-group.task-plan.index')">
-                            {{ __('Plans') }}
+                            {{ __('Planer') }}
                         </x-nav-link>
                     @endif
                     @if (Auth::user()->hasRole('admin'))
@@ -120,9 +120,9 @@
                     {{ __('Songs') }}
                 </x-responsive-nav-link>
             @endif
-            @if (Auth::user()->hasRole('admin'))
+            @if (Auth::user()->matchRoles('planer*'))
                 <x-responsive-nav-link :href="route('book-group.task-plan.index')" :active="request()->routeIs('book-group.task-plan.index')">
-                    {{ __('Plans') }}
+                    {{ __('Planer') }}
                 </x-responsive-nav-link>
             @endif
             @if (Auth::user()->hasRole('admin'))

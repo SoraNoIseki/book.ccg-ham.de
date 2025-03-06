@@ -1,26 +1,23 @@
 import { defineStore } from "pinia";
 import { computed, watch } from "vue";
 import { TaskPlanService } from "../services";
-import { json } from "stream/consumers";
+import { DateTime } from "luxon";
 
 export const useTaskPlanStore = defineStore("TaskPlanStore", {
     state: () => ({
-        now: new Date(),
+        now: DateTime.now() as DateTime,
         names: [] as NameResult[],
         groups: [] as Group[],
         taskPlans: [] as TaskPlan[],
         groupFilter: [] as GroupFilterItem[],
         groupFilterInit: false,
         roles: [] as UserRole[],
+        currentPlanMonth: DateTime.now() as DateTime,
+        sundays: [] as DateTime[],
+        abortController: null as AbortController | null,
     }),
     actions: {
         init() {
-            this.now = new Date();
-
-            this.getTaskPlans();
-            this.getGroups();
-            this.getMembers();
-
             // load from local storage
             const groupFilter = localStorage.getItem("groupFilter");
             if (groupFilter) {
@@ -28,8 +25,22 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
                 this.groupFilterInit = true;
             }
 
+            const currentPlanMonth = localStorage.getItem("currentPlanMonth");
+            if (currentPlanMonth) {
+                this.currentPlanMonth = DateTime.fromISO(currentPlanMonth);
+            } else {
+                this.currentPlanMonth = DateTime.now().startOf("month");
+                this.saveCurrentPlanMonthToLocalStorage();
+            }
+            this.prepareSundays();
+
             // load user roles from window
             this.roles = JSON.parse((window as any).roles);
+
+            // load data
+            this.getTaskPlans();
+            this.getGroups();
+            this.getMembers();
         },
 
         async getMembers() {
@@ -76,19 +87,31 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
         },
 
         async getTaskPlans() {
-            TaskPlanService.getTaskPlans().then((result) => {
+            if (this.abortController) {
+                this.abortController.abort();
+            }
+
+            this.abortController = new AbortController();
+            const signal = this.abortController.signal;
+
+            const year = this.currentPlanMonth.year.toString();
+            const month = this.currentPlanMonth.month.toString();
+
+            TaskPlanService.getTaskPlans(year, month, signal).then((result) => {
                 if (result) {
                     this.taskPlans = result;
                 }
+            }).finally(() => {
+                this.abortController = null;
             });
         },
 
         async updateTaskPlan(role: string, value: string, date: string) {
             TaskPlanService.updateTaskPlan(role, value, date).then((result) => {
                 if (result) {
-                    // const role = result.role;
-                    // const plans = result.plans;
-                    // this.taskPlans.find(item => item.role === role)!.plans = plans;
+                    const role = result.role;
+                    const plans = result.plans;
+                    this.taskPlans.find(item => item.role === role)!.plans = plans;
                 }
             });
         },
@@ -101,6 +124,65 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
                     enabled: true,
                 };
             });
+        },
+
+        nextPlanMonth() {
+            this.currentPlanMonth = this.currentPlanMonth.plus({ months: 1 });
+            this.updateAfterSwitchMonth();
+        },
+
+        prevPlanMonth() {
+            this.currentPlanMonth = this.currentPlanMonth.minus({ months: 1 });
+            this.updateAfterSwitchMonth();
+        },
+
+        backToCurrentMonth() {
+            const currentMonth = DateTime.now().startOf("month");
+            if (currentMonth.equals(this.currentPlanMonth)) {
+                return;
+            }
+
+            this.currentPlanMonth = currentMonth;
+            this.updateAfterSwitchMonth();
+        },
+
+        goToNextMonth() {
+            const nextMonth = DateTime.now().startOf("month").plus({ months: 1 });
+            if (nextMonth.equals(this.currentPlanMonth)) {
+                return;
+            }
+
+            this.currentPlanMonth = nextMonth;
+            this.updateAfterSwitchMonth();
+        },
+
+        updateAfterSwitchMonth() {
+            this.saveCurrentPlanMonthToLocalStorage();
+            this.prepareSundays();
+            this.getTaskPlans();
+        },
+
+        saveCurrentPlanMonthToLocalStorage() {
+            localStorage.setItem(
+                "currentPlanMonth",
+                this.currentPlanMonth.toISO() || DateTime.now().toISO()
+            );
+        },
+
+        prepareSundays() {
+            let sundays: DateTime[] = [];
+            const currentMonth = this.currentPlanMonth;
+            const firstDay = currentMonth.startOf("month");
+            const lastDay = currentMonth.endOf("month");
+
+            for (let i = 0; i < lastDay.day; i++) {
+                const day = firstDay.plus({ days: i });
+                if (day.weekday === 7) {
+                    sundays.push(day);
+                }
+            }
+
+            this.sundays = sundays;
         },
     },
     getters: {
@@ -175,6 +257,20 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
 
                 return acc;
             }, {} as Record<string, TaskPlanFormItem>);
+        },
+        isUserHasEditPermission(): boolean {
+            if (TaskPlanService.isUserHasPermission("planer_admin")) {
+                return true;
+            }
+
+            let hasPermission = false;
+            this.groups.forEach((group: Group) => {
+                if (TaskPlanService.isUserHasPermission(group.permission)) {
+                    hasPermission = true;
+                    return;
+                }
+            });
+            return hasPermission;
         },
     },
 });

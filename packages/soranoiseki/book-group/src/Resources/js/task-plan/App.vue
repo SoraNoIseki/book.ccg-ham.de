@@ -1,6 +1,6 @@
 <template>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-6 overflow-x-hidden">
-        <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg overflow-y-visible mb-8" id="add-member-component">
+        <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg overflow-y-visible mb-8" id="add-member-component" v-if="isUserHasEditPermission">
             <div class="text-main dark:text-gray-100">
                 <div class="px-3 py-2 md:px-4 md:py-4">
                     <div class="relative">
@@ -43,8 +43,11 @@
 import { ref, Ref, onMounted, watch } from 'vue';
 import { useTaskPlanStore } from './stores';
 import { MembersComponent, PlanerComponent, AddMemberComponent } from './components';
+import { TaskPlanService } from './services';
+import { storeToRefs } from 'pinia';
 
 const taskPlanStore = useTaskPlanStore();
+const { isUserHasEditPermission } = storeToRefs(taskPlanStore);
 
 onMounted(async () => {
     taskPlanStore.init();

@@ -57,11 +57,11 @@ Route::middleware('web', 'auth')->group(function () {
         Route::get('/update-holidays', [CalendarController::class, 'updateHolidays'])->name('book-group.calendar.update-holidays');
     });
 
-    Route::group(['prefix' => 'task-plan'], function() {
+    Route::group(['prefix' => 'planer', 'middleware' => 'role.wildcard:planer*'], function() {
         Route::get('/', [TaskPlanController::class, 'index'])->name('book-group.task-plan.index');
     });
 
-    Route::group(['prefix' => 'api/task-plan'], function() {
+    Route::group(['prefix' => 'api/planer', 'middleware' => 'role.wildcard:planer*'], function() {
         Route::get('/members', [TaskPlanApiController::class, 'getMembers'])->name('book-group.task-plan.api.get-members');
         Route::post('/members', [TaskPlanApiController::class, 'createMember'])->name('book-group.task-plan.api.create-member');
         Route::post('/members/delete', [TaskPlanApiController::class, 'deleteMember'])->name('book-group.task-plan.api.delete-member');
@@ -70,8 +70,9 @@ Route::middleware('web', 'auth')->group(function () {
 
         Route::get('/plans', [TaskPlanApiController::class, 'getTaskPlans'])->name('book-group.task-plan.api.index');
         Route::put('/plans', [TaskPlanApiController::class, 'updateTaskPlan'])->name('book-group.task-plan.api.update');
-        Route::get('/plans/text', [TaskPlanApiController::class, 'getTaskPlansText'])->name('book-group.task-plan.api.get-text');
     });
+
+    Route::get('api/planer/plans/text', [TaskPlanApiController::class, 'getTaskPlansText'])->name('book-group.task-plan.api.get-text');
     
 });
 

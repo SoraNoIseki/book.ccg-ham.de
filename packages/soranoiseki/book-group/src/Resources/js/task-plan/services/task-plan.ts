@@ -50,10 +50,10 @@ export class TaskPlanService {
         });
     }
 
-    static getTaskPlans(): Promise<TaskPlan[] | undefined> {
+    static getTaskPlans(year: string, month: string, signal: AbortSignal): Promise<TaskPlan[] | undefined> {
         const url = routes.plan.index;
         return new Promise((resolve, reject) => {
-            ApiClient.get<TaskPlan[]>(url, {})
+            ApiClient.get<TaskPlan[]>(url, { year, month }, signal)
                 .then((result) => resolve(result))
                 .catch((error) => reject(error));
         });
@@ -98,6 +98,10 @@ export class TaskPlanService {
                 notAllowedGroups.push(group);
             }
         });
+
+        if (notAllowedGroups.length === 0) {
+            return true;
+        }
 
         return notAllowedGroups;
     }

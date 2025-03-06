@@ -4,7 +4,7 @@ return [
     [
         "group" => "礼拜组",
         "color" => "#CD5C5C",
-        "permission" => "planer_worship",
+        "permission" => "planer_write_worship",
         "roles" => [
             [
                 "role" => "主题",
@@ -59,7 +59,7 @@ return [
     [
         "group" => "教育组",
         "color" => "#008000",
-        "permission" => "planer_education",
+        "permission" => "planer_write_education",
         "roles" => [
             [
                 "role" => "少年班",
@@ -84,7 +84,7 @@ return [
     [
         "group" => "图书组",
         "color" => "#BA55D3",
-        "permission" => "planer_book",
+        "permission" => "planer_write_book",
         "roles" => [
             [
                 "role" => "PPT制作播放",
@@ -97,7 +97,7 @@ return [
     [
         "group" => "服务组",
         "color" => "#4682B4",
-        "permission" => "planer_service",
+        "permission" => "planer_write_service",
         "roles" => [
             [
                 "role" => "餐前准备",
@@ -122,7 +122,7 @@ return [
     [
         "group" => "管堂组",
         "color" => "#A0522D",
-        "permission" => "planer_management",
+        "permission" => "planer_write_management",
         "roles" => [
             [
                 "role" => "管堂组",

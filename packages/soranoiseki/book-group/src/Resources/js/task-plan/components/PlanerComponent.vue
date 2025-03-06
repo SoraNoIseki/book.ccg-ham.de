@@ -6,7 +6,26 @@
 
         <GroupFilterComponent class="my-4" />
 
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-fixed rounded-md overflow-hidden">
+        <div class="inline-flex rounded-md shadow-xs mb-4" role="group">
+            <button type="button" @click="taskPlanStore.prevPlanMonth"
+                class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 border border-gray-200 rounded-s-lg focus:z-10 focus:ring-0 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+                上一月
+            </button>
+            <button type="button" @click="taskPlanStore.backToCurrentMonth"
+                class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 border-t border-b border-r border-gray-200 focus:z-10 focus:ring-0 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+                回到 {{ taskPlanStore.now.toFormat('M') }} 月
+            </button>
+            <button type="button" @click="taskPlanStore.goToNextMonth"
+                class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 border-t border-b border-gray-200 focus:z-10 focus:ring-0 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+                {{ taskPlanStore.now.plus({ months: 1 }).toFormat('M') }} 月
+            </button>
+            <button type="button" @click="taskPlanStore.nextPlanMonth"
+                class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 border border-gray-200 rounded-e-lg focus:z-10 focus:ring-0 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+                下一月
+            </button>
+        </div>
+
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-fixed rounded-md">
             <thead class="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr class="bg-primary-200 border-b dark:border-gray-700 border-gray-200">
                     <th scope="col" class="w-36 h-12"></th>
@@ -31,7 +50,7 @@
                                             v-model="planForm[role.role]['week' + (index + 1).toString()]"
                                             :options="selectItemsByRole(role.role)" :max="role.max"
                                             :disabled="!isUserHasPermission(group.permission)"
-                                            @change="onChangeMembers($event, role.role, date)">
+                                            @select="onChangeMembers($event, role.role, date, group.permission)">
                                         </UiMultiSelect>
 
                                         <div v-if="role.type === 'input'" class="flex items-center justify-center h-full w-full">
@@ -39,7 +58,7 @@
                                                 :placeholder="role.placeholder ?? '请输入'"
                                                 :disabled="!isUserHasPermission(group.permission)"
                                                 @change="onInput($event, role.role, date)"
-                                                class="block p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></textarea>
+                                                class="block p-2.5 w-full min-w-[160px] text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></textarea>
                                         </div>
                                     </div>
                                 </td>
@@ -63,22 +82,11 @@ import { UiMultiSelect, GroupFilterComponent } from './';
 import { TaskPlanService } from '../services';
 
 
-const sundays = ref<DateTime[]>([]);
-
 const taskPlanStore = useTaskPlanStore();
-const { groups, sortedMembersByRole, planForm, groupFilter } = storeToRefs(taskPlanStore);
-
+const { groups, sortedMembersByRole, planForm, groupFilter, sundays } = storeToRefs(taskPlanStore);
 
 onMounted(async () => {
-    // find all Sundays in the month
-    const now = DateTime.now();
-    const daysInMonth = now.daysInMonth;
-    for (let day = 1; day <= daysInMonth; day++) {
-        const date = DateTime.local(now.year, now.month, day);
-        if (date.weekday === 7) {
-            sundays.value.push(date);
-        }
-    }
+    
 });
 
 const selectItemsByRole = computed(() => {
@@ -89,7 +97,11 @@ const selectItemsByRole = computed(() => {
     };
 });
 
-const onChangeMembers = (value: string[], role: string, date: DateTime) => {
+const onChangeMembers = (value: string[], role: string, date: DateTime, permission: string) => {
+    if (!isUserHasPermission(permission)) {
+        return;
+    }
+
     taskPlanStore.updateTaskPlan(role, value.join('+'), date.toISODate() ?? '');
 };
 

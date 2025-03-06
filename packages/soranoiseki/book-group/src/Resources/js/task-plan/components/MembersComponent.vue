@@ -26,7 +26,7 @@
                 <tr>
                     <th scope="col" class="p-2 bg-primary-400"></th>
                     <template v-for="group in groups">
-                        <th scope="col" :colspan="group.roles.length" class="p-2" v-show="isGroupVisible(group)" :style="`background-color: ${group.color}55;`">
+                        <th scope="col" :colspan="group.roles.filter(role => role.type === 'select').length" class="p-2" v-show="isGroupVisible(group)" :style="`background-color: ${group.color}55;`">
                             {{ group.group }}
                         </th>
                     </template>
@@ -38,7 +38,10 @@
                     </th>
                     <template v-for="group in groups">
                         <template v-for="role in group.roles">
-                            <th scope="col" class="p-2" v-show="isGroupVisible(group)" :style="`background-color: ${group.color}55;`">
+                            <th scope="col" class="p-2" 
+                                v-if="role.type === 'select'"
+                                v-show="isGroupVisible(group)" 
+                                :style="`background-color: ${group.color}55;`">
                                 {{ role.name }}
                             </th>
                         </template>
@@ -55,7 +58,9 @@
 
                     <template v-for="group in groups">
                         <template v-for="role in group.roles">
-                            <td class="p-2 font-bold text-lg relative" :style="`background-color: ${group.color}55; color: ${group.color};`"
+                            <td v-if="role.type === 'select'"
+                                class="p-2 font-bold text-lg relative" 
+                                :style="`background-color: ${group.color}55; color: ${group.color};`"
                                 :class="[ isUserHasPermission(group.permission) ? 'cursor-pointer' : 'cursor-not-allowed' ]"
                                 v-show="isGroupVisible(group)"
                                 @click="toggleRole(member, role.role, group.permission)">
@@ -86,7 +91,7 @@
                     </template>
 
                     <td class="p-2 bg-red-500 text-white">
-                        <button type="button" @click="onDeleteMember(member)"
+                        <button type="button" @click="onDeleteMember(member)" :disabled="!isUserHasEditPermission"
                             class="block text-white bg-red-500 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-1.5 py-2.5 w-full text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 disabled:opacity-50 disabled:cursor-not-allowed">
                             删除
                         </button>
@@ -171,7 +176,7 @@ import { GroupFilterComponent } from './';
 import { TaskPlanService } from '../services';
 
 const taskPlanStore = useTaskPlanStore();
-const { groupMembers, groups, groupFilter } = storeToRefs(taskPlanStore);
+const { groupMembers, groups, groupFilter, isUserHasEditPermission } = storeToRefs(taskPlanStore);
 
 const deleteTargetEl: Ref<HTMLElement | null> = ref(null);
 const deleteModal: Ref<Modal | null> = ref(null);
@@ -197,9 +202,9 @@ const onDeleteMember = (member: GroupMember) => {
         return;
     }
 
-    if (Array.isArray(isUserCanDeleteMember)) {
+    if (Array.isArray(isUserCanDeleteMember) && isUserCanDeleteMember.length > 0) {
         const errorGroupNames = [...new Set(isUserCanDeleteMember.map((group: Group) => group.group))];
-        errorMessage.value = `组员 <strong>${member.name}</strong> 无法删除，因为他同时也是 <strong>${errorGroupNames.join('、')}</strong> 的成员。`;
+        errorMessage.value = `组员 <strong>${member.name}</strong> 无法删除，因为他/她同时也是 <strong>${errorGroupNames.join('、')}</strong> 的成员。`;
         if (errorModal.value) {
             errorModal.value.show();
         }
