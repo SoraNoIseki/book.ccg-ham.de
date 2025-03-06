@@ -555,6 +555,79 @@ class TaskPlanApiController extends Controller
         ]);
 
     }
+
+    public function getTaskPlansText(Request $request) {
+        $text = [];
+
+        $date = Carbon::now();
+        if ($request->has('date')) {
+            $date = Carbon::createFromFormat('Y-m-d', $request->date);
+        }
+        $groupId = date('Y_n', $date->timestamp);
+        $weekOfMonth = $date->weekOfMonth;
+       
+        $text[] = $date->format('Y 年 n 月 j 日') . ' 主日服事表';
+        
+        $plans = TopicInfo::raw(function($collection) use ($groupId) {
+            return $collection->findOne(['group_id' => $groupId]);
+        });
+        $text[] = '证道主题：' . $plans->getWeekAttribute($weekOfMonth);
+
+        $plans = PreacherInfo::raw(function($collection) use ($groupId) {
+            return $collection->findOne(['group_id' => $groupId]);
+        });
+        $text[] = '讲员：' . $plans->getWeekAttribute($weekOfMonth);
+
+        $plans = HosterInfo::raw(function($collection) use ($groupId) {
+            return $collection->findOne(['group_id' => $groupId]);
+        });
+        $text[] = '司会：' . implode('、', explode('+', $plans->getWeekAttribute($weekOfMonth)));
+
+        $plans = PianoInfo::raw(function($collection) use ($groupId) {
+            return $collection->findOne(['group_id' => $groupId]);
+        });
+        $text[] = '司琴：' . implode('、', explode('+', $plans->getWeekAttribute($weekOfMonth)));
+
+        $plans = SongLeaderInfo::raw(function($collection) use ($groupId) {
+            return $collection->findOne(['group_id' => $groupId]);
+        });
+        $text[] = '领唱小组：' . implode('、', explode('+', $plans->getWeekAttribute($weekOfMonth)));
+
+        $plans = MainActionerInfo::raw(function($collection) use ($groupId) {
+            return $collection->findOne(['group_id' => $groupId]);
+        });
+        $text[] = '主领执事：' . implode('、', explode('+', $plans->getWeekAttribute($weekOfMonth)));
+
+        $plans = TeenageInfo::raw(function($collection) use ($groupId) {
+            return $collection->findOne(['group_id' => $groupId]);
+        });
+        $text[] = '少年主日学：' . implode('、', explode('+', $plans->getWeekAttribute($weekOfMonth)));
+
+        $plans = KidInfo::raw(function($collection) use ($groupId) {
+            return $collection->findOne(['group_id' => $groupId]);
+        });
+        $text[] = '少儿主日学：' . implode('、', explode('+', $plans->getWeekAttribute($weekOfMonth)));
+
+        $plans = BabyInfo::raw(function($collection) use ($groupId) {
+            return $collection->findOne(['group_id' => $groupId]);
+        });
+        $text[] = '幼儿主日学：' . implode('、', explode('+', $plans->getWeekAttribute($weekOfMonth)));
+
+        $plans = PptInfo::raw(function($collection) use ($groupId) {
+            return $collection->findOne(['group_id' => $groupId]);
+        });
+        $text[] = 'PPT制作播放：' . implode('、', explode('+', $plans->getWeekAttribute($weekOfMonth)));
+
+        $plans = InstrumentOperatorInfo::raw(function($collection) use ($groupId) {
+            return $collection->findOne(['group_id' => $groupId]);
+        });
+        $text[] = '音响：' . implode('、', explode('+', $plans->getWeekAttribute($weekOfMonth)));
+
+        $text = implode("\n", $text);
+        return $this->respondSuccess([
+            'text' => $text,
+        ]);
+    }
    
 
 }

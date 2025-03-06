@@ -11,6 +11,7 @@
 
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
+            <button type="button" class="get-task-plans text-sm w-64 px-3 py-2.5 mb-3 bg-blue-100 rounded-md font-semibold border border-gray-300" data-date="{{ $date }}" data-target="worker1" data-url="{{ route('book-group.task-plan.api.get-text', ['date' => $date]) }}">加载 {{ $date }} 主日服事表</button>
             <textarea rows="12" name="worker[item1]" id="worker1" placeholder="服事列表（本周）"
                 class="required w-full resize-none rounded-md border border-gray-200 bg-white dark:bg-gray-900 py-3 px-6 text-base font-medium text-main dark:text-light outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['worker']['item1']){{ $content['worker']['item1'] }}@endisset</textarea>
         </div>
@@ -48,6 +49,7 @@
 
     <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="col-span-3">
+            <button type="button" class="get-task-plans text-sm w-64 px-3 py-2.5 mb-3 bg-blue-100 rounded-md font-semibold border border-gray-300" data-date="{{ $nextWeek }}" data-target="worker2" data-url="{{ route('book-group.task-plan.api.get-text', ['date' => $nextWeek]) }}">加载 {{ $nextWeek }} 主日服事表</button>
             <textarea rows="12" name="worker[item2]" id="worker2" placeholder="服事列表（下周）"
                 class="required w-full resize-none rounded-md border border-gray-200 bg-white dark:bg-gray-900 py-3 px-6 text-base font-medium text-main dark:text-light outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md">@isset($content['worker']['item2']){{ $content['worker']['item2'] }}@endisset</textarea>
         </div>
