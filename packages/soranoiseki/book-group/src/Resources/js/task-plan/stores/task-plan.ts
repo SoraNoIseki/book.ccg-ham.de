@@ -176,5 +176,19 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
                 return acc;
             }, {} as Record<string, TaskPlanFormItem>);
         },
+        isUserHasEditPermission(): boolean {
+            if (TaskPlanService.isUserHasPermission('planer_admin')) {
+                return true;
+            }
+        
+            let hasPermission = false;
+            this.groups.forEach((group: Group) => {
+                if (TaskPlanService.isUserHasPermission(group.permission)) {
+                    hasPermission = true;
+                    return;
+                }
+            });
+            return hasPermission;
+        }
     },
 });

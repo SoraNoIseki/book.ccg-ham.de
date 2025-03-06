@@ -99,6 +99,10 @@ export class TaskPlanService {
             }
         });
 
+        if (notAllowedGroups.length === 0) {
+            return true;
+        }
+
         return notAllowedGroups;
     }
 }

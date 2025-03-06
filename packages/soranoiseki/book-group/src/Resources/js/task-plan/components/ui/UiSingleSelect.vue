@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-row items-center min-w-[180px] w-full">
+    <div class="flex flex-row items-center min-w-[160px] w-full">
         <Multiselect :options="options" mode="single" :close-on-select="true" :create-option="false" :can-deselect="false"
             :placeholder=placeholder noResultsText="找不到选型" noOptionsText="没有选项"
             :searchable="searchable" :groups="groups" v-model="selectedValues" class="w-full" :classes="{

@@ -57,4 +57,11 @@ class User extends Authenticatable
     {
         return $this->roles()->where('internal_name', $roleInternalName)->exists();
     }
+
+    public function matchRoles($rolePattern)
+    {
+        return $this->roles->contains(function ($role) use ($rolePattern) {
+            return fnmatch($rolePattern, $role->internal_name);
+        });
+    }
 }

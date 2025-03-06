@@ -55,6 +55,7 @@ import { ref, Ref, onMounted, computed } from 'vue';
 import { useTaskPlanStore } from '../stores';
 import { storeToRefs } from 'pinia';
 import { UiSingleSelect } from '.';
+import { TaskPlanService } from '../services';
 
 const taskPlanStore = useTaskPlanStore();
 const { groups, groupMembers } = storeToRefs(taskPlanStore);
@@ -65,23 +66,25 @@ onMounted(async () => {
 
 const roles: Ref<SelectOptionGroup[]> = computed(() => {
     return groups.value.reduce((acc: SelectOptionGroup[], group: Group) => {
-        group.roles.forEach((role: GroupRole) => {
-            const groupIndex = acc.findIndex((g: SelectOptionGroup) => g.label === group.group);
-            if (groupIndex === -1) {
-                acc.push({
-                    label: group.group,
-                    options: [{
+        if (TaskPlanService.isUserHasPermission('planer_admin') || TaskPlanService.isUserHasPermission(group.permission)) {
+            group.roles.forEach((role: GroupRole) => {
+                const groupIndex = acc.findIndex((g: SelectOptionGroup) => g.label === group.group);
+                if (groupIndex === -1) {
+                    acc.push({
+                        label: group.group,
+                        options: [{
+                            value: role.role,
+                            label: role.name,
+                        }],
+                    });
+                } else {
+                    acc[groupIndex].options.push({
                         value: role.role,
                         label: role.name,
-                    }],
-                });
-            } else {
-                acc[groupIndex].options.push({
-                    value: role.role,
-                    label: role.name,
-                });
-            }
-        });
+                    });
+                }
+            });
+        }
         return acc;
     }, []);
 });

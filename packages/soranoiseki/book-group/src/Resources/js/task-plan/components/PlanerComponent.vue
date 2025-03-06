@@ -6,7 +6,7 @@
 
         <GroupFilterComponent class="my-4" />
 
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-fixed rounded-md overflow-hidden">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-fixed rounded-md">
             <thead class="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr class="bg-primary-200 border-b dark:border-gray-700 border-gray-200">
                     <th scope="col" class="w-36 h-12"></th>
@@ -31,7 +31,7 @@
                                             v-model="planForm[role.role]['week' + (index + 1).toString()]"
                                             :options="selectItemsByRole(role.role)" :max="role.max"
                                             :disabled="!isUserHasPermission(group.permission)"
-                                            @change="onChangeMembers($event, role.role, date)">
+                                            @change="onChangeMembers($event, role.role, date, group.permission)">
                                         </UiMultiSelect>
 
                                         <div v-if="role.type === 'input'" class="flex items-center justify-center h-full w-full">
@@ -39,7 +39,7 @@
                                                 :placeholder="role.placeholder ?? '请输入'"
                                                 :disabled="!isUserHasPermission(group.permission)"
                                                 @change="onInput($event, role.role, date)"
-                                                class="block p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></textarea>
+                                                class="block p-2.5 w-full min-w-[160px] text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></textarea>
                                         </div>
                                     </div>
                                 </td>
@@ -89,7 +89,11 @@ const selectItemsByRole = computed(() => {
     };
 });
 
-const onChangeMembers = (value: string[], role: string, date: DateTime) => {
+const onChangeMembers = (value: string[], role: string, date: DateTime, permission: string) => {
+    if (!isUserHasPermission(permission)) {
+        return;
+    }
+
     taskPlanStore.updateTaskPlan(role, value.join('+'), date.toISODate() ?? '');
 };
 
