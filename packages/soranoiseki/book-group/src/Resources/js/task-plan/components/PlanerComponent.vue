@@ -64,10 +64,8 @@ import { TaskPlanService } from '../services';
 
 
 const sundays = ref<DateTime[]>([]);
-
 const taskPlanStore = useTaskPlanStore();
 const { groups, sortedMembersByRole, planForm, groupFilter } = storeToRefs(taskPlanStore);
-
 
 onMounted(async () => {
     // find all Sundays in the month
