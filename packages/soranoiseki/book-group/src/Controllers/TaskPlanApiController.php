@@ -566,7 +566,7 @@ class TaskPlanApiController extends Controller
         $groupId = date('Y_n', $date->timestamp);
         $weekOfMonth = $date->weekOfMonth;
        
-        $text[] = $date->format('Y 年 n 月 j 日') . ' 主日服事表';
+        $text[] = $date->format('Y 年 n 月 j 日') . '主日服事表';
         
         $plans = TopicInfo::raw(function($collection) use ($groupId) {
             return $collection->findOne(['group_id' => $groupId]);

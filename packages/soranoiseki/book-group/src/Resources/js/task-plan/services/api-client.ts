@@ -1,7 +1,11 @@
 import axios from "./http-commons";
-import { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
+import { AxiosResponse, AxiosError, AxiosRequestConfig, GenericAbortSignal } from "axios";
 
 const handleAxiosError = (error: unknown) => {
+    if ((error as AxiosError).name === "CanceledError") {
+        return;
+    }
+    
     console.error(error);
 
     if ((error as AxiosError).response) {
@@ -60,12 +64,11 @@ const filterParams = (params: Object): Object => {
 };
 
 const ApiClient = {
-    async get<T>(endpoint: string, params: Object): Promise<T | undefined> {
+    async get<T>(endpoint: string, params: Object, signal: GenericAbortSignal | undefined = undefined): Promise<T | undefined> {
         const filteredParams = filterParams(params);
-
         return new Promise<T | undefined>((resolve, reject) => {
             axios
-                .get<ApiResponse<T>>(endpoint, { params: filteredParams })
+                .get<ApiResponse<T>>(endpoint, { params: filteredParams, signal: signal })
                 .then((response) => {
                     if (response.data.success) {
                         resolve(response.data.data);
