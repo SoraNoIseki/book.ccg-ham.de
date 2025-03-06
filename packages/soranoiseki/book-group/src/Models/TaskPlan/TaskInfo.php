@@ -7,7 +7,7 @@ use MongoDB\Laravel\Eloquent\Model;
 class TaskInfo extends Model
 {
     protected $connection = 'mongodb-task';
-    
+
     protected $fillable = [
         '1st_week',
         '2nd_week',
@@ -55,6 +55,24 @@ class TaskInfo extends Model
             4 => $this->attributes['4th_week'] = $value,
             5 => $this->attributes['5th_week'] = $value,
         };
+    }
+
+    public function getWeekAttribute(int $weekOfMonth)
+    {
+        if ($weekOfMonth < 1 || $weekOfMonth > 5) {
+            return '';
+        }
+
+        $value = '';
+        match ($weekOfMonth) {
+            1 => $value = $this->attributes['1st_week'],
+            2 => $value = $this->attributes['2nd_week'],
+            3 => $value = $this->attributes['3rd_week'],
+            4 => $value = $this->attributes['4th_week'],
+            5 => $value = $this->attributes['5th_week'],
+        };
+
+        return $value;
     }
 
     public function initWeekAttributes()

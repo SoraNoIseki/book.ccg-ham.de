@@ -33,4 +33,17 @@ $(document).ready(function() {
             $(target).val(lines.join('\n'));
         }
     });
+
+    $('.get-task-plans').click(function() {
+        var target = $(this).data('target');
+        var url = $(this).data('url');
+        console.log(url);
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                $('#' + target).html(response.data.text);
+            }
+        });
+    });
 });

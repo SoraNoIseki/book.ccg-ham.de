@@ -71,6 +71,7 @@ class PowerpointController extends Controller
 
         return view('book-group::powerpoint.index', [
             'date' => $date,
+            'nextWeek' => Carbon::parse($date)->addWeek()->format('Y-m-d'),
             'defaultDate' => $defaultDate,
             'content' => $content,
             'versions' => $versions,
