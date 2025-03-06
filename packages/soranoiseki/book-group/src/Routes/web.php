@@ -72,7 +72,7 @@ Route::middleware('web', 'auth')->group(function () {
         Route::put('/plans', [TaskPlanApiController::class, 'updateTaskPlan'])->name('book-group.task-plan.api.update');
     });
 
-    Route::get('/plans/text', [TaskPlanApiController::class, 'getTaskPlansText'])->name('book-group.task-plan.api.get-text');
+    Route::get('api/planer/plans/text', [TaskPlanApiController::class, 'getTaskPlansText'])->name('book-group.task-plan.api.get-text');
     
 });
 
