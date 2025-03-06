@@ -8,4 +8,9 @@
     <div class="sm:py-12">
         <div id="app-task-plan"></div>
     </div>
+
+    <script>
+         window.roles = @json($roles);
+    </script>
+
 </x-app-layout>

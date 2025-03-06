@@ -2,7 +2,7 @@
     <div class="space-y-4">
         <div v-for="user in users" :key="user.id" class="p-4 bg-gray-100 rounded-lg">
             <div class="font-bold text-lg">{{ user.name }}</div>
-            <div class="mt-2 flex flex-wrap gap-4">
+            <div class="mt-2 grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                 <template v-for="role in roles" :key="role">
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="checkbox" value="" class="sr-only peer" :checked="isToggled(user, role.id)" @click="toggleRole(user.id, role.id)" >

@@ -6,12 +6,12 @@
 
         <p class="my-4 text-gray-700 dark:text-gray-400 font-semibold text-sm">
             请仔细检查组员名字，确保名字正确无误。已添加的组员名字将会作为选项显示在计划表中。<br>
-            管理组员请前往<a href="#members-component" class="text-blue-600 hover:underline px-0.5">组员管理</a>模块。
+            管理组员请前往<span  @click="scrollToId('members-component')" class="text-primary-600 hover:underline px-0.5 cursor-pointer">组员管理</span>模块。
         </p>
 
         <div class="flex items-center mb-4 bg-white dark:bg-gray-700 dark:text-gray-400 gap-x-4">
             <div class="">
-                <input type="text" v-model="toAddMember" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <input type="text" v-model="toAddMember" placeholder="请输入名字" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
             </div>
 
             <UiSingleSelect placeholder="无称谓"
@@ -31,14 +31,19 @@
             </UiSingleSelect>
 
             <button type="button" @click="onAddMember" :disabled="!enableAddButton"
-                class="text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-700 dark:hover:bg-blue-800 dark:focus:ring-blue-800 disabled:opacity-50 disabled:cursor-not-allowed">
+                class="text-white bg-primary-600 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-700 dark:hover:bg-primary-800 dark:focus:ring-primary-800 disabled:opacity-50 disabled:cursor-not-allowed">
                 添加组员
             </button>
         </div>
         <div>
             <p class="my-4 text-gray-700 dark:text-gray-400 font-semibold" v-if="previewMemberName">
                 <span v-if="nameValid">预览：{{ previewMemberName }}</span>
-                <span v-else class="text-red-700">错误：{{ previewMemberName }}</span>
+                <span v-else class="text-red-700">
+                    <span>错误：{{ previewMemberName }}</span>
+                    <span v-if="redirectToMember !== ''" @click="scrollToId(redirectToMember)">
+                        立即前往<span class="text-primary-600 hover:underline px-0.5 cursor-pointer">组员编辑</span>模块
+                    </span>
+                </span>
             </p>
         </div>
     </div>
@@ -100,7 +105,6 @@ const onAddMember = () => {
     if (!enableAddButton.value) {
         return;
     }
-    console.log(previewMemberName.value, toAddRole.value);
     taskPlanStore.addMember(previewMemberName.value, toAddRole.value);
 
     toAddMember.value = "";
@@ -116,6 +120,7 @@ const previewMemberName = computed(() => {
     return buildMemberName();
 });
 const nameValid = ref<boolean>(true);
+const redirectToMember = ref<string>('');
 
 const buildMemberName = () => {
     let memberName = toAddMember.value.trim();
@@ -172,11 +177,20 @@ const buildMemberName = () => {
 
     if (groupMembers.value.find((member: GroupMember) => member.name === memberName)) {
         nameValid.value = false;
-        return `名字 ${memberName} 已存在`;
+        redirectToMember.value = memberName;
+        return `名字 ${memberName} 已存在。`;
     }
 
     nameValid.value = true;
+    redirectToMember.value = '';
     return memberName;
+};
+
+const scrollToId = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 };
 
 </script>

@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-row items-center min-w-[180px] w-full">
-        <Multiselect :options="options" mode="single" :close-on-select="true" :create-option="false"
-            :placeholder=placeholder noResultsText="Keine Ergebnisse gefunden" noOptionsText="Keine Optionen verfügbar"
+        <Multiselect :options="options" mode="single" :close-on-select="true" :create-option="false" :can-deselect="false"
+            :placeholder=placeholder noResultsText="找不到选型" noOptionsText="没有选项"
             :searchable="searchable" :groups="groups" v-model="selectedValues" class="w-full" :classes="{
                 containerActive: '',
                 search: 'multiselect-search cursor-pointer focus-within:ring-2 focus-within:ring-blue-600',
@@ -44,7 +44,7 @@ const props = defineProps({
     placeholder: {
         type: String,
         required: false,
-        default: 'Bitte wählen...',
+        default: '请选择',
     },
     options: {
         type: Array as PropType<SelectOption[] | SelectOptionGroup[]>,

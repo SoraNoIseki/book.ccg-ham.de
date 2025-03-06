@@ -15,6 +15,7 @@ class Role extends Model
      * @var string[]
      */
     protected $fillable = [
+        'internal_name',
         'name',
     ];
 
