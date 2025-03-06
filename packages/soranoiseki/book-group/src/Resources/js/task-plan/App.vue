@@ -41,7 +41,6 @@
 <script setup lang="ts">
 
 import { ref, Ref, onMounted, watch } from 'vue';
-import { LoadingIcon, ChevronDownIcon } from '../icons';
 import { useTaskPlanStore } from './stores';
 import { MembersComponent, PlanerComponent, AddMemberComponent } from './components';
 

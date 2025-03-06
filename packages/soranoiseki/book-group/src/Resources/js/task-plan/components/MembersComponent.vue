@@ -55,11 +55,12 @@
 
                     <template v-for="group in groups">
                         <template v-for="role in group.roles">
-                            <td class="p-2 font-bold text-lg cursor-pointer relative" :style="`background-color: ${group.color}55; color: ${group.color};`"
+                            <td class="p-2 font-bold text-lg relative" :style="`background-color: ${group.color}55; color: ${group.color};`"
+                                :class="[ isUserHasPermission(group.permission) ? 'cursor-pointer' : 'cursor-not-allowed' ]"
                                 v-show="isGroupVisible(group)"
-                                @click="toggleRole(member, role.role)">
+                                @click="toggleRole(member, role.role, group.permission)">
                                 <div class="h-full w-full flex items-center justify-center"
-                                    @mouseenter="showTooltip(member.name + role.role)"
+                                    @mouseenter="showTooltip(member.name + role.role, group.color)"
                                     @mouseleave="hideTooltip(member.name + role.role)">
                                     <i v-if="isMemberInGroup(member, role.role)"
                                         class="w-6 h-6 fill-current">
@@ -76,8 +77,8 @@
                                     </i>
                                 </div>
 
-                                <div :id="'tooltip-member-role' + member.name + role.role"
-                                    class="absolute min-w-[120px] -translate-x-1/2 left-1/2 -top-4 text-center z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                                <div :id="'tooltip-member-role' + member.name + role.role" :style="`background-color: ${tooltipBgColor ?? '#333'};`"
+                                    class="absolute min-w-[120px] -translate-x-1/2 left-1/2 -top-5 text-center z-10 invisible inline-block px-3 py-2 text-xs font-medium text-white rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
                                     <span v-html="role.name"></span>
                                 </div>
                             </td>
@@ -85,7 +86,7 @@
                     </template>
 
                     <td class="p-2 bg-red-500 text-white">
-                        <button type="button" @click="deleteMember(member.name)"
+                        <button type="button" @click="onDeleteMember(member)"
                             class="block text-white bg-red-500 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-1.5 py-2.5 w-full text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800 disabled:opacity-50 disabled:cursor-not-allowed">
                             删除
                         </button>
@@ -100,7 +101,7 @@
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
-                <button type="button" @click="closeModal"
+                <button type="button" @click="closeDeleteModal"
                     class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
                     <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                         viewBox="0 0 14 14">
@@ -119,15 +120,45 @@
                         即将删除：<strong>{{ toDelete }}</strong>，删除后无法撤销操作，是否要进行删除？
                     </h3>
                     <button type="button" @click="confirmDelete"
-                        class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center w-full">
+                        class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-base px-5 py-2.5 text-center w-full mb-4">
                         删除
                     </button>
-                    <button type="button" @click="closeModal"
-                        class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">取消</button>
+                    <button type="button" @click="closeDeleteModal"
+                        class="w-full px-5 py-2.5 mb-4 text-base font-medium text-gray-900 focus:outline-none bg-gray-100 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">取消</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <div id="delete-error-popup-modal" tabindex="-1"
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-md max-h-full">
+            <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
+                <button type="button" @click="closeErrorModal"
+                    class="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                    </svg>
+                    <span class="sr-only">关闭</span>
+                </button>
+                <div class="p-4 md:p-5 text-center">
+                    <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    <h3 class="mb-5 text-lg font-normal text-gray-700 dark:text-gray-400">
+                        <span v-html="errorMessage"></span>
+                    </h3>
+                    <button type="button" @click="closeErrorModal"
+                        class="w-full px-5 py-2.5 mb-4 text-base font-medium text-gray-900 focus:outline-none bg-gray-100 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </template>
 
 <script setup lang="ts">
@@ -137,38 +168,67 @@ import { useTaskPlanStore } from '../stores';
 import { storeToRefs } from 'pinia';
 import { Modal } from 'flowbite';
 import { GroupFilterComponent } from './';
+import { TaskPlanService } from '../services';
 
 const taskPlanStore = useTaskPlanStore();
 const { groupMembers, groups, groupFilter } = storeToRefs(taskPlanStore);
 
-const targetEl: Ref<HTMLElement | null> = ref(null);
-const modal: Ref<Modal | null> = ref(null);
+const deleteTargetEl: Ref<HTMLElement | null> = ref(null);
+const deleteModal: Ref<Modal | null> = ref(null);
+const errorTargetEl: Ref<HTMLElement | null> = ref(null);
+const errorModal: Ref<Modal | null> = ref(null);
+const errorMessage = ref<string>('');
+
 const search = ref<string>("");
+const tooltipBgColor = ref<string>("");
 
 onMounted(async () => {
-    targetEl.value = document.getElementById('delete-popup-modal');
-    modal.value = new Modal(targetEl.value);
+    deleteTargetEl.value = document.getElementById('delete-popup-modal');
+    deleteModal.value = new Modal(deleteTargetEl.value);
+    errorTargetEl.value = document.getElementById('delete-error-popup-modal');
+    errorModal.value = new Modal(errorTargetEl.value);
 });
 
-const toDelete = ref<string>("");
-const deleteMember = (name: string) => {
-    toDelete.value = name;
-    if (modal.value) {
-        modal.value.show();
+const toDelete = ref<string>('');
+const onDeleteMember = (member: GroupMember) => {
+    const isUserCanDeleteMember = TaskPlanService.isUserCanDeleteMember(member, groups.value);
+
+    if (!isUserCanDeleteMember) {
+        return;
+    }
+
+    if (Array.isArray(isUserCanDeleteMember)) {
+        const errorGroupNames = [...new Set(isUserCanDeleteMember.map((group: Group) => group.group))];
+        errorMessage.value = `组员 <strong>${member.name}</strong> 无法删除，因为他同时也是 <strong>${errorGroupNames.join('、')}</strong> 的成员。`;
+        if (errorModal.value) {
+            errorModal.value.show();
+        }
+        return;
+    }
+
+    toDelete.value = member.name;
+    if (deleteModal.value) {
+        deleteModal.value.show();
     }
 };
 
 const confirmDelete = () => {
     taskPlanStore.deleteMember(toDelete.value);
-    if (modal.value) {
-        modal.value.hide();
+    if (deleteModal.value) {
+        deleteModal.value.hide();
     }
 };
 
-const closeModal = () => {
+const closeDeleteModal = () => {
     toDelete.value = "";
-    if (modal.value) {
-        modal.value.hide();
+    if (deleteModal.value) {
+        deleteModal.value.hide();
+    }
+};
+
+const closeErrorModal = () => {
+    if (errorModal.value) {
+        errorModal.value.hide();
     }
 };
 
@@ -176,17 +236,23 @@ const isMemberInGroup = (member: GroupMember, groupRole: string) => {
     return member.roles.some((role: string) => role === groupRole);
 };
 
-const toggleRole = (member: GroupMember, role: string) => {
+const toggleRole = (member: GroupMember, role: string, groupPermission: string) => {
+    if (!isUserHasPermission(groupPermission)) {
+        return;
+    }
+
     if (member.roles.length === 1 && member.roles[0] === role) {
         console.log('Each member must have at least one role');
         return;
     }
+
     taskPlanStore.toggleMemberRole(member.name, role);
 };
 
-const showTooltip = (id: string) => {
+const showTooltip = (id: string, color: string) => {
     const tooltip = document.getElementById('tooltip-member-role' + id);
     if (tooltip) {
+        tooltipBgColor.value = color;
         tooltip.classList.remove('invisible', 'opacity-0');
         tooltip.classList.add('visible', 'opacity-100');
     }
@@ -215,5 +281,8 @@ const isMemberShown = (member: GroupMember) => {
     return member.name.toLowerCase().includes(search.value.toLowerCase());
 };
 
+const isUserHasPermission = (permission: string) => {
+    return TaskPlanService.isUserHasPermission(permission);
+};
 
 </script>

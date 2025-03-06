@@ -26,11 +26,21 @@
                             <template v-for="(date, index) in sundays">
                                 <td class="p-2 font-bold text-lg cursor-pointer relative w-1/{{ sundays.length }}">
                                     <div class="h-full w-full flex items-center justify-center">
-                                        <UiMultiSelect placeholder="请选择"
+                                        <UiMultiSelect v-if="role.type === 'select'"
+                                            :placeholder="role.placeholder ?? '请选择'"
                                             v-model="planForm[role.role]['week' + (index + 1).toString()]"
-                                            :options="selectItemsByRole(role.role)"
-                                            @change="onChange($event, role.role, date, index)">
+                                            :options="selectItemsByRole(role.role)" :max="role.max"
+                                            :disabled="!isUserHasPermission(group.permission)"
+                                            @change="onChangeMembers($event, role.role, date)">
                                         </UiMultiSelect>
+
+                                        <div v-if="role.type === 'input'" class="flex items-center justify-center h-full w-full">
+                                            <textarea rows="3" v-model="planForm[role.role]['week' + (index + 1).toString()]"
+                                                :placeholder="role.placeholder ?? '请输入'"
+                                                :disabled="!isUserHasPermission(group.permission)"
+                                                @change="onInput($event, role.role, date)"
+                                                class="block p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></textarea>
+                                        </div>
                                     </div>
                                 </td>
                             </template>
@@ -46,12 +56,11 @@
 <script setup lang="ts">
 
 import { ref, Ref, onMounted, computed } from 'vue';
-import { LoadingIcon, ChevronDownIcon } from '../../icons';
 import { useTaskPlanStore } from '../stores';
 import { storeToRefs } from 'pinia';
 import { DateTime } from 'luxon';
-import { UiMultiSelect } from './';
-import { GroupFilterComponent } from './';
+import { UiMultiSelect, GroupFilterComponent } from './';
+import { TaskPlanService } from '../services';
 
 
 const sundays = ref<DateTime[]>([]);
@@ -80,12 +89,21 @@ const selectItemsByRole = computed(() => {
     };
 });
 
-const onChange = (value: string[], role: string, date: DateTime, index: number) => {
+const onChangeMembers = (value: string[], role: string, date: DateTime) => {
     taskPlanStore.updateTaskPlan(role, value.join('+'), date.toISODate() ?? '');
+};
+
+const onInput = (event: Event, role: string, date: DateTime) => {
+    const target = event.target as HTMLTextAreaElement;
+    taskPlanStore.updateTaskPlan(role, target.value.trim(), date.toISODate() ?? '');
 };
 
 const isGroupVisible = (group: Group) => {
     return groupFilter.value.find((filter: GroupFilterItem) => filter.name === group.group)?.enabled ?? true;
+};
+
+const isUserHasPermission = (permission: string) => {
+    return TaskPlanService.isUserHasPermission(permission);
 };
 
 </script>

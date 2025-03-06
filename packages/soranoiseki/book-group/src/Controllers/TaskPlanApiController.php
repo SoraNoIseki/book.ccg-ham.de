@@ -194,20 +194,17 @@ class TaskPlanApiController extends Controller
 
         $taskPlans = [];
 
-        $plans = TopicInfo::raw(function($collection) use ($groupId) {
-            return $collection->findOne(['group_id' => $groupId]);
-        });
-        $taskPlans[] = [
-            'role' => '主题',
-            'plans' => $plans ? new TaskInfoResource($plans) : null,
-        ];
-
         $groups = config('book.groups', []);
         foreach ($groups as $group) {
             foreach ($group['roles'] as $role) {
 
                 $plans = null;
                 switch ($role['role']) {
+                    case '主题':
+                        $plans = TopicInfo::raw(function($collection) use ($groupId) {
+                            return $collection->findOne(['group_id' => $groupId]);
+                        });
+                        break;
                     case '证道':
                         $plans = PreacherInfo::raw(function($collection) use ($groupId) {
                             return $collection->findOne(['group_id' => $groupId]);
@@ -300,7 +297,7 @@ class TaskPlanApiController extends Controller
     public function updateTaskPlan(UpdateTaskPlanRequest $request) {
         $data = $request->validated();
         $role = $data['role'];
-        $members = $data['members'] ?? '';
+        $value = $data['value'] ?? '';
         $date = Carbon::createFromFormat('Y-m-d', $data['date']);
         $groupId = date('Y_n', $date->timestamp);
         $weekOfMonth = $date->weekOfMonth;
@@ -308,18 +305,33 @@ class TaskPlanApiController extends Controller
         // dd($data, $weekOfMonth);
 
         switch ($role) {
+            case '主题':
+                $plans = TopicInfo::raw(function($collection) use ($groupId) {
+                    return $collection->findOne(['group_id' => $groupId]);
+                });
+                if ($plans) {
+                    $plans->setWeekAttribute($weekOfMonth, $value);
+                    $plans->save();
+                } else {
+                    $plans = new TopicInfo();
+                    $plans->group_id = $groupId;
+                    $plans->initWeekAttributes();
+                    $plans->setWeekAttribute($weekOfMonth, $value);
+                    $plans->save();
+                }
+                break;
             case '证道':
                 $plans = PreacherInfo::raw(function($collection) use ($groupId) {
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new PreacherInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;
@@ -328,13 +340,13 @@ class TaskPlanApiController extends Controller
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new HosterInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;
@@ -343,13 +355,13 @@ class TaskPlanApiController extends Controller
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new PianoInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;
@@ -358,13 +370,13 @@ class TaskPlanApiController extends Controller
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new SongLeaderInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;
@@ -373,13 +385,13 @@ class TaskPlanApiController extends Controller
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new MainActionerInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;
@@ -388,13 +400,13 @@ class TaskPlanApiController extends Controller
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new InstrumentOperatorInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;
@@ -403,13 +415,13 @@ class TaskPlanApiController extends Controller
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new ReceptionInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;
@@ -418,13 +430,13 @@ class TaskPlanApiController extends Controller
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new BabyInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;
@@ -433,13 +445,13 @@ class TaskPlanApiController extends Controller
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new KidInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;
@@ -448,13 +460,13 @@ class TaskPlanApiController extends Controller
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new TeenageInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;
@@ -463,13 +475,13 @@ class TaskPlanApiController extends Controller
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new PptInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;
@@ -478,13 +490,13 @@ class TaskPlanApiController extends Controller
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new CleanupInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;
@@ -493,13 +505,13 @@ class TaskPlanApiController extends Controller
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new BeforeLunchInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;
@@ -508,13 +520,13 @@ class TaskPlanApiController extends Controller
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new CookInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;
@@ -523,13 +535,13 @@ class TaskPlanApiController extends Controller
                     return $collection->findOne(['group_id' => $groupId]);
                 });
                 if ($plans) {
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 } else {
                     $plans = new AfterLunchInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
-                    $plans->setWeekAttribute($weekOfMonth, $members);
+                    $plans->setWeekAttribute($weekOfMonth, $value);
                     $plans->save();
                 }
                 break;

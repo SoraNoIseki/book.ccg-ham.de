@@ -61,14 +61,44 @@ export class TaskPlanService {
 
     static updateTaskPlan(
         role: string,
-        members: string,
+        value: string,
         date: string
     ): Promise<TaskPlan | undefined> {
         const url = routes.plan.update;
         return new Promise((resolve, reject) => {
-            ApiClient.put<TaskPlan>(url, { role, members, date })
+            ApiClient.put<TaskPlan>(url, { role, value, date })
                 .then((result) => resolve(result))
                 .catch((error) => reject(error));
         });
+    }
+
+    static isUserHasPermission (permission: string) {
+        const userRolesJson = (window as any).roles;
+        if (userRolesJson && userRolesJson.length > 0) {
+            const userRoles = JSON.parse(userRolesJson) as UserRole[];
+            return userRoles.filter((role: UserRole) => role.internal_name === permission || role.internal_name === 'planer_admin').length > 0;
+        }
+    
+        return false;
+    };
+
+    static isUserCanDeleteMember(member: GroupMember, groups: Group[]): Group[] | boolean {
+        if (this.isUserHasPermission('planer_admin')) {
+            return true;
+        }
+
+        if (groups.length === 0) {
+            return false;
+        }
+        
+        let notAllowedGroups: Group[] = [];
+        member.roles.forEach((role: string) => {
+            const group = groups.find((group: Group) => group.roles.filter((groupRole: GroupRole) => groupRole.role === role).length > 0);
+            if (group && !this.isUserHasPermission(group.permission)) {
+                notAllowedGroups.push(group);
+            }
+        });
+
+        return notAllowedGroups;
     }
 }

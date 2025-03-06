@@ -23,7 +23,7 @@ class UpdateTaskPlanRequest extends FormRequest
     {
         return [
             'role' => 'string|required',
-            'members' => 'string|nullable',
+            'value' => 'string|nullable',
             'date' => 'string|required',
         ];
     }

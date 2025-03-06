@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, watch } from "vue";
 import { TaskPlanService } from "../services";
+import { json } from "stream/consumers";
 
 export const useTaskPlanStore = defineStore("TaskPlanStore", {
     state: () => ({
@@ -10,6 +11,7 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
         taskPlans: [] as TaskPlan[],
         groupFilter: [] as GroupFilterItem[],
         groupFilterInit: false,
+        roles: [] as UserRole[],
     }),
     actions: {
         init() {
@@ -20,11 +22,14 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
             this.getMembers();
 
             // load from local storage
-            const groupFilter = localStorage.getItem('groupFilter');
+            const groupFilter = localStorage.getItem("groupFilter");
             if (groupFilter) {
                 this.groupFilter = JSON.parse(groupFilter);
                 this.groupFilterInit = true;
             }
+
+            // load user roles from window
+            this.roles = JSON.parse((window as any).roles);
         },
 
         async getMembers() {
@@ -36,7 +41,7 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
         },
 
         async addMember(name: string, role: string) {
-            TaskPlanService.addMember(name, role).then((result) => { 
+            TaskPlanService.addMember(name, role).then((result) => {
                 if (result) {
                     this.names = result;
                 }
@@ -78,27 +83,25 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
             });
         },
 
-        async updateTaskPlan(role: string, members: string, date: string) {
-            TaskPlanService.updateTaskPlan(role, members, date).then(
-                (result) => {
-                    if (result) {
-                        // const role = result.role;
-                        // const plans = result.plans;
-                        // this.taskPlans.find(item => item.role === role)!.plans = plans;
-                    }
+        async updateTaskPlan(role: string, value: string, date: string) {
+            TaskPlanService.updateTaskPlan(role, value, date).then((result) => {
+                if (result) {
+                    // const role = result.role;
+                    // const plans = result.plans;
+                    // this.taskPlans.find(item => item.role === role)!.plans = plans;
                 }
-            );
+            });
         },
-        
+
         initGroupFilter() {
             this.groupFilter = this.groups.map((group) => {
                 return {
                     name: group.group,
                     color: group.color,
                     enabled: true,
-                }
+                };
             });
-        }
+        },
     },
     getters: {
         groupMembers(): GroupMember[] {
@@ -126,21 +129,50 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
         },
         planForm(): Record<string, TaskPlanFormItem> {
             return this.taskPlans.reduce((acc, item) => {
-                acc[item.role] = item.plans
-                    ? {
-                          week1: item.plans.week1.split("+"),
-                          week2: item.plans.week2.split("+"),
-                          week3: item.plans.week3.split("+"),
-                          week4: item.plans.week4.split("+"),
-                          week5: item.plans.week5.split("+"),
-                      }
-                    : {
-                          week1: [],
-                          week2: [],
-                          week3: [],
-                          week4: [],
-                          week5: [],
-                      };
+                const role = item.role;
+                let type = "select";
+                this.groups.forEach((group) => {
+                    group.roles.forEach((groupRole) => {
+                        if (groupRole.role === role) {
+                            type = groupRole.type;
+                        }
+                    });
+                });
+
+                if (type === "select") {
+                    acc[item.role] = item.plans
+                        ? {
+                              week1: item.plans.week1.split("+"),
+                              week2: item.plans.week2.split("+"),
+                              week3: item.plans.week3.split("+"),
+                              week4: item.plans.week4.split("+"),
+                              week5: item.plans.week5.split("+"),
+                          }
+                        : {
+                              week1: [],
+                              week2: [],
+                              week3: [],
+                              week4: [],
+                              week5: [],
+                          };
+                } else {
+                    acc[item.role] = item.plans
+                        ? {
+                              week1: item.plans.week1,
+                              week2: item.plans.week2,
+                              week3: item.plans.week3,
+                              week4: item.plans.week4,
+                              week5: item.plans.week5,
+                          }
+                        : {
+                              week1: "",
+                              week2: "",
+                              week3: "",
+                              week4: "",
+                              week5: "",
+                          };
+                }
+
                 return acc;
             }, {} as Record<string, TaskPlanFormItem>);
         },
