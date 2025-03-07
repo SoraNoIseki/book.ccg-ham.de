@@ -37,7 +37,7 @@
         </div>
         <div>
             <p class="my-4 text-gray-700 dark:text-gray-400 font-semibold" v-if="previewMemberName">
-                <span v-if="nameValid">预览：{{ previewMemberName }}</span>
+                <span v-if="nameValid">预览：名字 <span class="text-green-600">{{ previewMemberName }}</span> 将被添加</span>
                 <span v-else class="text-red-700">
                     <span>错误：{{ previewMemberName }}</span>
                     <span v-if="redirectToMember !== ''" @click="scrollToId(redirectToMember)">
@@ -138,6 +138,7 @@ const possibleMemberNames = ref<string[]>([]);
 
 const buildMemberName = () => {
     let memberName = toAddMember.value.trim();
+    const titleRegex = new RegExp(titles.map((t: SelectOption) => t.value).join('|'), 'g');
     possibleMemberNames.value = [];
 
     if (memberName === '') {
@@ -160,13 +161,20 @@ const buildMemberName = () => {
             return '请输入完整名字';
         }
 
-        if (memberName.includes('弟兄') || memberName.includes('姊妹') || memberName.includes('姐妹') || memberName.includes('牧师') || memberName.includes('师母') || memberName.includes('传道')) {
+        // If name match title regex
+        if (toAddTitle.value !== '' && titleRegex.test(memberName)) {
             nameValid.value = false;
             return '名字中不能包含称谓';
         }
 
         // Check if the name already exists
-        const existing = groupMembers.value.find((member: GroupMember) => member.name.replace(/[\s\p{P}]/gu, '').includes(memberName + toAddTitle.value));
+        const existing = groupMembers.value.find((member: GroupMember) => {
+            let name = member.name.replace(/[\s\p{P}]/gu, '');
+            if (toAddTitle.value === '') {
+                name = name.replace(titleRegex, '');
+            }
+            return name === (memberName + toAddTitle.value);
+        });
         if (existing) {
             nameValid.value = false;
             redirectToMember.value = existing.name;
@@ -195,14 +203,21 @@ const buildMemberName = () => {
             return '请输入完整名字';
         }
 
-        if (memberName.includes('弟兄') || memberName.includes('姊妹') || memberName.includes('姐妹') || memberName.includes('牧师') || memberName.includes('师母') || memberName.includes('传道')) {
+        // If name match title regex
+        if (toAddTitle.value !== '' && titleRegex.test(memberName)) {
             nameValid.value = false;
             return '名字中不能包含称谓';
         }
 
         // Check if the name already exists
-        const existing = groupMembers.value.find((member: GroupMember) => member.name.replace(/[\s\p{P}]/gu, '').toLowerCase() === memberName.toLowerCase())
-            if (existing) {
+        const existing = groupMembers.value.find((member: GroupMember) => {
+            let name = member.name.replace(/[\s\p{P}]/gu, '').toLowerCase();
+            if (toAddTitle.value === '') {
+                name = name.replace(titleRegex, '');
+            }
+            return name === (memberName.toLowerCase() + toAddTitle.value);
+        });
+        if (existing) {
             nameValid.value = false;
             redirectToMember.value = existing.name;
             return `名字 ${existing.name} 已存在。`;
