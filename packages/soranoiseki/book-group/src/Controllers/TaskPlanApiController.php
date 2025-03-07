@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Log;
 use Soranoiseki\Core\Controllers\Controller;
 use Soranoiseki\Core\Traits\ApiResponser;
 use Soranoiseki\BookGroup\Http\Resources\TaskPlan\NameResource;
@@ -86,7 +87,15 @@ class TaskPlanApiController extends Controller
             $names = NameInfo::raw(function($collection) {
                 return $collection->find([], ['sort' => ['name' => 1], 'collation' => ['locale' => 'zh', 'strength' => 1]]);
             });
+
+            Log::channel('book')->info('Created member', [
+                'name' => $data['name'],
+                'role' => $data['role'],
+            ]);
         } catch (\Exception $e) {
+            Log::channel('book')->error('Failed to create member', [
+                'error' => $e->getMessage(),
+            ]);
             return $this->respondError($e->getMessage());
         }
         
@@ -123,7 +132,15 @@ class TaskPlanApiController extends Controller
             $names = NameInfo::raw(function($collection) {
                 return $collection->find([], ['sort' => ['name' => 1], 'collation' => ['locale' => 'zh', 'strength' => 1]]);
             });
+
+            Log::channel('book')->info('Deleted member', [
+                'name' => $data['name'],
+            ]);
         } catch (\Exception $e) {
+            Log::channel('book')->error('Failed to delete member', [
+                'error' => $e->getMessage(),
+            ]);
+
             return $this->respondError($e->getMessage());
         }
         
@@ -178,10 +195,6 @@ class TaskPlanApiController extends Controller
         
         return $this->respondSuccessWithResource(NameResource::collection($names));
     }
-    
-
-
-
 
     public function getTaskPlans(Request $request)
     {

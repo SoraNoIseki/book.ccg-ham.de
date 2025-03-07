@@ -60,6 +60,9 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
             TaskPlanService.addMember(name, role).then((result) => {
                 if (result) {
                     this.names = result;
+
+                    const roleLabel = this.groupRoles.find((item) => item.role === role)?.name ?? role;
+                    toastr.success(`组员 ${name} 已添加到 ${roleLabel}`);
                 }
             });
         },
@@ -68,6 +71,8 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
             TaskPlanService.deleteMember(name).then((result) => {
                 if (result) {
                     this.names = result;
+
+                    toastr.success(`组员 ${name} 已删除`);
                 }
             });
         },

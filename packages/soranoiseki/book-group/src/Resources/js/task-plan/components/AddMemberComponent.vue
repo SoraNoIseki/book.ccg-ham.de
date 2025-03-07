@@ -37,7 +37,7 @@
         </div>
         <div>
             <p class="my-4 text-gray-700 dark:text-gray-400 font-semibold" v-if="previewMemberName">
-                <span v-if="nameValid">预览：名字 <span class="text-green-600">{{ previewMemberName }}</span> 将被添加</span>
+                <span v-if="nameValid">预览：名字 <span class="text-green-600">{{ previewMemberName }}</span> 将被添加到 {{ getGroupRoleLabel(toAddRole) }}</span>
                 <span v-else class="text-red-700">
                     <span>错误：{{ previewMemberName }}</span>
                     <span v-if="redirectToMember !== ''" @click="scrollToId(redirectToMember)">
@@ -46,7 +46,7 @@
                 </span>
             </p>
             <p class="my-4 text-gray-700 dark:text-gray-400 font-semibold text-sm" v-if="possibleMemberNames.length > 0">
-                <p class="mb-2">你可能想添加：</p>
+                <p class="mb-2">你是否想添加：</p>
                 <p v-for="name in possibleMemberNames" :key="name" class="mb-1">
                     {{ name }}
                     <span class="mx-2">|</span>
@@ -240,5 +240,9 @@ const scrollToId = (id: string) => {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 };
+
+const getGroupRoleLabel = (role: string): string => {
+    return taskPlanStore.groupRoles.find((item) => item.role === role)?.name || role;
+}
 
 </script>
