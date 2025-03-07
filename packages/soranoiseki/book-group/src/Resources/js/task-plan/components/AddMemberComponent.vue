@@ -46,7 +46,7 @@
                 </span>
             </p>
             <p class="my-4 text-gray-700 dark:text-gray-400 font-semibold text-sm" v-if="possibleMemberNames.length > 0">
-                <p class="mb-2">你可能想添加：</p>
+                <p class="mb-2">你是否想添加：</p>
                 <p v-for="name in possibleMemberNames" :key="name" class="mb-1">
                     {{ name }}
                     <span class="mx-2">|</span>
