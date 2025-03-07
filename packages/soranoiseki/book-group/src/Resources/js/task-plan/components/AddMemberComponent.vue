@@ -45,6 +45,16 @@
                     </span>
                 </span>
             </p>
+            <p class="my-4 text-gray-700 dark:text-gray-400 font-semibold text-sm" v-if="possibleMemberNames.length > 0">
+                <p class="mb-2">你可能想添加：</p>
+                <p v-for="name in possibleMemberNames" :key="name" class="mb-1">
+                    {{ name }}
+                    <span class="mx-2">|</span>
+                    <span>
+                        立即前往<span class="text-primary-600 hover:underline px-0.5 cursor-pointer" @click="scrollToId(name)">组员编辑</span>模块
+                    </span>
+                </p>
+            </p>
         </div>
     </div>
 </template>
@@ -124,9 +134,11 @@ const previewMemberName = computed(() => {
 });
 const nameValid = ref<boolean>(true);
 const redirectToMember = ref<string>('');
+const possibleMemberNames = ref<string[]>([]);
 
 const buildMemberName = () => {
     let memberName = toAddMember.value.trim();
+    possibleMemberNames.value = [];
 
     if (memberName === '') {
         return '';
@@ -139,6 +151,10 @@ const buildMemberName = () => {
         // Remove all spaces and punctuation marks
         memberName = memberName.replace(/[\s\p{P}]/gu, '');
 
+        // Find possible names
+        possibleMemberNames.value = groupMembers.value.filter((member: GroupMember) => member.name.replace(/[\s\p{P}]/gu, '').includes(memberName)).map((member: GroupMember) => member.name);
+        console.log(possibleMemberNames.value);
+
         if (memberName.length === 1) {
             nameValid.value = false;
             return '请输入完整名字';
@@ -147,6 +163,14 @@ const buildMemberName = () => {
         if (memberName.includes('弟兄') || memberName.includes('姊妹') || memberName.includes('姐妹') || memberName.includes('牧师') || memberName.includes('师母') || memberName.includes('传道')) {
             nameValid.value = false;
             return '名字中不能包含称谓';
+        }
+
+        // Check if the name already exists
+        const existing = groupMembers.value.find((member: GroupMember) => member.name.replace(/[\s\p{P}]/gu, '').includes(memberName + toAddTitle.value));
+        if (existing) {
+            nameValid.value = false;
+            redirectToMember.value = existing.name;
+            return `名字 ${existing.name} 已存在。`;
         }
 
         // If the name contains Chinese characters, add a space between each character
@@ -162,6 +186,10 @@ const buildMemberName = () => {
         // Remove spaces at the beginning and end
         memberName = memberName.trim();
 
+        // Find possible names
+        possibleMemberNames.value = groupMembers.value.filter((member: GroupMember) => member.name.replace(/[\s\p{P}]/gu, '').toLowerCase().includes(memberName.toLowerCase())).map((member: GroupMember) => member.name);
+        console.log(possibleMemberNames.value);
+
         if (memberName.length < 3) {
             nameValid.value = false;
             return '请输入完整名字';
@@ -172,16 +200,18 @@ const buildMemberName = () => {
             return '名字中不能包含称谓';
         }
 
+        // Check if the name already exists
+        const existing = groupMembers.value.find((member: GroupMember) => member.name.replace(/[\s\p{P}]/gu, '').toLowerCase() === memberName.toLowerCase())
+            if (existing) {
+            nameValid.value = false;
+            redirectToMember.value = existing.name;
+            return `名字 ${existing.name} 已存在。`;
+        }
+
         // Add title
         if (toAddTitle.value) {
             memberName += ' ' + toAddTitle.value;
         }
-    }
-
-    if (groupMembers.value.find((member: GroupMember) => member.name === memberName)) {
-        nameValid.value = false;
-        redirectToMember.value = memberName;
-        return `名字 ${memberName} 已存在。`;
     }
 
     nameValid.value = true;

@@ -283,7 +283,7 @@ const isGroupVisible = (group: Group) => {
 };
 
 const isMemberShown = (member: GroupMember) => {
-    return member.name.toLowerCase().includes(search.value.toLowerCase());
+    return member.name.replace(/[\s\p{P}]/gu, '').toLowerCase().includes(search.value.toLowerCase());
 };
 
 const isUserHasPermission = (permission: string) => {
