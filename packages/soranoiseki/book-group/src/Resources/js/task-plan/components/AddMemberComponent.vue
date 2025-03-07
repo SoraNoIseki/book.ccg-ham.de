@@ -37,7 +37,7 @@
         </div>
         <div>
             <p class="my-4 text-gray-700 dark:text-gray-400 font-semibold" v-if="previewMemberName">
-                <span v-if="nameValid">预览：名字 <span class="text-green-600">{{ previewMemberName }}</span> 将被添加</span>
+                <span v-if="nameValid">预览：名字 <span class="text-green-600">{{ previewMemberName }}</span> 将被添加到 {{ getGroupRoleLabel(toAddRole) }}</span>
                 <span v-else class="text-red-700">
                     <span>错误：{{ previewMemberName }}</span>
                     <span v-if="redirectToMember !== ''" @click="scrollToId(redirectToMember)">
@@ -240,5 +240,9 @@ const scrollToId = (id: string) => {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 };
+
+const getGroupRoleLabel = (role: string): string => {
+    return taskPlanStore.groupRoles.find((item) => item.role === role)?.name || role;
+}
 
 </script>
