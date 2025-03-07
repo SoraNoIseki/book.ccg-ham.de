@@ -15,6 +15,8 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
         currentPlanMonth: DateTime.now() as DateTime,
         sundays: [] as DateTime[],
         abortController: null as AbortController | null,
+        conflictMembers: [] as conflictMember[],
+        loadingPlan: false,
     }),
     actions: {
         init() {
@@ -97,12 +99,17 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
             const year = this.currentPlanMonth.year.toString();
             const month = this.currentPlanMonth.month.toString();
 
+            this.loadingPlan = true;
             TaskPlanService.getTaskPlans(year, month, signal).then((result) => {
                 if (result) {
                     this.taskPlans = result;
+                    this.updateConflictMembers();
                 }
+            }).catch(() => {
+                this.loadingPlan = false
             }).finally(() => {
                 this.abortController = null;
+                this.loadingPlan = false;
             });
         },
 
@@ -112,6 +119,7 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
                     const role = result.role;
                     const plans = result.plans;
                     this.taskPlans.find(item => item.role === role)!.plans = plans;
+                    this.updateConflictMembers();
                 }
             });
         },
@@ -184,6 +192,51 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
 
             this.sundays = sundays;
         },
+
+        updateConflictMembers() {
+            const plans = this.taskPlans.filter((item) => item.role !== '主题');
+            const conflictMembers: conflictMember[] = [];
+
+            const weeks = [ "week1", "week2", "week3", "week4", "week5" ];
+            for (const [index, week] of weeks.entries()) {
+                const weekMembers = plans.reduce((acc, item) => {
+                    if (!item.plans || !item.plans[week]) {
+                        return acc;
+                    }
+                    const members: string[] = item.plans[week].split("+");
+                    members.forEach((member) => {
+                        if (!acc.find((item) => item.name === member)) {
+                            acc.push({
+                                name: member,
+                                roles: [
+                                    item.role,
+                                ],
+                            });
+                        } else {
+                            const target = acc.find((item) => item.name === member);
+                            if (target) {
+                                target.roles.push(item.role);
+                            }
+                        }
+                    });
+                    return acc;
+                }, [] as GroupMember[]);
+
+                const duplicated = weekMembers.filter(member => member.roles.length > 1);
+                const date = this.sundays[index]?.toFormat('yyyy年M月d日') ?? '';
+                if (duplicated.length > 0 && date !== '') {
+                    duplicated.forEach((member) => {
+                        conflictMembers.push({
+                            name: member.name,
+                            roles: member.roles,
+                            date: date,
+                        });
+                    });
+                }
+            }
+
+            this.conflictMembers = conflictMembers;
+        }
     },
     getters: {
         groupMembers(): GroupMember[] {
@@ -272,5 +325,10 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
             });
             return hasPermission;
         },
+        groupRoles(): GroupRole[] {
+            return this.groups.reduce((acc, group) => {
+                return acc.concat(group.roles);
+            }, [] as GroupRole[]);
+        }
     },
 });

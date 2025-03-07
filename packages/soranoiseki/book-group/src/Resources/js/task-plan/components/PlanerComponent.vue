@@ -25,12 +25,24 @@
             </button>
         </div>
 
+        <div class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300" role="alert" v-show="conflictMembers.length > 0 && !loadingPlan">
+            <template v-for="conflict in conflictMembers">
+                <p class="mb-2">
+                    <span class="font-semibold">{{ conflict.name }}</span> 在 <span class="font-semibold">{{ conflict.date }}</span> 有多个服事：
+                    <span v-for="(role, index) in conflict.roles" :key="index">
+                        <span v-if="index > 0" class="mx-2">|</span>
+                        <span class="font-semibold">{{ getGroupRoleName(role) }}</span>
+                    </span>
+                </p>
+            </template>
+        </div>
+
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-fixed rounded-md">
             <thead class="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr class="bg-primary-200 border-b dark:border-gray-700 border-gray-200">
                     <th scope="col" class="w-36 h-12"></th>
                     <template v-for="date in sundays">
-                        <th scope="col" class="p-2 w-1/{{ sundays.length }}">{{ date.toISODate() }}</th>
+                        <th scope="col" class="p-2 w-1/{{ sundays.length }}">{{ date.toFormat('yyyy年M月d日') }}</th>
                     </template>
                 </tr>
             </thead>
@@ -44,13 +56,15 @@
                             </td>
                             <template v-for="(date, index) in sundays">
                                 <td class="p-2 font-bold text-lg cursor-pointer relative w-1/{{ sundays.length }}">
-                                    <div class="h-full w-full flex items-center justify-center">
+                                    <div class="h-full w-full flex items-center justify-center" v-show="!loadingPlan">
                                         <UiMultiSelect v-if="role.type === 'select'"
                                             :placeholder="role.placeholder ?? '请选择'"
                                             v-model="planForm[role.role]['week' + (index + 1).toString()]"
                                             :options="selectItemsByRole(role.role)" :max="role.max"
                                             :disabled="!isUserHasPermission(group.permission)"
-                                            @select="onChangeMembers($event, role.role, date, group.permission)">
+                                            @select="onChangeMembers($event, role.role, date, group.permission)"
+                                            :border-color="group.color"
+                                        >
                                         </UiMultiSelect>
 
                                         <div v-if="role.type === 'input'" class="flex items-center justify-center h-full w-full">
@@ -58,8 +72,15 @@
                                                 :placeholder="role.placeholder ?? '请输入'"
                                                 :disabled="!isUserHasPermission(group.permission)"
                                                 @change="onInput($event, role.role, date)"
-                                                class="block p-2.5 w-full min-w-[160px] text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"></textarea>
+                                                class="block p-2.5 w-full min-w-[160px] text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                                                :style="`border-color: ${group.color}`"
+                                            ></textarea>
                                         </div>
+                                    </div>
+
+                                    <!-- Dummy animation -->
+                                    <div v-show="loadingPlan" class="animate-pulse bg-white rounded-md p-3 border w-auto" :style="`border-color: ${group.color}`">
+                                        <div class="h-4 rounded w-full opacity-50" :style="`background-color: ${group.color}`"></div>
                                     </div>
                                 </td>
                             </template>
@@ -83,7 +104,7 @@ import { TaskPlanService } from '../services';
 
 
 const taskPlanStore = useTaskPlanStore();
-const { groups, sortedMembersByRole, planForm, groupFilter, sundays } = storeToRefs(taskPlanStore);
+const { groups, sortedMembersByRole, planForm, groupFilter, sundays, conflictMembers, groupRoles, loadingPlan } = storeToRefs(taskPlanStore);
 
 onMounted(async () => {
     
@@ -116,6 +137,10 @@ const isGroupVisible = (group: Group) => {
 
 const isUserHasPermission = (permission: string) => {
     return TaskPlanService.isUserHasPermission(permission);
+};
+
+const getGroupRoleName = (role: string) => {
+    return groupRoles.value.find((r: GroupRole) => r.role === role)?.name ?? '';
 };
 
 </script>

@@ -90,3 +90,9 @@ interface UserRole {
     name: string;
     internal_name: string;
 }
+
+interface conflictMember {
+    name: string;
+    roles: string[];
+    date: string;
+}
