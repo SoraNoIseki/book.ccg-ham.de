@@ -236,6 +236,20 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
             }
 
             this.conflictMembers = conflictMembers;
+        },
+
+        copyTaskPlanText(date: string) {
+            let text: string = '';
+            TaskPlanService.copyTaskPlanText(date).then((result) => {
+                if (result) {
+                    text = result.text;
+
+                    // copy to clipboard
+                    navigator.clipboard.writeText(text)
+                        .then(() => console.log("Text copied successfully!"))
+                        .catch(err => console.error("Failed to copy text: ", err));
+                }
+            });  
         }
     },
     getters: {

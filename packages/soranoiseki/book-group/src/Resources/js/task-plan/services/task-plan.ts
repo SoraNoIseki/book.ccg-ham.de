@@ -72,6 +72,15 @@ export class TaskPlanService {
         });
     }
 
+    static copyTaskPlanText(date: string): Promise<{ text: string } | undefined> {
+        const url = routes.plan.text;
+        return new Promise((resolve, reject) => {
+            ApiClient.get<{ text: string }>(url, { date })
+                .then((result) => resolve(result))
+                .catch((error) => reject(error));
+        });
+    }
+
     static isUserHasPermission (permission: string) {
         const userRolesJson = (window as any).roles;
         if (userRolesJson && userRolesJson.length > 0) {
