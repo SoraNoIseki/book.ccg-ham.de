@@ -43,7 +43,6 @@
 import { ref, Ref, onMounted, watch } from 'vue';
 import { useTaskPlanStore } from './stores';
 import { MembersComponent, PlanerComponent, AddMemberComponent } from './components';
-import { TaskPlanService } from './services';
 import { storeToRefs } from 'pinia';
 
 const taskPlanStore = useTaskPlanStore();

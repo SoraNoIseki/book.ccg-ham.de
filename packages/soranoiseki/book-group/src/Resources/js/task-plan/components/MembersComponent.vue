@@ -63,7 +63,7 @@
                                 :style="`background-color: ${group.color}55; color: ${group.color};`"
                                 :class="[ isUserHasPermission(group.permission) ? 'cursor-pointer' : 'cursor-not-allowed' ]"
                                 v-show="isGroupVisible(group)"
-                                @click="toggleRole(member, role.role, group.permission)">
+                                @click="toggleRole(member, role, group.permission)">
                                 <div class="h-full w-full flex items-center justify-center"
                                     @mouseenter="showTooltip(member.name + role.role, group.color)"
                                     @mouseleave="hideTooltip(member.name + role.role)">
@@ -241,12 +241,12 @@ const isMemberInGroup = (member: GroupMember, groupRole: string) => {
     return member.roles.some((role: string) => role === groupRole);
 };
 
-const toggleRole = (member: GroupMember, role: string, groupPermission: string) => {
+const toggleRole = (member: GroupMember, role: GroupRole, groupPermission: string) => {
     if (!isUserHasPermission(groupPermission)) {
         return;
     }
 
-    if (member.roles.length === 1 && member.roles[0] === role) {
+    if (member.roles.length === 1 && member.roles[0] === role.role) {
         console.log('Each member must have at least one role');
         return;
     }

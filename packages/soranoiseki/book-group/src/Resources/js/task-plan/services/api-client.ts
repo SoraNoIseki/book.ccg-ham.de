@@ -1,5 +1,8 @@
 import axios from "./http-commons";
 import { AxiosResponse, AxiosError, AxiosRequestConfig, GenericAbortSignal } from "axios";
+import { useToast } from "vue-toast-notification";
+
+const toastr = useToast();
 
 const handleAxiosError = (error: unknown) => {
     if ((error as AxiosError).name === "CanceledError") {
@@ -17,7 +20,7 @@ const handleAxiosError = (error: unknown) => {
         switch (statusCode) {
             case 404:
                 toastr.error(
-                    "Die angeforderte Ressource wurde nicht gefunden."
+                    "请求的资源不存在"
                 );
                 break;
             case 422:
@@ -35,17 +38,17 @@ const handleAxiosError = (error: unknown) => {
             case 500:
                 toastr.error(
                     (response as ServerErrorApiResponse).message ??
-                        "Es ist ein Fehler aufgetreten."
+                        "未知错误"
                 );
                 break;
             default:
                 toastr.error(
                     (error as AxiosError).message ??
-                        "Es ist ein Fehler aufgetreten."
+                        "未知错误"
                 );
         }
     } else {
-        toastr.error("Es ist ein Fehler aufgetreten.");
+        toastr.error("未知错误");
     }
 };
 
@@ -134,7 +137,7 @@ const ApiClient = {
                     if (response.data.status === "success") {
                         resolve(response.data);
                     } else {
-                        toastr.error("Es ist ein Fehler aufgetreten.");
+                        toastr.error("未知错误");
                         resolve(undefined);
                     }
                 })

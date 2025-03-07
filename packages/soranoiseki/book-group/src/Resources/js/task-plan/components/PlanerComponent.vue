@@ -123,8 +123,9 @@ import { storeToRefs } from 'pinia';
 import { DateTime } from 'luxon';
 import { UiMultiSelect, GroupFilterComponent } from './';
 import { TaskPlanService } from '../services';
+import { useToast } from "vue-toast-notification";
 
-
+const toastr = useToast();
 const taskPlanStore = useTaskPlanStore();
 const { groups, sortedMembersByRole, planForm, groupFilter, sundays, conflictMembers, groupRoles, loadingPlan } = storeToRefs(taskPlanStore);
 
@@ -195,11 +196,9 @@ const copyGroupRolePlansText = (role: GroupRole) => {
             }
         });
 
-        navigator.clipboard.writeText(text).then(() => {
-            console.log('Copied to clipboard');
-        }).catch((error) => {
-            console.error('Failed to copy: ', error);
-        });
+        navigator.clipboard.writeText(text)
+            .then(() => toastr.success('服事安排已复制到剪切板'))
+            .catch(err => console.error("Failed to copy text: ", err));
     }
 
     

@@ -2,6 +2,9 @@ import { defineStore } from "pinia";
 import { computed, watch } from "vue";
 import { TaskPlanService } from "../services";
 import { DateTime } from "luxon";
+import { useToast } from "vue-toast-notification";
+
+const toastr = useToast();
 
 export const useTaskPlanStore = defineStore("TaskPlanStore", {
     state: () => ({
@@ -80,10 +83,11 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
             });
         },
 
-        async toggleMemberRole(name: string, role: string) {
-            TaskPlanService.toggleMemberRole(name, role).then((result) => {
+        async toggleMemberRole(name: string, role: GroupRole) {
+            TaskPlanService.toggleMemberRole(name, role.role).then((result) => {
                 if (result) {
                     this.names = result;
+                    toastr.success(`组员 ${name} 已更新：${role.name}`);
                 }
             });
         },
@@ -246,10 +250,10 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
 
                     // copy to clipboard
                     navigator.clipboard.writeText(text)
-                        .then(() => console.log("Text copied successfully!"))
+                        .then(() => toastr.success('服事安排已复制到剪切板'))
                         .catch(err => console.error("Failed to copy text: ", err));
                 }
-            });  
+            });
         }
     },
     getters: {

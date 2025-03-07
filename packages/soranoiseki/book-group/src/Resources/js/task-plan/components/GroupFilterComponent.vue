@@ -31,7 +31,9 @@
 import { onMounted } from 'vue';
 import { useTaskPlanStore } from '../stores';
 import { storeToRefs } from 'pinia';
+import { useToast } from "vue-toast-notification";
 
+const toastr = useToast();
 const taskPlanStore = useTaskPlanStore();
 const { groupFilter } = storeToRefs(taskPlanStore);
 
@@ -41,6 +43,7 @@ onMounted(async () => {
 
 const onToggleGroupFilter = (group: GroupFilterItem) => {
     group.enabled = !group.enabled;
+    toastr.success(group.name + (group.enabled ? '已开启显示' : '已隐藏'));
 };
 
 </script>

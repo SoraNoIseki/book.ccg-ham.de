@@ -4,6 +4,7 @@ import Alpine from 'alpinejs';
 import 'flowbite';
 
 import "@vueform/multiselect/themes/default.css";
+import 'vue-toast-notification/dist/theme-sugar.css';
 
 (window as any).Alpine = Alpine;
 
@@ -19,7 +20,7 @@ import.meta.glob([
 
 import { createApp } from 'vue';
 import { createPinia } from "pinia";
-import VueDatePicker from '@vuepic/vue-datepicker';
+import ToastPlugin from 'vue-toast-notification';
 
 import * as AppSongs from "../../packages/soranoiseki/book-group/src/Resources/js/songs";
 import * as AppTaskPlan from "../../packages/soranoiseki/book-group/src/Resources/js/task-plan";
@@ -34,6 +35,7 @@ appSongs.mount("#app-songs");
 const appAdmin = createApp(AppAdmin.App);
 appAdmin.mount("#app-admin");
 
-const taskPlan = createApp(AppTaskPlan.App);;
-taskPlan.use(createPinia());
-taskPlan.mount("#app-task-plan");
+const appTaskPlan = createApp(AppTaskPlan.App);;
+appTaskPlan.use(createPinia());
+appTaskPlan.use(ToastPlugin);
+appTaskPlan.mount("#app-task-plan");
