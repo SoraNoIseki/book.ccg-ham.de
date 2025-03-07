@@ -6,26 +6,7 @@
 
         <GroupFilterComponent class="my-4" />
 
-        <div class="inline-flex rounded-md shadow-xs mb-4" role="group">
-            <button type="button" @click="taskPlanStore.prevPlanMonth"
-                class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 border border-gray-200 rounded-s-lg focus:z-10 focus:ring-0 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
-                上一月
-            </button>
-            <button type="button" @click="taskPlanStore.backToCurrentMonth"
-                class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 border-t border-b border-r border-gray-200 focus:z-10 focus:ring-0 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
-                回到 {{ taskPlanStore.now.toFormat('M') }} 月
-            </button>
-            <button type="button" @click="taskPlanStore.goToNextMonth"
-                class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 border-t border-b border-gray-200 focus:z-10 focus:ring-0 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
-                {{ taskPlanStore.now.plus({ months: 1 }).toFormat('M') }} 月
-            </button>
-            <button type="button" @click="taskPlanStore.nextPlanMonth"
-                class="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 border border-gray-200 rounded-e-lg focus:z-10 focus:ring-0 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
-                下一月
-            </button>
-        </div>
-
-        <div class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300" role="alert" v-show="conflictMembers.length > 0 && !loadingPlan">
+        <div class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-orange-300 border border-orange-200 dark:border-none" role="alert" v-show="conflictMembers.length > 0 && !loadingPlan">
             <template v-for="conflict in conflictMembers">
                 <p class="mb-2">
                     <span class="font-semibold">{{ conflict.name }}</span> 在 <span class="font-semibold">{{ conflict.date }}</span> 有多个服事：
@@ -35,6 +16,35 @@
                     </span>
                 </p>
             </template>
+        </div>
+
+        <div class="w-full flex items-center justify-between mb-4">
+            <div class="inline-flex rounded-md shadow-xs" role="group">
+                <button type="button" @click="taskPlanStore.prevPlanMonth"
+                    class="px-5 py-2.5 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 border border-gray-200 rounded-s-lg focus:z-10 focus:ring-0 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+                    上一月
+                </button>
+                <button type="button" @click="taskPlanStore.backToCurrentMonth"
+                    class="px-5 py-2.5 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 border-t border-b border-r border-gray-200 focus:z-10 focus:ring-0 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+                    回到 {{ taskPlanStore.now.toFormat('M') }} 月
+                </button>
+                <button type="button" @click="taskPlanStore.goToNextMonth"
+                    class="px-5 py-2.5 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 border-t border-b border-gray-200 focus:z-10 focus:ring-0 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+                    {{ taskPlanStore.now.plus({ months: 1 }).toFormat('M') }} 月
+                </button>
+                <button type="button" @click="taskPlanStore.nextPlanMonth"
+                    class="px-5 py-2.5 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 border border-gray-200 rounded-e-lg focus:z-10 focus:ring-0 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:text-white">
+                    下一月
+                </button>
+            </div>
+
+            <div class="inline-flex">
+                <button type="button" @click="refreshTaskPlans"
+                    class="text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:hover:bg-primary-600  me-2 mb-2">
+                    <svg class="w-4 h-4 me-2 -ms-1 fill-current" :class="{ 'animated': loadingPlan }" aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M142.9 142.9c-17.5 17.5-30.1 38-37.8 59.8c-5.9 16.7-24.2 25.4-40.8 19.5s-25.4-24.2-19.5-40.8C55.6 150.7 73.2 122 97.6 97.6c87.2-87.2 228.3-87.5 315.8-1L455 55c6.9-6.9 17.2-8.9 26.2-5.2s14.8 12.5 14.8 22.2l0 128c0 13.3-10.7 24-24 24l-8.4 0c0 0 0 0 0 0L344 224c-9.7 0-18.5-5.8-22.2-14.8s-1.7-19.3 5.2-26.2l41.1-41.1c-62.6-61.5-163.1-61.2-225.3 1zM16 312c0-13.3 10.7-24 24-24l7.6 0 .7 0L168 288c9.7 0 18.5 5.8 22.2 14.8s1.7 19.3-5.2 26.2l-41.1 41.1c62.6 61.5 163.1 61.2 225.3-1c17.5-17.5 30.1-38 37.8-59.8c5.9-16.7 24.2-25.4 40.8-19.5s25.4 24.2 19.5 40.8c-10.8 30.6-28.4 59.3-52.9 83.8c-87.2 87.2-228.3 87.5-315.8 1L57 457c-6.9 6.9-17.2 8.9-26.2 5.2S16 449.7 16 440l0-119.6 0-.7 0-7.6z"/></svg>
+                    刷新表格
+                </button>
+            </div>
         </div>
 
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-fixed rounded-md">
@@ -143,4 +153,23 @@ const getGroupRoleName = (role: string) => {
     return groupRoles.value.find((r: GroupRole) => r.role === role)?.name ?? '';
 };
 
+const refreshTaskPlans = () => {
+    taskPlanStore.getTaskPlans();
+};
+
 </script>
+
+<style scoped>
+    .animated {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
