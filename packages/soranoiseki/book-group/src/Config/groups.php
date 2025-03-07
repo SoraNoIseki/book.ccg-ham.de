@@ -126,7 +126,7 @@ return [
         "roles" => [
             [
                 "role" => "管堂组",
-                "name" => "管堂小组\n（预备）",
+                "name" => "管堂小组（预备）",
                 'type' => 'select',
                 'max' => 2,
             ],

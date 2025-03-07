@@ -52,7 +52,14 @@
                 <tr class="bg-primary-200 border-b dark:border-gray-700 border-gray-200">
                     <th scope="col" class="w-36 h-12"></th>
                     <template v-for="date in sundays">
-                        <th scope="col" class="p-2 w-1/{{ sundays.length }}">{{ date.toFormat('yyyy年M月d日') }}</th>
+                        <th scope="col" class="p-2 w-1/{{ sundays.length }}">
+                            <span class="flex w-full gap-x-2 items-center">
+                                {{ date.toFormat('yyyy年M月d日') }}
+                                <button type="button" title="复制当日服事表文本（PPT用）" @click="taskPlanStore.copyTaskPlanText(date.toISODate() ?? '')">
+                                    <svg class="block cursor-pointer w-4 h-4 fill-current text-primary-700 hover:text-primary-800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M208 0L332.1 0c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9L448 336c0 26.5-21.5 48-48 48l-192 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48zM48 128l80 0 0 64-64 0 0 256 192 0 0-32 64 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 176c0-26.5 21.5-48 48-48z"/></svg>
+                                </button>
+                            </span>
+                        </th>
                     </template>
                 </tr>
             </thead>
@@ -62,7 +69,12 @@
                         <tr v-show="isGroupVisible(group)" :style="`background-color: ${group.color}55;`"
                             class="border-b dark:border-gray-700 border-gray-200">
                             <td class="p-2 font-medium text-gray-900 whitespace-nowrap dark:text-white w-auto">
-                                {{ role.name }}
+                                <span class="flex w-full gap-x-2 items-center">
+                                    {{ role.name }}
+                                    <button type="button" title="复制该组服事表文本" @click="copyGroupRolePlansText(role)">
+                                        <svg class="block cursor-pointer w-4 h-4 fill-current text-primary-700 hover:text-primary-800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M208 0L332.1 0c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9L448 336c0 26.5-21.5 48-48 48l-192 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48zM48 128l80 0 0 64-64 0 0 256 192 0 0-32 64 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 176c0-26.5 21.5-48 48-48z"/></svg>
+                                    </button>
+                                </span>
                             </td>
                             <template v-for="(date, index) in sundays">
                                 <td class="p-2 font-bold text-lg cursor-pointer relative w-1/{{ sundays.length }}">
@@ -111,8 +123,9 @@ import { storeToRefs } from 'pinia';
 import { DateTime } from 'luxon';
 import { UiMultiSelect, GroupFilterComponent } from './';
 import { TaskPlanService } from '../services';
+import { useToast } from "vue-toast-notification";
 
-
+const toastr = useToast();
 const taskPlanStore = useTaskPlanStore();
 const { groups, sortedMembersByRole, planForm, groupFilter, sundays, conflictMembers, groupRoles, loadingPlan } = storeToRefs(taskPlanStore);
 
@@ -155,6 +168,40 @@ const getGroupRoleName = (role: string) => {
 
 const refreshTaskPlans = () => {
     taskPlanStore.getTaskPlans();
+};
+
+const copyGroupRolePlansText = (role: GroupRole) => {
+    let text = role.name.replace(/[\r\n]+/g, ' ') + '：\n\n';
+    const taskPlan = taskPlanStore.taskPlans.find((plan) => plan.role === role.role);
+
+    console.log(taskPlan);
+
+    if (taskPlan) {
+        sundays.value.forEach((date, index) => {
+            console.log(date, index);
+            text += date.toFormat('yyyy年M月d日') + '：\n';
+            const plans = taskPlan.plans;
+            if (plans) {
+                const value = plans['week' + (index + 1).toString()];
+                if (value && value !== '') {
+                    if (role.type === 'select') {
+                        const members = value.split('+').join('、');
+                        text += members + '\n';
+                    } else {
+                        const inputs = value.split('+').join('\n');
+                        text += inputs + '\n';
+                    }
+                }
+                text += '\n';
+            }
+        });
+
+        navigator.clipboard.writeText(text)
+            .then(() => toastr.success('服事安排已复制到剪切板'))
+            .catch(err => console.error("Failed to copy text: ", err));
+    }
+
+    
 };
 
 </script>

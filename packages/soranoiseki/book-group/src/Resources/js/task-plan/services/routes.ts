@@ -2,6 +2,7 @@ const routes = {
     plan: {
         index: "/plans",
         update: "/plans",
+        text: "/plans/text",
     },
     member: {
         index: "/members",
