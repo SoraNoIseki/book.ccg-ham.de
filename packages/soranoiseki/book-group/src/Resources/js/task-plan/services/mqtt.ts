@@ -8,7 +8,7 @@ const options = {
 };
 
 const client = (mqtt as any).connect(
-    `ws://${options.host}:${options.port}/ws`,
+    `${import.meta.env.VITE_MQTT_SCHEME}://${options.host}:${options.port}/ws`,
     options
 );
 
