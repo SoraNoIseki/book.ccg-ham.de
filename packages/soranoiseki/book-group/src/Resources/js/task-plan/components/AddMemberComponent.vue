@@ -154,7 +154,6 @@ const buildMemberName = () => {
 
         // Find possible names
         possibleMemberNames.value = groupMembers.value.filter((member: GroupMember) => member.name.replace(/[\s\p{P}]/gu, '').includes(memberName)).map((member: GroupMember) => member.name);
-        console.log(possibleMemberNames.value);
 
         if (memberName.length === 1) {
             nameValid.value = false;
@@ -196,7 +195,6 @@ const buildMemberName = () => {
 
         // Find possible names
         possibleMemberNames.value = groupMembers.value.filter((member: GroupMember) => member.name.replace(/[\s\p{P}]/gu, '').toLowerCase().includes(memberName.toLowerCase())).map((member: GroupMember) => member.name);
-        console.log(possibleMemberNames.value);
 
         if (memberName.length < 3) {
             nameValid.value = false;

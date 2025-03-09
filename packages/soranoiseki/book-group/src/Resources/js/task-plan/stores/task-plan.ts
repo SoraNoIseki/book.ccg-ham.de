@@ -125,12 +125,14 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
         async updateTaskPlan(role: string, value: string, date: string) {
             TaskPlanService.updateTaskPlan(role, value, date).then((result) => {
                 if (result) {
-                    const role = result.role;
-                    const plans = result.plans;
-                    this.taskPlans.find(item => item.role === role)!.plans = plans;
-                    this.updateConflictMembers();
+                    
                 }
             });
+        },
+
+        updateLocalTaskPlan(role: string, plans: TaskPlanItem) {
+            this.taskPlans.find(item => item.role === role)!.plans = plans;
+            this.updateConflictMembers();
         },
 
         initGroupFilter() {

@@ -37,11 +37,19 @@ use Soranoiseki\BookGroup\Models\TaskPlan\{
     TeenageInfo,
     TopicInfo,
 };
+use App\Services\MqttService;
 
 
 class TaskPlanApiController extends Controller
 {
     use ApiResponser;
+
+    protected $mqttService;
+
+    public function __construct(MqttService $mqttService)
+    {
+        $this->mqttService = $mqttService;
+    }
 
     public function getMembers(Request $request)
     {
@@ -316,7 +324,7 @@ class TaskPlanApiController extends Controller
         $weekOfMonth = $date->weekOfMonth;
 
         // dd($data, $weekOfMonth);
-
+        
         switch ($role) {
             case '主题':
                 $plans = TopicInfo::raw(function($collection) use ($groupId) {
@@ -562,10 +570,14 @@ class TaskPlanApiController extends Controller
                 break;
         }
 
-        return $this->respondSuccess([
+        $returnData = [
             'role' => $role,
             'plans' => new TaskInfoResource($plans),
-        ]);
+        ];
+
+        $this->mqttService->publish('book/task-plans', json_encode($returnData), 0, false);
+
+        return $this->respondSuccess($returnData);
 
     }
 

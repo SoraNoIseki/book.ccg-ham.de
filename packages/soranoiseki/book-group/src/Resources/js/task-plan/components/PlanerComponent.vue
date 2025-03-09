@@ -174,11 +174,8 @@ const copyGroupRolePlansText = (role: GroupRole) => {
     let text = role.name.replace(/[\r\n]+/g, ' ') + '：\n\n';
     const taskPlan = taskPlanStore.taskPlans.find((plan) => plan.role === role.role);
 
-    console.log(taskPlan);
-
     if (taskPlan) {
         sundays.value.forEach((date, index) => {
-            console.log(date, index);
             text += date.toFormat('yyyy年M月d日') + '：\n';
             const plans = taskPlan.plans;
             if (plans) {

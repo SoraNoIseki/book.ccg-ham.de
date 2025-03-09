@@ -1,6 +1,4 @@
 $(document).ready(function() {
-    console.log('book.js loaded');
-
     $('.apply-song-content').click(function() {
         var target = $(this).data('target');
         var content = $('#' + target).val();
@@ -9,7 +7,6 @@ $(document).ready(function() {
 
     $('.toggle-song-content').click(function() {
         var target = $(this).data('target');
-        console.log($('#' + target));
         $('#' + target).toggle();
     });
 
@@ -37,7 +34,6 @@ $(document).ready(function() {
     $('.get-task-plans').click(function() {
         var target = $(this).data('target');
         var url = $(this).data('url');
-        console.log(url);
         $.ajax({
             url: url,
             type: 'GET',
