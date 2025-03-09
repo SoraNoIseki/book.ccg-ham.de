@@ -79,7 +79,7 @@
                             <template v-for="(date, index) in sundays">
                                 <td class="p-2 font-bold text-lg cursor-pointer relative w-1/{{ sundays.length }}">
                                     <div class="h-full w-full flex items-center justify-center" v-show="!loadingPlan">
-                                        <UiMultiSelect v-if="role.type === 'select'"
+                                        <UiMultiSelect v-if="planForm[role.role] && role.type === 'select'"
                                             :placeholder="role.placeholder ?? '请选择'"
                                             v-model="planForm[role.role]['week' + (index + 1).toString()]"
                                             :options="selectItemsByRole(role.role)" :max="role.max"
@@ -89,7 +89,7 @@
                                         >
                                         </UiMultiSelect>
 
-                                        <div v-if="role.type === 'input'" class="flex items-center justify-center h-full w-full">
+                                        <div v-if="planForm[role.role] && role.type === 'input'" class="flex items-center justify-center h-full w-full">
                                             <textarea rows="3" v-model="planForm[role.role]['week' + (index + 1).toString()]"
                                                 :placeholder="role.placeholder ?? '请输入'"
                                                 :disabled="!isUserHasPermission(group.permission)"

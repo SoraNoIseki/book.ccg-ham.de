@@ -17,7 +17,7 @@ class MqttService
             ->setUsername(env('MQTT_USERNAME'))
             ->setPassword(env('MQTT_PASSWORD'))
             ->setKeepAliveInterval(60)
-            ->setLastWillTopic('esp32/last_will')
+            ->setLastWillTopic('book/last_will')
             ->setLastWillMessage('Client disconnected unexpectedly')
             ->setLastWillQualityOfService(1);
 

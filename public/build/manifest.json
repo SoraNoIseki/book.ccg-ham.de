@@ -19,14 +19,14 @@
     "src": "resources/images/loading.gif"
   },
   "resources/js/app.css": {
-    "file": "assets/app-4377efc8.css",
+    "file": "assets/app-b97c7859.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.ts": {
     "css": [
-      "assets/app-4377efc8.css"
+      "assets/app-b97c7859.css"
     ],
-    "file": "assets/app-76729f1d.js",
+    "file": "assets/app-db2f719a.js",
     "isEntry": true,
     "src": "resources/js/app.ts"
   }
