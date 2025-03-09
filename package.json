@@ -7,6 +7,7 @@
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
         "@types/luxon": "^3.4.2",
+        "@types/mqtt": "^2.5.0",
         "@types/node": "^22.13.9",
         "@types/toastr": "^2.1.43",
         "@vitejs/plugin-vue": "^4.6.2",
@@ -24,6 +25,7 @@
         "@vuepic/vue-datepicker": "^8.8.0",
         "flowbite": "^3.1.2",
         "luxon": "^3.4.4",
+        "mqtt": "^5.10.4",
         "pinia": "^2.1.7",
         "sortablejs": "^1.15.0",
         "toastr": "^2.1.4",
