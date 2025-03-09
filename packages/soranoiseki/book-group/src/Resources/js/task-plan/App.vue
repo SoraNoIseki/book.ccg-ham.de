@@ -65,7 +65,7 @@ onMounted(async () => {
         if (topic === "book/task-plans") {
             try {
                 const data = JSON.parse(message.toString());
-                taskPlanStore.updateLocalTaskPlan(data.role, data.plans);
+                taskPlanStore.updateLocalTaskPlan(data.role, data.plans, data.date);
             } catch (error) {
                 
             }

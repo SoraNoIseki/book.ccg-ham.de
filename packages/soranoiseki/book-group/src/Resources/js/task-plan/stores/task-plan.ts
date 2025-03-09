@@ -130,7 +130,13 @@ export const useTaskPlanStore = defineStore("TaskPlanStore", {
             });
         },
 
-        updateLocalTaskPlan(role: string, plans: TaskPlanItem) {
+        updateLocalTaskPlan(role: string, plans: TaskPlanItem, date: string) {
+            // check year & month
+            const toUpdateDate = DateTime.fromISO(date);
+            if (toUpdateDate.year !== this.currentPlanMonth.year || toUpdateDate.month !== this.currentPlanMonth.month) {
+                return;
+            }
+
             this.taskPlans.find(item => item.role === role)!.plans = plans;
             this.updateConflictMembers();
         },

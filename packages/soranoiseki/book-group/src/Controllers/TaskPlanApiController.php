@@ -573,6 +573,7 @@ class TaskPlanApiController extends Controller
         $returnData = [
             'role' => $role,
             'plans' => new TaskInfoResource($plans),
+            'date' => $date->format('Y-m-d'),
         ];
 
         $this->mqttService->publish('book/task-plans', json_encode($returnData), 0, false);
