@@ -36,6 +36,8 @@ use Soranoiseki\BookGroup\Models\TaskPlan\{
     SongLeaderInfo,
     TeenageInfo,
     TopicInfo,
+    CleanupAfterInfo,
+    EducationWorshipInfo,
 };
 use App\Services\MqttService;
 
@@ -301,6 +303,16 @@ class TaskPlanApiController extends Controller
                             return $collection->findOne(['group_id' => $groupId]);
                         });
                         break;
+                    case '教育敬拜组':
+                        $plans = EducationWorshipInfo::raw(function($collection) use ($groupId) {
+                            return $collection->findOne(['group_id' => $groupId]);
+                        });
+                        break;
+                    case '管堂组收拾':
+                        $plans = CleanupAfterInfo::raw(function($collection) use ($groupId) {
+                            return $collection->findOne(['group_id' => $groupId]);
+                        });
+                        break;
                     default:
                         break;
                 }
@@ -560,6 +572,36 @@ class TaskPlanApiController extends Controller
                     $plans->save();
                 } else {
                     $plans = new AfterLunchInfo();
+                    $plans->group_id = $groupId;
+                    $plans->initWeekAttributes();
+                    $plans->setWeekAttribute($weekOfMonth, $value);
+                    $plans->save();
+                }
+                break;
+            case '教育敬拜组':
+                $plans = EducationWorshipInfo::raw(function($collection) use ($groupId) {
+                    return $collection->findOne(['group_id' => $groupId]);
+                });
+                if ($plans) {
+                    $plans->setWeekAttribute($weekOfMonth, $value);
+                    $plans->save();
+                } else {
+                    $plans = new EducationWorshipInfo();
+                    $plans->group_id = $groupId;
+                    $plans->initWeekAttributes();
+                    $plans->setWeekAttribute($weekOfMonth, $value);
+                    $plans->save();
+                }
+                break;
+            case '管堂组收拾':
+                $plans = CleanupAfterInfo::raw(function($collection) use ($groupId) {
+                    return $collection->findOne(['group_id' => $groupId]);
+                });
+                if ($plans) {
+                    $plans->setWeekAttribute($weekOfMonth, $value);
+                    $plans->save();
+                } else {
+                    $plans = new CleanupAfterInfo();
                     $plans->group_id = $groupId;
                     $plans->initWeekAttributes();
                     $plans->setWeekAttribute($weekOfMonth, $value);

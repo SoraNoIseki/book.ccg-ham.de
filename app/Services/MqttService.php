@@ -20,28 +20,42 @@ class MqttService
             ->setLastWillTopic('book/last_will')
             ->setLastWillMessage('Client disconnected unexpectedly')
             ->setLastWillQualityOfService(1);
-
-        $this->client->connect($settings);
+            
+        if (env('MQTT_ENABLED', false)) {
+            $this->client->connect($settings);
+        }
     }
 
     public function publish($topic, $message, $qos = 0, $retain = false)
     {
+        if (!env('MQTT_ENABLED', false)) {
+            return;
+        }
         $this->client->publish($topic, $message, $qos, $retain);
         $this->disconnect();
     }
 
     public function subscribe($topic, callable $callback, $qos = 0)
     {
+        if (!env('MQTT_ENABLED', false)) {
+            return;
+        }
         $this->client->subscribe($topic, $callback, $qos);
     }
 
     public function loop($duration = 1)
     {
+        if (!env('MQTT_ENABLED', false)) {
+            return;
+        }
         $this->client->loop($duration);
     }
 
     public function disconnect()
     {
+        if (!env('MQTT_ENABLED', false)) {
+            return;
+        }
         $this->client->disconnect();
     }
 }
