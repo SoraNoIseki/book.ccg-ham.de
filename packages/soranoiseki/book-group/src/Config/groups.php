@@ -79,6 +79,12 @@ return [
                 'type' => 'select',
                 'max' => 3,
             ],
+            [
+                "role" => "教育敬拜组",
+                "name" => "教育敬拜组",
+                'type' => 'select',
+                'max' => 2,
+            ],
         ]
     ],
     [
@@ -129,6 +135,12 @@ return [
                 "name" => "管堂小组（预备）",
                 'type' => 'select',
                 'max' => 2,
+            ],
+            [
+                "role" => "管堂组收拾",
+                "name" => "管堂小组（收拾）",
+                'type' => 'select',
+                'max' => 3,
             ],
         ]
     ],
