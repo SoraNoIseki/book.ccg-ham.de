@@ -69,12 +69,12 @@ class BookGroupServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->make('Soranoiseki\BookGroup\Controllers\PowerpointController');
-        $this->app->make('Soranoiseki\BookGroup\Controllers\LibraryController');
-        $this->app->make('Soranoiseki\BookGroup\Controllers\CalendarController');
-        $this->app->make('Soranoiseki\BookGroup\Controllers\PowerpointAjaxController');
-        $this->app->make('Soranoiseki\BookGroup\Controllers\SongController');
-        $this->app->make('Soranoiseki\BookGroup\Controllers\TaskPlanController');
+        // $this->app->make('Soranoiseki\BookGroup\Http\Controllers\PowerpointController');
+        // $this->app->make('Soranoiseki\BookGroup\Http\Controllers\LibraryController');
+        // $this->app->make('Soranoiseki\BookGroup\Http\Controllers\CalendarController');
+        // $this->app->make('Soranoiseki\BookGroup\Http\Controllers\PowerpointAjaxController');
+        // $this->app->make('Soranoiseki\BookGroup\Http\Controllers\SongController');
+        // $this->app->make('Soranoiseki\BookGroup\Http\Controllers\TaskPlanController');
 
         $this->commands([
             \Soranoiseki\BookGroup\Console\Commands\SyncSongs::class,

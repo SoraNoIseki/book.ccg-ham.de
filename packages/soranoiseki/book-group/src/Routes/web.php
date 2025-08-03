@@ -1,14 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Soranoiseki\BookGroup\Controllers\PowerpointController;
-use Soranoiseki\BookGroup\Controllers\PowerpointAjaxController;
-use Soranoiseki\BookGroup\Controllers\LibraryController;
-use Soranoiseki\BookGroup\Controllers\CalendarController;
-use Soranoiseki\BookGroup\Controllers\SongController;
-use Soranoiseki\BookGroup\Controllers\SongApiController;
-use Soranoiseki\BookGroup\Controllers\TaskPlanController;
-use Soranoiseki\BookGroup\Controllers\TaskPlanApiController;
+use Soranoiseki\BookGroup\Http\Controllers\PowerpointController;
+use Soranoiseki\BookGroup\Http\Controllers\PowerpointAjaxController;
+use Soranoiseki\BookGroup\Http\Controllers\LibraryController;
+use Soranoiseki\BookGroup\Http\Controllers\CalendarController;
+use Soranoiseki\BookGroup\Http\Controllers\SongController;
+use Soranoiseki\BookGroup\Http\Controllers\SongApiController;
+use Soranoiseki\BookGroup\Http\Controllers\TaskPlanController;
+use Soranoiseki\BookGroup\Http\Controllers\TaskPlanApiController;
 
 
 Route::middleware('web', 'auth')->group(function () {

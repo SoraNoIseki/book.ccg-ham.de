@@ -1,20 +1,13 @@
 <?php
 
-namespace Soranoiseki\BookGroup\Controllers;
+namespace Soranoiseki\BookGroup\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\Process\Process;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Response;
 use Soranoiseki\Core\Controllers\Controller;
 use Soranoiseki\BookGroup\Models\Worship\Song;
-
 use Soranoiseki\BookGroup\Models\Worship\SongContent;
-use Soranoiseki\BookGroup\Requests\StorePowerpointRequest;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class SongController extends Controller
 {

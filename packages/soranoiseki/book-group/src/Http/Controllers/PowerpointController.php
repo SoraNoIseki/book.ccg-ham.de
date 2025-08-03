@@ -1,17 +1,14 @@
 <?php
 
-namespace Soranoiseki\BookGroup\Controllers;
+namespace Soranoiseki\BookGroup\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
 use Soranoiseki\Core\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
-use Soranoiseki\BookGroup\Requests\StorePowerpointRequest;
+use Soranoiseki\BookGroup\Http\Requests\StorePowerpointRequest;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-
-use Soranoiseki\BookGroup\Models\Worship\Song;
 
 class PowerpointController extends Controller
 {
