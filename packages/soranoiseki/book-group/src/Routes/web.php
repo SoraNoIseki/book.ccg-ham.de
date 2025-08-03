@@ -9,6 +9,7 @@ use Soranoiseki\BookGroup\Http\Controllers\SongController;
 use Soranoiseki\BookGroup\Http\Controllers\SongApiController;
 use Soranoiseki\BookGroup\Http\Controllers\TaskPlanController;
 use Soranoiseki\BookGroup\Http\Controllers\TaskPlanApiController;
+use Soranoiseki\BookGroup\Http\Controllers\Api\WebsiteApiController;
 
 
 Route::middleware('web', 'auth')->group(function () {
@@ -81,4 +82,11 @@ Route::middleware('web')->group(function () {
     Route::get('/worship-songs', [SongController::class, 'list'])->name('book-group.song.list');
     Route::get('/api/songs', [SongApiController::class, 'index']);
     Route::get('/api/songs/{groupId}', [SongApiController::class, 'show']);
+});
+
+
+Route::middleware('web')->group(function () {
+    Route::group(['prefix' => 'api/website'], function() {
+        Route::get('/plans/{year}', [WebsiteApiController::class, 'getPlansByYear'])->where('year', '[0-9]+');
+    });
 });
