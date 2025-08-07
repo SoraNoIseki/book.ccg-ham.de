@@ -12,7 +12,7 @@ use Soranoiseki\BookGroup\Http\Controllers\TaskPlanApiController;
 use Soranoiseki\BookGroup\Http\Controllers\Api\WebsiteApiController;
 
 
-Route::middleware('web', 'auth')->group(function () {
+Route::middleware(['web', 'auth'])->group(function () {
     Route::group(['prefix' => 'ppt', 'middleware' => 'role:ppt'], function() {
         Route::get('/', [PowerpointController::class, 'index'])->name('book-group.ppt.index');
         Route::post('/save', [PowerpointController::class, 'store'])->name('book-group.ppt.store');
@@ -85,7 +85,7 @@ Route::middleware('web')->group(function () {
 });
 
 
-Route::middleware('web')->group(function () {
+Route::middleware('api')->group(function () {
     Route::group(['prefix' => 'api/website'], function() {
         Route::get('/plans/{year}', [WebsiteApiController::class, 'getPlansByYear'])->where('year', '[0-9]+');
     });
