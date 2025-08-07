@@ -15,8 +15,6 @@ use Illuminate\Support\Facades\Log;
 
 class FetchDropboxPublicLinks extends Command
 {
-    private const START_FROM = "2025-01-01";
-   
     private array $sundays = [];
 
     private Client $client;
@@ -51,7 +49,7 @@ class FetchDropboxPublicLinks extends Command
         $this->forceUpdate = $this->option('force-update');
         $this->logger = Log::channel('book');
 
-        $start = Carbon::parse(self::START_FROM);
+        $start = Carbon::parse(env('DROPBOX_START_DATE', '2025-01-01'));
         $end = Carbon::now()->endOfWeek();
         $current = $start->copy()->next(Carbon::SUNDAY);
         while ($current->lte($end)) {
