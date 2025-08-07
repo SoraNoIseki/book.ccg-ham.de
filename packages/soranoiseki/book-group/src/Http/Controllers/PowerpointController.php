@@ -62,9 +62,7 @@ class PowerpointController extends Controller
             }
             session()->flash('infoMessage', 'PPT内容已从版本 ' . $lastVersion . ' 复制并加载。');
         }
-
-        // $file = Storage::disk('dropbox')->get('test.txt');
-        // dd($file);
+        
 
         return view('book-group::powerpoint.index', [
             'date' => $date,

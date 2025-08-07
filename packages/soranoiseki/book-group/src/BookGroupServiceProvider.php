@@ -78,12 +78,14 @@ class BookGroupServiceProvider extends ServiceProvider
 
         $this->commands([
             \Soranoiseki\BookGroup\Console\Commands\SyncSongs::class,
+            \Soranoiseki\BookGroup\Console\Commands\FetchDropboxPublicLinks::class,
         ]);
     }
 
 
     protected function initDropboxApp() {
         Storage::extend('dropbox', function (Application $app, array $config) {
+            dd($config['authorization_token']);
             $adapter = new DropboxAdapter(new DropboxClient(
                 $config['authorization_token']
             ));

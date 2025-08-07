@@ -3,9 +3,10 @@
 namespace Soranoiseki\BookGroup\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Soranoiseki\BookGroup\Models\TaskPlan\TopicInfo;
 use Soranoiseki\BookGroup\Models\TaskPlan\PreacherInfo;
-use Carbon\Carbon;
+use Soranoiseki\BookGroup\Models\Dropbox\File as DropboxFile;
 
 
 class WebsiteApiController extends BaseApiController
@@ -83,6 +84,24 @@ class WebsiteApiController extends BaseApiController
                     'topic' => isset($topicData[0]) ? trim($topicData[0]) : '',
                     'text' => isset($topicData[1]) ? trim($topicData[1]) : '',
                     'preacher' => $preacher[$weekKey] ?? '',
+                    'worship_file' => DropboxFile::where('date', $sunday->toDateString())
+                        ->where('type', 'worship')
+                        ->get()
+                        ->map(function ($file) {
+                            return [
+                                'file_name' => $file->file_name,
+                                'share_link' => $file->share_link,
+                            ];
+                        })->first(),
+                    'recording_file' => DropboxFile::where('date', $sunday->toDateString())
+                        ->where('type', 'recording')
+                        ->get()
+                        ->map(function ($file) {
+                            return [
+                                'file_name' => $file->file_name,
+                                'share_link' => $file->share_link,
+                            ];
+                        })->first(),
                 ];
             }
         }
