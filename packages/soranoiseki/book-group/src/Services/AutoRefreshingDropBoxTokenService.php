@@ -7,6 +7,9 @@ use GuzzleHttp\Client as HttpClient;
 use Spatie\Dropbox\TokenProvider;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * https://github.com/spatie/dropbox-api/issues/94#issuecomment-1222553430
+ */
 class AutoRefreshingDropBoxTokenService implements TokenProvider
 {
    private string $key;
