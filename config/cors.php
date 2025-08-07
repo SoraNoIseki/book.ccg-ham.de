@@ -15,11 +15,11 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/website/*', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['ccg-ham.de'],
+    'allowed_origins' => ['https://www.ccg-ham.de'],
 
     'allowed_origins_patterns' => [],
 
