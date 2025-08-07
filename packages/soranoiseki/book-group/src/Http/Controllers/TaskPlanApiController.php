@@ -1,6 +1,6 @@
 <?php
 
-namespace Soranoiseki\BookGroup\Controllers;
+namespace Soranoiseki\BookGroup\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
