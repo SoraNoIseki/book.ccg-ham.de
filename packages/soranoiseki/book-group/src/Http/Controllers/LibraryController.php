@@ -1,6 +1,6 @@
 <?php
 
-namespace Soranoiseki\BookGroup\Controllers;
+namespace Soranoiseki\BookGroup\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Soranoiseki\BookGroup\Requests;
+namespace Soranoiseki\BookGroup\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 

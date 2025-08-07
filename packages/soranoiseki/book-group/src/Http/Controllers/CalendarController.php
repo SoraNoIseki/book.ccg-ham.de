@@ -1,6 +1,6 @@
 <?php
 
-namespace Soranoiseki\BookGroup\Controllers;
+namespace Soranoiseki\BookGroup\Http\Controllers;
 
 use Soranoiseki\Core\Controllers\Controller;
 use Soranoiseki\BookGroup\Models\Calendar\Calendar;
