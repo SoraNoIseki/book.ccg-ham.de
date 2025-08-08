@@ -45,7 +45,7 @@ import { ref, Ref, onMounted, watch } from 'vue';
 import { useTaskPlanStore } from './stores';
 import { MembersComponent, PlanerComponent, AddMemberComponent } from './components';
 import { storeToRefs } from 'pinia';
-import { MqttClient } from './services';
+// import { MqttClient } from './services';
 
 const taskPlanStore = useTaskPlanStore();
 const { isUserHasEditPermission } = storeToRefs(taskPlanStore);
@@ -53,24 +53,24 @@ const { isUserHasEditPermission } = storeToRefs(taskPlanStore);
 onMounted(async () => {
     taskPlanStore.init();
 
-    MqttClient.on("connect", () => {
-        MqttClient.subscribe("book/task-plans", (err) => {
-            if (!err) {
-                MqttClient.publish("book/task-plans", "Hello mqtt");
-            }
-        });
-    });
+    // MqttClient.on("connect", () => {
+    //     MqttClient.subscribe("book/task-plans", (err) => {
+    //         if (!err) {
+    //             MqttClient.publish("book/task-plans", "Hello mqtt");
+    //         }
+    //     });
+    // });
 
-    MqttClient.on("message", (topic, message) => {
-        if (topic === "book/task-plans") {
-            try {
-                const data = JSON.parse(message.toString());
-                taskPlanStore.updateLocalTaskPlan(data.role, data.plans, data.date);
-            } catch (error) {
+    // MqttClient.on("message", (topic, message) => {
+    //     if (topic === "book/task-plans") {
+    //         try {
+    //             const data = JSON.parse(message.toString());
+    //             taskPlanStore.updateLocalTaskPlan(data.role, data.plans, data.date);
+    //         } catch (error) {
                 
-            }
-        }
-    });
+    //         }
+    //     }
+    // });
 });
 
 watch(() => taskPlanStore.groupFilter, () => {
