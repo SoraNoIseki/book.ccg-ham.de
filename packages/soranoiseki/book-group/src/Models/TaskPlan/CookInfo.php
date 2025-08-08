@@ -6,6 +6,6 @@ class CookInfo extends TaskInfo
 {
     protected $connection = 'mongodb-task';
 
-    protected $collection = 'cook_info';
+    protected $table = 'cook_info';
 
 }

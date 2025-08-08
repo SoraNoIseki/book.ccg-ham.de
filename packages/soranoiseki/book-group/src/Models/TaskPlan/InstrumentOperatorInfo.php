@@ -6,6 +6,6 @@ class InstrumentOperatorInfo extends TaskInfo
 {
     protected $connection = 'mongodb-task';
 
-    protected $collection = 'instrument_operator_info';
+    protected $table = 'instrument_operator_info';
 
 }

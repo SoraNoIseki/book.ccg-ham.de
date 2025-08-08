@@ -6,6 +6,6 @@ class PreacherInfo extends TaskInfo
 {
     protected $connection = 'mongodb-task';
 
-    protected $collection = 'preacher_info';
+    protected $table = 'preacher_info';
 
 }

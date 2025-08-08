@@ -6,6 +6,6 @@ class PianoInfo extends TaskInfo
 {
     protected $connection = 'mongodb-task';
 
-    protected $collection = 'piano_info';
+    protected $table = 'piano_info';
 
 }

@@ -6,6 +6,6 @@ class ReceptionInfo extends TaskInfo
 {
     protected $connection = 'mongodb-task';
 
-    protected $collection = 'reception_info';
+    protected $table = 'reception_info';
 
 }
