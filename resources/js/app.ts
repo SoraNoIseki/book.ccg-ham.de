@@ -27,6 +27,11 @@ import * as AppTaskPlan from "../../packages/soranoiseki/book-group/src/Resource
 import * as AppAdmin from "./admin";
 
 import '@vuepic/vue-datepicker/dist/main.css';
+import { configureEcho } from '@laravel/echo-vue';
+
+configureEcho({
+    broadcaster: 'reverb',
+});
 
 // App PPT Generator
 const appSongs = createApp(AppSongs.App);

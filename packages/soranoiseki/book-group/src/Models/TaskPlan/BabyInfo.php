@@ -6,6 +6,6 @@ class BabyInfo extends TaskInfo
 {
     protected $connection = 'mongodb-task';
 
-    protected $collection = 'baby_info';
+    protected $table = 'baby_info';
 
 }

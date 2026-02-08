@@ -39,7 +39,8 @@
                     </div>
 
                     <div class="px-6 py-4">
-                        <p class="my-4"><a href="{{ route('book-group.song.index') . '#' . $song->_id }}"><< 返回列表</a></p>
+                        <p class="my-4"><a href="{{ route('book-group.song.index') . '#' . $song->_id }}"><< 返回诗歌列表</a></p>
+                        <p class="my-4"><a href="{{ route('book-group.song.index') . '#unsaved-anchor' }}"><< 返回未保存列表</a></p>
                         <form action="{{ route('book-group.song.save', ['song' => $song->_id]) }}" method="POST" id="editSong">
                             @csrf
 

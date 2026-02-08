@@ -28,10 +28,12 @@
                             @php
                                 // $url_image = "images/calendar/" . $details[$month]['year'] . "/" . $details[$month]['image'];
                                 $url_image = "images/calendar/" . $year . "/" . str_pad((string)$month, 2, '0', STR_PAD_LEFT) . ".jpg";
+                                $overlay_image = "images/calendar/" . $year . "/"  . "overlay.png";
                             @endphp
-                            <div class="image" class="image-{{$calendar['year']}}-{{$month}}" style="background-image: url('{{ url("$url_image") }}');"></div>
+                            <div class="image image-{{$calendar['year']}}-{{$month}}" style="background-image: url('{{ url("$url_image") }}');"></div>
+                            <div class="overlay-background" style="background-image: url('{{ url("$overlay_image") }}');"></div>
                             <div class="overlay">
-                                <div class="prev-month header-month">
+                                <!-- <div class="prev-month header-month">
                                     <div class="label">
                                         <span class="zh">{{$days[$month-1][15]['details']['gregorian_year']}}年{{(int)$days[$month-1][15]['details']['gregorian_month']}}月</span>
                                         <span class="de">{{ $monthText[(int)$days[$month-1][15]['details']['gregorian_month'] - 1] }}</span>
@@ -78,7 +80,17 @@
                                             </li>
                                         @endforeach
                                     </ul>
-                                </div>
+                                </div> -->
+
+                                @if($details)
+                                    <div class="bible-verse">
+                                        <div class="bible-verse-wrapper">
+                                            <div class="bible-verse-text">{!! str_replace('|', '<br>', $details[$month]['bible_text']) !!}</div>
+                                            <div class="bible-verse-source">{{ $details[$month]['bible_source'] }}</div>
+                                        </div>
+                                    </div>
+                                @endif
+
                             </div>
                         </div>
                     </div>
@@ -89,15 +101,6 @@
                             <span class="zh">{{ $calendar['year'] }}年{{ $month }}月</span>
                             <span class="de">{{ $monthText[$month - 1] }}</span>
                         </div>
-
-                        @if($details)
-                            <div class="bible-verse">
-                                <div class="bible-verse-wrapper">
-                                    <div class="bible-verse-text">{!! str_replace('|', '<br>', $details[$month]['bible_text']) !!}</div>
-                                    <div class="bible-verse-source">—— {{ $details[$month]['bible_source'] }}</div>
-                                </div>
-                            </div>
-                        @endif
                     </div>
                     <div class="calendar-weekdays">
                         <ul class="weekdays">

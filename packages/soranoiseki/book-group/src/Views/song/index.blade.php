@@ -4,7 +4,21 @@
             诗歌管理
         </h2>
     </x-slot>
-    
+
+    <!-- Floating Quick Navigation Buttons with Tailwind -->
+    <div class="fixed top-1/2 left-4 -translate-y-1/2 z-50 flex flex-col gap-4">
+        <button type="button"
+            title="未保存的诗歌"
+            onclick="document.getElementById('unsaved-anchor').scrollIntoView({behavior: 'smooth'});"
+            class="bg-primary-600 hover:bg-primary-700 text-white rounded-full w-12 h-12 sm:w-10 sm:h-10 flex items-center justify-center text-lg shadow-md opacity-85 hover:opacity-100 transition-opacity duration-200 mb-0"
+        >新</button>
+        <button type="button"
+            title="所有诗歌"
+            onclick="document.getElementById('all-songs-anchor').scrollIntoView({behavior: 'smooth'});"
+            class="bg-primary-600 hover:bg-primary-700 text-white rounded-full w-12 h-12 sm:w-10 sm:h-10 flex items-center justify-center text-lg shadow-md opacity-85 hover:opacity-100 transition-opacity duration-200"
+        >库</button>
+    </div>
+
     <div class="py-12">
 
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-6">
@@ -39,6 +53,8 @@
 
                     <div class="px-6 py-4">
                         <div class="relative overflow-x-auto mb-6">
+                            <a id="unsaved-anchor"></a>
+                            <h3 class="text-2xl font-semibold mb-4">未保存的诗歌内容</h3>
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                     <tr>
@@ -88,6 +104,8 @@
                         @endphp
 
                         <div class="relative overflow-x-auto">
+                            <a id="all-songs-anchor"></a>
+                            <h3 class="text-2xl font-semibold mb-4">所有诗歌</h3>
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                     <tr>

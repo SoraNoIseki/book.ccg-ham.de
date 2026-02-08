@@ -8,6 +8,6 @@ class Song extends Model
 {
     protected $connection = 'mongodb-hymn';
 
-    protected $collection = 'hymn_info';
+    protected $table = 'hymn_info';
 
 }

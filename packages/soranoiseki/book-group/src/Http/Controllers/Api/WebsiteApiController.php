@@ -128,4 +128,34 @@ class WebsiteApiController extends BaseApiController
         return $this->respondWithData($responseData);
     }
 
+
+    public function getBulletinsByYear(Request $request, $year)
+    {
+        $cacheKey = 'website_bulletins_' . $year;
+        $cacheTtl = 60 * 60; // 1 hour
+
+        $responseData = Cache::get($cacheKey);
+        if (!$responseData) {
+            $bulletins = DropboxFile::where('type', 'bulletin')
+                ->whereYear('date', $year)
+                ->orderBy('date', 'desc')
+                ->get()
+                ->map(function ($file) {
+                    return [
+                        'date' => $file->date,
+                        'file_name' => $file->file_name,
+                        'share_link' => $file->share_link,
+                    ];
+                });
+
+            $responseData = [
+                'year' => (int) $year,
+                'bulletins' => $bulletins,
+            ];
+            Cache::put($cacheKey, $responseData, $cacheTtl);
+        }
+
+        return $this->respondWithData($responseData);
+
+    }
 }

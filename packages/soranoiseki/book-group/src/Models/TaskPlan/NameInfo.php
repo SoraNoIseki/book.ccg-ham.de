@@ -8,7 +8,7 @@ class NameInfo extends Model
 {
     protected $connection = 'mongodb-task';
 
-    protected $collection = 'name_info';
+    protected $table = 'name_info';
 
     public function getNamesAttribute()
     {

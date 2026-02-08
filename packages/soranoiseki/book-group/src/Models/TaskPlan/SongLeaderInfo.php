@@ -6,6 +6,6 @@ class SongLeaderInfo extends TaskInfo
 {
     protected $connection = 'mongodb-task';
 
-    protected $collection = 'song_leader_info';
+    protected $table = 'song_leader_info';
 
 }
