@@ -6,6 +6,6 @@ class HosterInfo extends TaskInfo
 {
     protected $connection = 'mongodb-task';
 
-    protected $collection = 'hoster_info';
+    protected $table = 'hoster_info';
 
 }

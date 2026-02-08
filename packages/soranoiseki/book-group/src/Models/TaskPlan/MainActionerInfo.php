@@ -6,6 +6,6 @@ class MainActionerInfo extends TaskInfo
 {
     protected $connection = 'mongodb-task';
 
-    protected $collection = 'main_actioner_info';
+    protected $table = 'main_actioner_info';
 
 }

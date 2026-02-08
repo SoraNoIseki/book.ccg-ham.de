@@ -13,8 +13,6 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/css/project.css', 'resources/js/app.ts'])
-
-        @livewireStyles
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -40,8 +38,5 @@
                 <img class="w-8 h-8" src={{ Vite::asset('resources/images/loading.gif') }}>
             </div>
         </div>
-
-        @livewireScripts
-        @livewire('livewire-ui-modal')
     </body>
 </html>

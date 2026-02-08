@@ -6,6 +6,6 @@ class TopicInfo extends TaskInfo
 {
     protected $connection = 'mongodb-task';
 
-    protected $collection = 'topic_info';
+    protected $table = 'topic_info';
 
 }

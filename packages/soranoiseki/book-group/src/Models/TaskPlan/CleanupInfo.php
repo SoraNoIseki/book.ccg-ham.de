@@ -6,6 +6,6 @@ class CleanupInfo extends TaskInfo
 {
     protected $connection = 'mongodb-task';
 
-    protected $collection = 'cleanup_info';
+    protected $table = 'cleanup_info';
 
 }

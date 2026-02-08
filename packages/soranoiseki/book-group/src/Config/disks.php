@@ -10,4 +10,9 @@ return [
         'driver' => 'dropbox',
         'authorization_token' => env('DROPBOX_AUTH_TOKEN'),
     ],
+    'scripts' => [
+        'driver' => 'local',
+        'root' => storage_path('scripts'),
+        'throw' => false,
+    ],
 ];
