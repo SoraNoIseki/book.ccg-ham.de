@@ -19,7 +19,16 @@ body {
     height: 100%;
     min-height: 100vh;
     min-height: -webkit-fill-available;
-    font-family: "Roboto", sans-serif;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "PingFang SC",
+        "Hiragino Sans GB",
+        "Microsoft YaHei",
+        "Noto Sans CJK SC",
+        "Roboto",
+        system-ui,
+        sans-serif;
 }
 
 html,
@@ -95,6 +104,17 @@ body {
     body {
         font-size: 35.36px;
         /* font-size: 25px; */
+
+        font-family:
+            -apple-system,
+            BlinkMacSystemFont,
+            "PingFang SC",
+            "Hiragino Sans GB",
+            "Microsoft YaHei",
+            "Noto Sans CJK SC",
+            "Roboto",
+            system-ui,
+            sans-serif;
     }
 }
 
@@ -121,6 +141,15 @@ body {
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
+.calendar-header .overlay-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+}
+
 .calendar-header .overlay {
     position: absolute;
     bottom: 0;
@@ -129,7 +158,6 @@ body {
     height: auto;
     display: flex;
     padding: 1.5rem 5rem;
-    background: linear-gradient(#0000, #0004 30%, #0009);
     display: flex;
     justify-content: space-between;
 }
@@ -177,7 +205,7 @@ body {
 
 
 .calendar .color-red {
-    color: #c90202;
+    color: #e5383b;
 }
 
 
@@ -193,8 +221,8 @@ body {
 }
 
 .calendar-footer {
-    padding: 0 5rem;
-    margin: 1.5rem 0 4rem;
+    padding: 0 10rem;
+    margin: 2rem 0 4rem;
     flex: 0 1 auto;
     background: #fff;
 }
@@ -208,7 +236,7 @@ body {
 
 .calendar-header .outer-wrapper {
     width: 100%;
-    padding-bottom: 60%;
+    padding-bottom: 50%;
 }
 
 .calendar-header .inner-wrapper {
@@ -235,24 +263,26 @@ body {
 .calendar-content-header {
     flex: 0 1 auto;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     margin-top: 1rem;
-    padding-bottom: 2rem;
+    padding-bottom: 3rem;
 }
 
 .calendar-content-header .year {
     display: flex;
     align-items: center;
+    font-size: 2.4rem;
+    letter-spacing: 1rem;
+    padding: 1.5rem 7rem 1.4rem;
+    border-top: #999 1px solid;
+    border-bottom: #999 1px solid;
 }
 
 .calendar-content-header .year .zh {
-    font-size: 3rem;
-    letter-spacing: 0.5rem;
+    
 }
 
 .calendar-content-header .year .de {
-    font-size: 2.5rem;
-    letter-spacing: 0.5rem;
     text-transform: uppercase;
     margin-left: 1rem;
     color: #777;
@@ -262,11 +292,11 @@ body {
 
 
 .bible-verse {
-    color: #333;
+    color: #fff;
     position: relative;
     flex: 1 1 auto;
-    text-align: right;
-    font-size: 1.5rem;
+    text-align: center;
+    font-size: 2rem;
 }
 
 .bible-verse-wrapper {
@@ -278,10 +308,10 @@ body {
 }
 
 .bible-verse .bible-verse-source {
-    color: #777;
+    color: #ddd;
     letter-spacing: 0.1rem;
-    margin-top: 0.4rem;
-    font-size: 1.5rem;
+    margin-top: 0.75rem;
+    font-size: 1.75rem;
 }
 
 
@@ -296,21 +326,28 @@ body {
     text-align: center;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: 5rem;
+
+    border-radius: 20px 20px 0 0;
+    overflow: hidden;
 }
 
 .calendar-weekdays .weekday-item {
     width: 100%;
     height: 100%;
-    background: #023e8a;
+    background: rgba(137, 146, 17, 0.9);
     color: #fff;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .calendar-weekdays .weekday-item.weekend {
-    background: #c1121f;
+    background: #e5383b;
 }
 
 .calendar-days {
@@ -318,6 +355,9 @@ body {
     height: 100%;
     border: 1px solid #ccc;
     border-top: none;
+
+    border-radius: 0 0 20px 20px;
+    overflow: hidden;
 }
 
 .calendar-days .days {
@@ -332,7 +372,8 @@ body {
     margin: auto;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.03);
+    /* background: rgba(0, 0, 0, 0.03); */
+    background: #d3d3d311;
     position: relative;
     border: 0.5px solid #ccc;
 }
@@ -350,7 +391,7 @@ body {
     position: absolute;
     top: 1.3rem;
     right: 1.2rem;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
 }
 
 .calendar-days .day-item .holiday {
@@ -374,7 +415,7 @@ body {
     left: 0;
     bottom: 1rem;
     line-height: 1.2;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     color: #343a40;
 }
 

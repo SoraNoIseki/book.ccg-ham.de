@@ -9,15 +9,15 @@ use Soranoiseki\BookGroup\Models\Calendar\Holiday;
 use Soranoiseki\BookGroup\Models\Calendar\Detail;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-// use PDF;
 use Overtrue\ChineseCalendar\Calendar as ChineseCalendar;
-use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Response;
-
 use Maatwebsite\Excel\Facades\Excel;
 use Soranoiseki\BookGroup\Imports\Calendar\ImportEvents;
 use Soranoiseki\BookGroup\Imports\Calendar\ImportBibleTexts;
 use Illuminate\Support\Facades\Session;
+use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 
 class CalendarController extends Controller
@@ -213,26 +213,81 @@ class CalendarController extends Controller
         ]);
     }
 
-    public function generate(Request $request, Calendar $calendar) {
+    public function generatePreview(Request $request, Calendar $calendar) {
         // prepare data
         $this->prepareEvents($calendar->year);
         $this->prepareHolidays($calendar->year);
         $this->prepareDetails($calendar->year);
         $this->prepareDays($calendar->year); // prepare days needs data above
 
-        // create PDF
-        $data = $this->createPDF($calendar);
-        //echo json_encode($data['days']['1']);die();
+        // build PDF data
+        $data = $this->buildPdfData($calendar);
 
         // response
         return view('book-group::calendar.pdf', $data);
-        // return response()->json([
-        //     'success' => true,
-        //     'data' => [
-        //         'file' => $data['filename'],
-        //         'path' => url('/'.$data['filename']),
-        //     ],
-        // ]);
+    }
+
+    public function downloadPdf(Request $request, Calendar $calendar) {
+        // prepare data
+        $this->prepareEvents($calendar->year);
+        $this->prepareHolidays($calendar->year);
+        $this->prepareDetails($calendar->year);
+        $this->prepareDays($calendar->year); // prepare days needs data above
+
+        // build PDF data
+        $data = $this->buildPdfData($calendar);
+        $html = view('book-group::calendar.pdf', $data)->render();
+
+// dd($html);
+
+        $year = $calendar->year;
+        $tempHtmlPath = storage_path('scripts/temp_calendar_' . $year . '.html');
+        $tempPdfPath = storage_path('scripts/temp_calendar_' . $year . '.pdf');
+
+        // save html to a temp file
+        file_put_contents($tempHtmlPath, $html);
+
+        // dd($tempHtmlPath);
+
+
+        $pythonPath = env('COMMON_PYTHON_PATH', '/usr/bin/python3');
+        $scriptPath = storage_path('scripts/html_to_pdf.py');
+        
+        // run python
+        $process = new Process([
+            $pythonPath,
+            $scriptPath,
+            $tempHtmlPath,
+            $tempPdfPath,
+        ]);
+        $process->run();
+
+        if (! $process->isSuccessful()) {
+        $error = new ProcessFailedException($process);
+
+            // If failed, clean up temp files
+            @unlink($tempHtmlPath);
+            @unlink($tempPdfPath);
+
+            return redirect()
+                ->route('book-group.calendar.index', ['v' => $year])
+                ->with([
+                    'success' => false,
+                    'message' => $error->getMessage(),
+                ]);
+        }
+      
+        // Read the generated PDF file
+        $pdfContent = file_get_contents($tempPdfPath);
+
+        // Clean up after use
+        @unlink($tempHtmlPath);
+        @unlink($tempPdfPath);
+
+        // Return PDF
+        return response($pdfContent)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="calendar_' . $year . '.pdf"');
     }
 
 
@@ -257,36 +312,7 @@ class CalendarController extends Controller
 
     private function prepareEvents($year) {
         $this->events = array();
-
-        // create weekly events
-        // $eventType = "weekly";
-        // for ($month = 1; $month <= 12; $month++) {
-        //     $this->insertEvent($year, $month, "second wednesday", "线上查经", $eventType);
-        //     $this->insertEvent($year, $month, "fourth wednesday", "线上查经", $eventType);
-
-        //     $this->insertEvent($year, $month, "first friday", "福音查经", $eventType);
-        //     $this->insertEvent($year, $month, "second friday", "福音查经", $eventType);
-        //     $this->insertEvent($year, $month, "third friday", "福音查经", $eventType);
-        //     $this->insertEvent($year, $month, "fourth friday", "福音查经", $eventType);
-        //     $this->insertEvent($year, $month, "fifth  friday", "福音查经", $eventType);
-            
-        //     $this->insertEvent($year, $month, "second saturday", "青年团契", $eventType);
-        //     $this->insertEvent($year, $month, "fourth saturday", "青年团契", $eventType);
-
-        //     $this->insertEvent($year, $month, "first friday", "长青团契", $eventType);
-        //     $this->insertEvent($year, $month, "third friday", "长青团契", $eventType);
-
-        //     $this->insertEvent($year, $month, "second saturday", "伉俪团契", $eventType);
-
-        //     $this->insertEvent($year, $month, "first thursday", "妈妈小组", $eventType);
-        //     $this->insertEvent($year, $month, "third thursday", "妈妈小组", $eventType);
-
-        //     $this->insertEvent($year, $month, "first sunday", "圣餐礼拜", $eventType);
-        //     $this->insertEvent($year, $month, "second sunday", "诗班排练", $eventType);
-        // }
-        // $this->insertEvent($year, 5, "first sunday", "诗班排练", $eventType);
-        // $this->insertEvent($year, 6, "first sunday", "诗班排练", $eventType);
-
+       
         // get yearly events from database
         $events = Event::where('year', '=', $year)->get();
         foreach ($events->toArray() as $event) {
@@ -367,20 +393,8 @@ class CalendarController extends Controller
     /**
      * @param Calendar $calendar
      */
-    private function createPDF(Calendar $calendar) {
-        // TODO: use mpdf
-        // https://mpdf.github.io/installation-setup/installation-v7-x.html
-
-
-        // share data to view
-        //view()->share('calendar',$calendar);
-        //$pdf = PDF::loadView('calendar.pdf', $calendar);
-
-        //die();
-
-        // download PDF file with download method
-        // return $pdf->download('pdf_file.pdf');
-
+    private function buildPdfData(Calendar $calendar) {
+       
         $path = 'downloads';
         if (!is_dir($path)) {
             mkdir($path, 0777, true);
@@ -416,51 +430,7 @@ class CalendarController extends Controller
             'year' => $calendar->year,
             'monthText' => $month,
         ];
-
-        $html = view('book-group::calendar.pdf', $data)->render();
-        //echo  $html; die();
-        /* $dompdf = new Dompdf();
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-        $dompdf->stream(); */
-
-        // $pdf = PDF::loadView('calendar.pdf', $data);
-        // $pdf->stream('document.pdf');
-
-        /* $pdf = PDF::loadHTML($html)
-        //PDF::loadView('calendar.pdf', $data)
-            ->setPaper('a4', 'portrait') // or landscape
-            //->setWarnings(false)
-            ->setOptions([
-                'dpi' => 300,
-                'defaultFont' => 'sans-serif',
-                'defaultMediaType' => 'print',
-                'isPhpEnabled' => true,
-                'isHtml5ParserEnabled' => true,
-            ])
-            //->stream()
-        ;
-
-        $pdf->stream('document.pdf'); */
-
-
-        /* PDF::loadHTML($html)
-        //PDF::loadView('calendar.pdf', $data)
-            ->setPaper('a4', 'portrait') // or landscape
-            //->setWarnings(false)
-            ->setOptions([
-                'dpi' => 300,
-                'defaultFont' => 'sans-serif',
-                'defaultMediaType' => 'print',
-                'isPhpEnabled' => true,
-                'isHtml5ParserEnabled' => true,
-            ])
-            ->save($filename)
-        ; */
-
-        //die();
-
+       
         return $data;
     }
 

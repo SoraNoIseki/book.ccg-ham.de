@@ -51,8 +51,8 @@ Route::middleware(['web', 'auth'])->group(function () {
         Route::delete('/{calendar}', [CalendarController::class, 'delete'])->where('calendar', '[0-9]+')->name('book-group.calendar.delete');
         Route::post('/create', [CalendarController::class, 'create'])->name('book-group.calendar.create');
         Route::get('/versions', [CalendarController::class, 'getVersions'])->name('book-group.calendar.versions');
-        Route::get('/pdf/{calendar}', [CalendarController::class, 'generate'])->where('calendar', '[0-9]+')->name('book-group.calendar.generate');
-        Route::get('/preview/{calendar}', [CalendarController::class, 'generate'])->where('calendar', '[0-9]+')->name('book-group.calendar.preview');
+        Route::get('/pdf/{calendar}', [CalendarController::class, 'downloadPdf'])->where('calendar', '[0-9]+')->name('book-group.calendar.generate');
+        Route::get('/preview/{calendar}', [CalendarController::class, 'generatePreview'])->where('calendar', '[0-9]+')->name('book-group.calendar.preview');
         Route::post('/import/events/{calendar}', [CalendarController::class, 'importEvents'])->where('calendar', '[0-9]+')->name('book-group.calendar.import-events');
         Route::post('/import/bible-texts/{calendar}', [CalendarController::class, 'importBibleTexts'])->where('calendar', '[0-9]+')->name('book-group.calendar.import-bible-texts');
         Route::get('/update-holidays', [CalendarController::class, 'updateHolidays'])->name('book-group.calendar.update-holidays');
