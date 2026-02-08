@@ -17,6 +17,8 @@ class FetchDropboxPublicLinks extends Command
 {
     private array $sundays = [];
 
+    private array $months = [];
+
     private Client $client;
 
     private Filesystem $filesystem;
@@ -56,12 +58,21 @@ class FetchDropboxPublicLinks extends Command
             $this->sundays[] = $current->copy();
             $current->addWeek();
         }
+
+        $startBulletin = Carbon::parse(env('DROPBOX_BULLETIN_START_DATE', '2018-01-01'));
+        $endBulletin = Carbon::now()->startOfMonth();
+        $currentBulletin = $startBulletin->copy();
+        while ($currentBulletin->lte($endBulletin)) {
+            $this->months[] = $currentBulletin->copy();
+            $currentBulletin->addMonth()->startOfMonth();
+        }
        
         $this->client = new Client(new AutoRefreshingDropBoxTokenService());
         $this->filesystem = new Filesystem(new DropboxAdapter($this->client), ['case_sensitive' => false]);
         
         $this->fetchWorshipFiles();
         $this->fetchRecordingFiles();        
+        $this->fetchBulletins();
     }
 
 
@@ -142,6 +153,45 @@ class FetchDropboxPublicLinks extends Command
                     'file_path' => $filePath,
                     'share_link' => $shareLink,
                     'type' => 'recording',
+                ]
+            );
+        }
+    }
+
+    private function fetchBulletins() {
+        $folder = env('DROPBOX_BULLETIN_FOLDER', '/Public/Bulletin/');
+        
+        foreach ($this->months as $month) {
+            $filePath = $folder . $month->format('Y') . '/m' . $month->format('my') . '.pdf';
+
+            // If the file already exists in the database and we are not forcing an update, skip it
+            $exists = DropboxFile::where('file_path', $filePath)
+                ->where('type', 'bulletin')
+                ->exists();
+            if ($exists && !$this->forceUpdate) {
+                continue;
+            }
+
+            // If file not found in Dropbox, skip it
+            if (!$this->filesystem->fileExists($filePath)) {
+                continue;
+            }
+
+            // Otherwise get the share link and create a new entry
+            $shareLink = $this->getShareLink($filePath);
+            if (!$shareLink) {
+                continue;
+            }
+
+            $this->logger->info("Creating or updating bulletin file entry for: {$filePath}");
+            DropboxFile::updateOrCreate(
+                ['file_path' => $filePath, 'type' => 'bulletin'],
+                [
+                    'date' => $month->format('Y-m-01'),
+                    'file_name' => basename($filePath),
+                    'file_path' => $filePath,
+                    'share_link' => $shareLink,
+                    'type' => 'bulletin',
                 ]
             );
         }

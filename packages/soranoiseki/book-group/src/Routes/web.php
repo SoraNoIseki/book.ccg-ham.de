@@ -88,5 +88,6 @@ Route::middleware('web')->group(function () {
 Route::middleware('api')->group(function () {
     Route::group(['prefix' => 'api/website'], function() {
         Route::get('/plans/{year}', [WebsiteApiController::class, 'getPlansByYear'])->where('year', '[0-9]+');
+        Route::get('/bulletins/{year}', [WebsiteApiController::class, 'getBulletinsByYear'])->where('year', '[0-9]+');
     });
 });
