@@ -11,7 +11,6 @@ import 'vue-toast-notification/dist/theme-sugar.css';
 Alpine.start();
 
 import './project';
-import '../../packages/soranoiseki/book-group/src/Resources/js/book';
 
 import.meta.glob([
     '../images/**',
