@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Soranoiseki\BookGroup\Models\TaskPlan\TopicInfo;
 use Soranoiseki\BookGroup\Models\TaskPlan\PreacherInfo;
 use Soranoiseki\BookGroup\Models\Dropbox\File as DropboxFile;
+use Soranoiseki\BookGroup\Models\Finance\FinanceInfo;
 
 
 class WebsiteApiController extends BaseApiController
@@ -143,6 +144,7 @@ class WebsiteApiController extends BaseApiController
                 ->map(function ($file) {
                     return [
                         'date' => $file->date,
+                        'month' => Carbon::parse($file->date)->format('n'),
                         'file_name' => $file->file_name,
                         'share_link' => $file->share_link,
                     ];
@@ -157,5 +159,16 @@ class WebsiteApiController extends BaseApiController
 
         return $this->respondWithData($responseData);
 
+    }
+
+    public function getLatestFinance(Request $request)
+    {
+        $finance = FinanceInfo::orderBy('_id', 'desc')->first();
+
+        if (!$finance) {
+            return $this->respondWithData(null);
+        }
+
+        return $this->respondWithData($finance->toArray());
     }
 }

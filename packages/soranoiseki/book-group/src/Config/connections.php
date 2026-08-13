@@ -53,4 +53,11 @@ return [
         'username' => env('MONGODB_USERNAME', 'homestead'),
         'password' => env('MONGODB_PASSWORD', 'secret'),
     ],
+    'mongodb-finance' => [
+        'driver' => 'mongodb',
+        'dsn' => env('MONGODB_DSN'),
+        'database' => 'ccg-finance',
+        'username' => env('MONGODB_USERNAME', 'homestead'),
+        'password' => env('MONGODB_PASSWORD', 'secret'),
+    ],
 ];
