@@ -1,8 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Soranoiseki\BookGroup\Http\Middleware\VerifyWebsiteApiToken;
 use Soranoiseki\BookGroup\Http\Controllers\PowerpointController;
 use Soranoiseki\BookGroup\Http\Controllers\PowerpointAjaxController;
+// use Soranoiseki\BookGroup\Http\Controllers\PowerpointApiController;
 use Soranoiseki\BookGroup\Http\Controllers\LibraryController;
 use Soranoiseki\BookGroup\Http\Controllers\CalendarController;
 use Soranoiseki\BookGroup\Http\Controllers\SongController;
@@ -23,6 +25,13 @@ Route::middleware(['web', 'auth'])->group(function () {
             Route::get('/song', [PowerpointAjaxController::class, 'getSong'])->name('book-group.ppt.ajax.get-song');
         });
     });
+
+    // Route::group(['prefix' => 'api/powerpoint', 'middleware' => 'role:ppt'], function() {
+    //     Route::get('/', [PowerpointApiController::class, 'show']);
+    //     Route::post('/save', [PowerpointApiController::class, 'save']);
+    //     Route::post('/save-download', [PowerpointApiController::class, 'saveDownload']);
+    //     Route::post('/download', [PowerpointApiController::class, 'download']);
+    // });
 
     Route::group(['prefix' => 'songs', 'middleware' => 'role:songs_management'], function() {
         Route::get('/', [SongController::class, 'index'])->name('book-group.song.index');
@@ -85,9 +94,11 @@ Route::middleware('web')->group(function () {
 });
 
 
-Route::middleware('api')->group(function () {
+// Route::middleware(['api', VerifyWebsiteApiToken::class])->group(function () {
+Route::middleware(['api'])->group(function () {
     Route::group(['prefix' => 'api/website'], function() {
         Route::get('/plans/{year}', [WebsiteApiController::class, 'getPlansByYear'])->where('year', '[0-9]+');
         Route::get('/bulletins/{year}', [WebsiteApiController::class, 'getBulletinsByYear'])->where('year', '[0-9]+');
+        Route::get('/finance', [WebsiteApiController::class, 'getLatestFinance']);
     });
 });

@@ -48,6 +48,10 @@ class BookGroupServiceProvider extends ServiceProvider
             __DIR__ . '/Config/groups.php',
             'book.groups'
         );
+        $this->mergeConfigFrom(
+            __DIR__ . '/Config/website_api.php',
+            'book.website_api'
+        );
 
        
         // register view components
