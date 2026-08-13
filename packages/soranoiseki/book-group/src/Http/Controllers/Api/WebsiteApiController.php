@@ -144,7 +144,7 @@ class WebsiteApiController extends BaseApiController
                 ->map(function ($file) {
                     return [
                         'date' => $file->date,
-                        'month' => Carbon::parse($file->date)->format('m'),
+                        'month' => Carbon::parse($file->date)->format('n'),
                         'file_name' => $file->file_name,
                         'share_link' => $file->share_link,
                     ];
