@@ -1,18 +1,32 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import axios from 'axios';
 import { storeToRefs } from 'pinia';
 import { usePowerpointStore } from '../../store/powerpoint';
 import ContentField from '../ui/ContentField.vue';
 import AlertBox from '../ui/AlertBox.vue';
+import SearchSelect from '../ui/SearchSelect.vue';
 
 interface SongOption { id: string; name: string; album?: string; checked?: boolean }
 
 const ppt = usePowerpointStore();
-const { endpoints } = storeToRefs(ppt);
+const { endpoints, date } = storeToRefs(ppt);
 
 const songs = ref<SongOption[]>([]);
 const loadingSong = ref(false);
+
+// Selected song id per textarea (only drives the dropdown display).
+const selected = reactive<Record<string, string>>({});
+
+// Searchable options: label contains name, album and checked mark.
+const options = computed<SelectOption[]>(() =>
+    songs.value.map((song) => ({ value: song.id, label: optionLabel(song) })),
+);
+
+// A different version has different content, so forget the old selections.
+watch(date, () => {
+    for (const k of Object.keys(selected)) delete selected[k];
+});
 
 const items = [
     { item: 'item1', label: '诗歌1' },
@@ -36,8 +50,7 @@ function optionLabel(s: SongOption): string {
 }
 
 // Load the PPT script of the chosen song into the textarea; empty choice clears it.
-async function onSelect(item: string, e: Event): Promise<void> {
-    const id = (e.target as HTMLSelectElement).value;
+async function onSelect(item: string, id: string): Promise<void> {
     if (!id) {
         ppt.setField('song', item, '');
         return;
@@ -72,22 +85,28 @@ function beautify(item: string): void {
 
 <template>
     <div class="mb-5">
-        <AlertBox title="关于歌词库">
-            歌词库数据提取自2018年至今所有的PPT，可能存在错误，近期将开展校对工作。
+        <AlertBox type="tip" title="提示">
+            请再次核对，并根据司会的要求修改歌词顺序。
         </AlertBox>
     </div>
 
     <ContentField v-for="(s, idx) in items" :key="s.item" tab="song" :item="s.item" :label="s.label" :rows="15">
         <template #toolbar>
             <div class="w-full flex gap-4">
-                <select :disabled="loadingSong" @change="onSelect(s.item, $event)"
-                    class="bg-gray-50 border border-gray-300 text-main text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full max-w-[500px] mb-3 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                    <option value="">从歌库中选择...</option>
-                    <option v-for="song in songs" :key="song.id" :value="song.id">{{ optionLabel(song) }}</option>
-                </select>
+                <div class="w-full max-w-[500px] mb-3">
+                    <SearchSelect v-model="selected[s.item]" :options="options" :disabled="loadingSong"
+                        placeholder="从歌库中选择，可输入关键字搜索..." @change="(id: string) => onSelect(s.item, id)" />
+                </div>
                 <button type="button" @click="beautify(s.item)"
-                    class="text-sm w-32 px-3 py-2.5 mb-3 bg-blue-100 rounded-md font-semibold border border-gray-300">
-                    自动优化格式
+                    class="group relative overflow-hidden inline-flex items-center gap-1.5 shrink-0 h-[42px] px-4 mb-3 rounded-lg text-sm font-semibold text-white whitespace-nowrap bg-gradient-to-r from-primary-500 to-primary-700 shadow-md shadow-primary-700/30 transition duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-700/40 active:translate-y-0 active:scale-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 outline-none motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+                    <!-- shine sweep on hover -->
+                    <span aria-hidden="true"
+                        class="pointer-events-none absolute inset-y-0 -left-full w-1/2 skew-x-[-20deg] bg-white/40 transition-transform duration-700 group-hover:translate-x-[400%] motion-reduce:hidden"></span>
+                    <svg class="relative w-4 h-4 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110 motion-reduce:transition-none"
+                        viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2zm7 11l.9 2.6L22.5 16.5l-2.6.9L19 20l-.9-2.6-2.6-.9 2.6-.9L19 13zM5 14l.9 2.6 2.6.9-2.6.9L5 21l-.9-2.6L1.5 17.5l2.6-.9L5 14z" />
+                    </svg>
+                    <span class="relative">自动优化格式</span>
                 </button>
             </div>
         </template>

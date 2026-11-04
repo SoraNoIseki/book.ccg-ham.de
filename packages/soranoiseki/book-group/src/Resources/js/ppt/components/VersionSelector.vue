@@ -1,39 +1,46 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { usePowerpointStore } from '../store/powerpoint';
+import UiSingleSelect from '@book/task-plan/components/ui/UiSingleSelect.vue';
+
+defineProps<{ compact?: boolean }>();
 
 const ppt = usePowerpointStore();
 const { date, selectedDate, versionOptions, isLoading, saveEnabled } = storeToRefs(ppt);
-
-// Load immediately when another version is picked.
-function onChange(): void {
-    ppt.loadVersion(selectedDate.value);
-}
 </script>
 
 <template>
-    <div class="flex flex-wrap -mx-3">
-        <!-- Current date (read-only) -->
-        <div class="w-full px-3 sm:w-1/2">
-            <div class="mb-5">
-                <label for="ppt-date" class="mb-3 block text-base font-medium text-main">日期</label>
-                <input id="ppt-date" type="date" disabled :value="date"
-                    class="w-full rounded-md border border-gray-200 bg-white py-3 px-6 text-base font-medium text-main outline-none disabled:bg-gray-50" />
-                <p class="mt-2 text-sm" :class="saveEnabled ? 'text-green-700' : 'text-gray-500'">
-                    {{ saveEnabled ? '本周版本，可编辑' : '历史版本，仅可下载' }}
-                </p>
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-4">
+        <!-- Current version: date + editable/readonly badge -->
+        <div class="flex items-center gap-3">
+            <div class="flex items-center justify-center rounded-xl bg-primary-100 text-primary-800 transition-all duration-300 ease-out"
+                :class="compact ? 'w-8 h-8' : 'w-11 h-11'">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <path d="M16 2v4M8 2v4M3 10h18" />
+                </svg>
+            </div>
+            <div>
+                <div class="text-xs text-gray-500 overflow-hidden transition-all duration-300 ease-out"
+                    :class="compact ? 'max-h-0 opacity-0' : 'max-h-5 opacity-100'">当前版本</div>
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-main dark:text-gray-100 tabular-nums transition-all duration-300 ease-out"
+                        :class="compact ? 'text-base' : 'text-lg'">{{ date || '--' }}</span>
+                    <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
+                        :class="saveEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'">
+                        {{ saveEnabled ? '本周 · 可编辑' : '历史 · 仅下载' }}
+                    </span>
+                </div>
             </div>
         </div>
 
-        <!-- Version selector -->
-        <div class="w-full px-3 sm:w-1/2">
-            <div class="mb-5">
-                <label for="ppt-version" class="mb-3 block text-base font-medium text-main">加载其他版本</label>
-                <select id="ppt-version" v-model="selectedDate" :disabled="isLoading" @change="onChange"
-                    class="w-full rounded-md border border-gray-200 bg-white py-3 px-6 text-base font-medium text-main outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md disabled:opacity-50">
-                    <option v-for="o in versionOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
-                </select>
-            </div>
+        <!-- Version search -->
+        <div class="w-full sm:w-64 sm:ml-auto lg:ml-0">
+            <div class="text-xs text-gray-500 overflow-hidden transition-all duration-300 ease-out"
+                :class="compact ? 'max-h-0 opacity-0 mb-0' : 'max-h-5 opacity-100 mb-1'">切换版本</div>
+            <UiSingleSelect v-model="selectedDate" :options="versionOptions" :disabled="isLoading"
+                placeholder="选择或搜索日期..." @change="(v: string) => v && ppt.loadVersion(v)" />
         </div>
     </div>
 </template>

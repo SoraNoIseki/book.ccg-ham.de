@@ -66,20 +66,30 @@ function setupAxiosCsrf(): void {
     if (token) axios.defaults.headers.common["X-CSRF-TOKEN"] = token;
 }
 
-function extractErrors(e: unknown): string[] {
+async function extractErrors(e: unknown): Promise<string[]> {
     const err = e as AxiosError<any>;
     const resp = err?.response;
+    let body = resp?.data;
 
-    if (resp?.data?.errors) {
+    // Requests with responseType "blob" deliver JSON error bodies as a Blob - decode it first.
+    if (body instanceof Blob) {
+        try {
+            body = JSON.parse(await body.text());
+        } catch {
+            body = undefined;
+        }
+    }
+
+    if (body?.errors) {
         const all: string[] = [];
-        for (const k of Object.keys(resp.data.errors)) {
-            all.push(...resp.data.errors[k]);
+        for (const k of Object.keys(body.errors)) {
+            all.push(...body.errors[k]);
         }
         return all;
     }
 
-    if (resp?.data?.message) return [String(resp.data.message)];
-    return ["An error occurred. Please do not refresh the page."];
+    if (body?.message) return [String(body.message)];
+    return ["有错误发生，请先保存。"];
 }
 
 function downloadBlob(res: AxiosResponse<Blob>, fallbackName: string): void {
@@ -146,6 +156,26 @@ export const usePowerpointStore = defineStore("powerpoint", {
 
     getters: {
         /**
+         * Required-field progress per tab, used for the tab badges.
+         * Tabs without required fields (report) have total = 0; their `filled` counts
+         * non-empty items so the UI can still show a check once something is entered.
+         */
+        tabProgress(state): Record<TabId, { filled: number; total: number }> {
+            const result = {} as Record<TabId, { filled: number; total: number }>;
+            for (const tab of ["pray", "scripture", "preach", "song", "report", "worker"] as TabId[]) {
+                result[tab] = { filled: 0, total: 0 };
+            }
+            result.report.filled = Object.values(state.content.report ?? {}).filter(
+                (v) => (v ?? "").trim() !== "",
+            ).length;
+            for (const [tab, item] of REQUIRED_FIELDS) {
+                result[tab].total++;
+                if ((state.content[tab]?.[item] ?? "").trim() !== "") result[tab].filled++;
+            }
+            return result;
+        },
+
+        /**
          * Options for the version selector.
          * Backend `versions` excludes the current date, so merge it back in.
          * Sorted descending (newest first), unique.
@@ -209,7 +239,7 @@ export const usePowerpointStore = defineStore("powerpoint", {
                 if (this.date) setQueryParam("v", this.date);
                 setQueryParam("tab", this.activeTab);
             } catch (e) {
-                this.errors = extractErrors(e);
+                this.errors = await extractErrors(e);
                 // Roll the selector back to the version that is actually shown
                 this.selectedDate = this.date;
             } finally {
@@ -278,9 +308,9 @@ export const usePowerpointStore = defineStore("powerpoint", {
                     this.endpoints.save,
                     this.buildPayload(),
                 );
-                this.successMessage = data.message ?? "Saved.";
+                this.successMessage = data.message ?? "已保存。";
             } catch (e) {
-                this.errors = extractErrors(e);
+                this.errors = await extractErrors(e);
             } finally {
                 this.isSubmitting = false;
             }
@@ -303,9 +333,9 @@ export const usePowerpointStore = defineStore("powerpoint", {
                     },
                 );
                 downloadBlob(res, `${this.date}.pptx`);
-                this.successMessage = "Saved and downloading...";
+                this.successMessage = "已保存，正在下载...";
             } catch (e) {
-                this.errors = extractErrors(e);
+                this.errors = await extractErrors(e);
             } finally {
                 this.isSubmitting = false;
             }
@@ -327,7 +357,7 @@ export const usePowerpointStore = defineStore("powerpoint", {
                 );
                 downloadBlob(res, `${this.date}.pptx`);
             } catch (e) {
-                this.errors = extractErrors(e);
+                this.errors = await extractErrors(e);
             } finally {
                 this.isSubmitting = false;
             }

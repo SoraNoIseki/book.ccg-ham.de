@@ -25,15 +25,17 @@ const value = computed({
 </script>
 
 <template>
-    <div class="mb-5">
-        <label :for="id" class="mb-3 block text-base font-medium text-main dark:text-light">{{ label }}</label>
+    <div class="mb-8">
+        <label :for="id" class="mb-2 block text-sm font-semibold text-main dark:text-light">{{ label }}</label>
+
+        <!-- Toolbar sits above the grid so the textarea and the hints start at the same height -->
+        <slot name="toolbar" />
 
         <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
             <div class="col-span-3">
-                <slot name="toolbar" />
                 <textarea :id="id" v-model="value" :rows="rows" :placeholder="placeholder ?? label"
                     :disabled="disabled"
-                    class="w-full resize-none rounded-md border border-gray-200 bg-white dark:bg-gray-900 py-3 px-6 text-base font-medium text-main dark:text-light outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md disabled:bg-gray-50" />
+                    class="w-full resize-y rounded-xl border border-gray-200 bg-gray-50/60 dark:bg-gray-900 py-3 px-4 text-base text-main dark:text-light placeholder:text-gray-400 outline-none transition focus:bg-white focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 disabled:bg-gray-100" />
             </div>
             <div v-if="slots.hint" class="space-y-5">
                 <slot name="hint" />
