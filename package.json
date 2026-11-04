@@ -1,5 +1,6 @@
 {
     "private": true,
+    "name": "book-ccg-hamburg",
     "scripts": {
         "dev": "vite",
         "build": "vite build"
