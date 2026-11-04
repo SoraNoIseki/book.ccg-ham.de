@@ -303,7 +303,7 @@ corepack_enable: false
 # for them. Example:
 #hooks:
 
-webimage_extra_packages: ['php${DDEV_PHP_VERSION}-mongodb']
+webimage_extra_packages: ['php${DDEV_PHP_VERSION}-mongodb', 'python3-venv', 'python3-pip']
 
 web_extra_exposed_ports:
   - name: vite
