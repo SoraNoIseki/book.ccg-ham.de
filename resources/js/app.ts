@@ -21,9 +21,8 @@ import { createApp } from 'vue';
 import { createPinia } from "pinia";
 import ToastPlugin from 'vue-toast-notification';
 
-import * as AppSongs from "../../packages/soranoiseki/book-group/src/Resources/js/songs";
-import * as AppTaskPlan from "../../packages/soranoiseki/book-group/src/Resources/js/task-plan";
-import * as AppAdmin from "./admin";
+import * as BookGroupApps from '@book/index';
+import * as AppAdmin from "@/admin";
 
 import '@vuepic/vue-datepicker/dist/main.css';
 import { configureEcho } from '@laravel/echo-vue';
@@ -32,14 +31,18 @@ configureEcho({
     broadcaster: 'reverb',
 });
 
-// App PPT Generator
-const appSongs = createApp(AppSongs.App);
-appSongs.mount("#app-songs");
-
 const appAdmin = createApp(AppAdmin.App);
 appAdmin.mount("#app-admin");
 
-const appTaskPlan = createApp(AppTaskPlan.App);;
+const appSongs = createApp(BookGroupApps.AppSongs);
+appSongs.mount("#app-songs");
+
+const appTaskPlan = createApp(BookGroupApps.AppTaskPlan);
 appTaskPlan.use(createPinia());
 appTaskPlan.use(ToastPlugin);
 appTaskPlan.mount("#app-task-plan");
+
+const appPptGenerator = createApp(BookGroupApps.AppPptGenerator);
+appPptGenerator.use(createPinia());
+appPptGenerator.use(ToastPlugin);
+appPptGenerator.mount("#app-ppt-generator");

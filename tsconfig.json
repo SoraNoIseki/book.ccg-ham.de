@@ -10,7 +10,12 @@
         "noImplicitThis": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["resources/js/*"],
+            "@book/*": ["packages/soranoiseki/book-group/src/Resources/js/*"]
+        }
     },
     "include": ["./**/*.ts", "./**/*.d.ts", "./**/*.vue"]
 }

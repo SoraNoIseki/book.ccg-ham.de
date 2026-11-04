@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Soranoiseki\BookGroup\Http\Middleware\VerifyWebsiteApiToken;
 use Soranoiseki\BookGroup\Http\Controllers\PowerpointController;
 use Soranoiseki\BookGroup\Http\Controllers\PowerpointAjaxController;
-// use Soranoiseki\BookGroup\Http\Controllers\PowerpointApiController;
+use Soranoiseki\BookGroup\Http\Controllers\PowerpointApiController;
 use Soranoiseki\BookGroup\Http\Controllers\LibraryController;
 use Soranoiseki\BookGroup\Http\Controllers\CalendarController;
 use Soranoiseki\BookGroup\Http\Controllers\SongController;
@@ -26,12 +26,14 @@ Route::middleware(['web', 'auth'])->group(function () {
         });
     });
 
-    // Route::group(['prefix' => 'api/powerpoint', 'middleware' => 'role:ppt'], function() {
-    //     Route::get('/', [PowerpointApiController::class, 'show']);
-    //     Route::post('/save', [PowerpointApiController::class, 'save']);
-    //     Route::post('/save-download', [PowerpointApiController::class, 'saveDownload']);
-    //     Route::post('/download', [PowerpointApiController::class, 'download']);
-    // });
+    Route::group(['prefix' => 'api/powerpoint', 'middleware' => 'role:ppt'], function() {
+        Route::get('/', [PowerpointApiController::class, 'show'])->name('book-group.ppt.api.show');
+        Route::post('/save', [PowerpointApiController::class, 'save'])->name('book-group.ppt.api.save');
+        Route::post('/save-download', [PowerpointApiController::class, 'saveDownload'])->name('book-group.ppt.api.save-download');
+        Route::post('/download', [PowerpointApiController::class, 'download'])->name('book-group.ppt.api.download');
+        Route::get('/songs', [PowerpointApiController::class, 'songs'])->name('book-group.ppt.api.songs');
+        Route::get('/song', [PowerpointApiController::class, 'getSong'])->name('book-group.ppt.api.song');
+    });
 
     Route::group(['prefix' => 'songs', 'middleware' => 'role:songs_management'], function() {
         Route::get('/', [SongController::class, 'index'])->name('book-group.song.index');
