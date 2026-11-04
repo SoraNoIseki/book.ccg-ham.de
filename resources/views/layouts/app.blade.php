@@ -38,5 +38,9 @@
                 <img class="w-8 h-8" src={{ Vite::asset('resources/images/loading.gif') }}>
             </div>
         </div>
+
+        <script>
+            window.roles = @json($roles);
+        </script>
     </body>
 </html>

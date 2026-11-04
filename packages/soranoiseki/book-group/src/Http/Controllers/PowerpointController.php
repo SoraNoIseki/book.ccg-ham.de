@@ -26,53 +26,8 @@ class PowerpointController extends Controller
      */
     public function index(Request $request)
     {
-        $defaultDate = Carbon::now()->endOfWeek()->format('Y-m-d');
-        if ($request->has('v') && $request->get('v') != '') {
-            $date = $request->get('v');
-        } else {
-            $date = $defaultDate;
-        }
-
-        // load otherversions
-        $versions = $this->getOtherVersions($date);
-
-        // read content from files
-        $content = [];
-        $versionExists = false;
-        foreach ($this->content as $field) {
-            $filename = $field . '_list_' . $date . '.txt';
-            $data = $this->readContentFile($filename);
-            if ($data !== false) {
-                $versionExists = true;
-                $content[$field] = $this->splitContentText($data);
-            }
-        }
-
-        // copy last version if this version not exists
-        if (!$versionExists) {
-            $lastVersion = $versions->first();
-            foreach ($this->content as $field) {
-                $filename = $field . '_list_' . $lastVersion . '.txt';
-                $data = $this->readContentFile($filename);
-                // dump($this->splitContentText($data));
-                if ($data !== false) {
-                    $versionExists = true;
-                    $content[$field] = $this->splitContentText($data);
-                }
-            }
-            session()->flash('infoMessage', 'PPT内容已从版本 ' . $lastVersion . ' 复制并加载。');
-        }
-        
-
-        return view('book-group::powerpoint.index', [
-            'date' => $date,
-            'nextWeek' => Carbon::parse($date)->addWeek()->format('Y-m-d'),
-            'defaultDate' => $defaultDate,
-            'content' => $content,
-            'versions' => $versions,
-            'saveEnabled' => $defaultDate == $date,
-            // 'songs' => Song::select(['id', 'song_id'])->orderBy('song_id', 'ASC')->get(),
-        ]);
+        // Data is loaded by the Vue app via PowerpointApiController::show
+        return view('book-group::powerpoint.index');
     }
 
     public function store(StorePowerpointRequest $request)
