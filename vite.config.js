@@ -24,7 +24,6 @@ export default defineConfig({
             input: [
                 "resources/css/app.css",
                 "resources/css/project.css",
-                "resources/css/calendar.css",
                 "resources/js/app.ts",
             ],
             refresh: true,

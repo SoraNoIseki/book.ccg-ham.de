@@ -10,7 +10,6 @@ use Soranoiseki\BookGroup\View\Components\Tabs\Tab;
 use Soranoiseki\BookGroup\View\Components\Alert;
 use Soranoiseki\BookGroup\View\Components\BibleSelector;
 use Soranoiseki\BookGroup\View\Components\SongSelector;
-use Soranoiseki\BookGroup\View\Components\PdfLayout;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\FilesystemAdapter;
@@ -61,7 +60,6 @@ class BookGroupServiceProvider extends ServiceProvider
         Blade::component('alert', Alert::class);
         Blade::component('bible-selector', BibleSelector::class);
         Blade::component('song-selector', SongSelector::class);
-        Blade::component('pdf-layout', PdfLayout::class);
 
         $this->commands([]);
     }

@@ -37,7 +37,7 @@ class ImportEvents implements OnEachRow, WithHeadingRow
             // update
             $event = Event::where('date', $date->format('Y-m-d'))->where('calendar_id', $this->calendar->id)->firstOrFail();
             $event->fill([
-                'event' => $name,
+                'name' => trim($name),
             ])->save();
         } catch (ModelNotFoundException $e) {
             $event = Event::create([
