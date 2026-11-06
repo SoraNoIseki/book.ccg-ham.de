@@ -9,8 +9,6 @@ import 'vue-toast-notification/dist/theme-sugar.css';
 
 Alpine.start();
 
-import './project';
-
 // Register static assets in the Vite manifest so Vite::asset() can resolve them.
 // `eager` is required: Vite 8 (Rolldown) drops an unused lazy glob and the assets never get emitted.
 import.meta.glob([
@@ -37,6 +35,9 @@ appAdmin.mount("#app-admin");
 
 const appSongs = createApp(BookGroupApps.AppSongs);
 appSongs.mount("#app-songs");
+
+const appSongAdmin = createApp(BookGroupApps.AppSongAdmin);
+appSongAdmin.mount("#app-song-admin");
 
 const appTaskPlan = createApp(BookGroupApps.AppTaskPlan);
 appTaskPlan.use(createPinia());

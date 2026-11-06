@@ -6,6 +6,7 @@ import { usePowerpointStore } from '../../store/powerpoint';
 import ContentField from '../ui/ContentField.vue';
 import AlertBox from '../ui/AlertBox.vue';
 import SearchSelect from '../ui/SearchSelect.vue';
+import { beautifySongText } from '../../../shared/songText';
 
 interface SongOption { id: string; name: string; album?: string; checked?: boolean }
 
@@ -66,20 +67,8 @@ async function onSelect(item: string, id: string): Promise<void> {
     }
 }
 
-// Normalise punctuation in lyrics (everything after title + source line).
 function beautify(item: string): void {
-    const text = ppt.content.song?.[item] ?? '';
-    const lines = text.split('\n').map((raw, i) => {
-        let line = raw.trim();
-        if (i > 1) {
-            line = line
-                .replace(/[。；，：“”（）、？！ ,.;:?!]/g, '　')
-                .replace(/　+$/, '')
-                .replace(/　+/g, '　');
-        }
-        return line;
-    });
-    ppt.setField('song', item, lines.join('\n'));
+    ppt.setField('song', item, beautifySongText(ppt.content.song?.[item] ?? ''));
 }
 </script>
 

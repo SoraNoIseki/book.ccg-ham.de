@@ -3,13 +3,6 @@
 namespace Soranoiseki\BookGroup;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Blade;
-use Soranoiseki\BookGroup\View\Components\Tabs\Container;
-use Soranoiseki\BookGroup\View\Components\Tabs\Label;
-use Soranoiseki\BookGroup\View\Components\Tabs\Tab;
-use Soranoiseki\BookGroup\View\Components\Alert;
-use Soranoiseki\BookGroup\View\Components\BibleSelector;
-use Soranoiseki\BookGroup\View\Components\SongSelector;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\FilesystemAdapter;
@@ -53,14 +46,6 @@ class BookGroupServiceProvider extends ServiceProvider
         );
 
        
-        // register view components
-        Blade::component('tabs-container', Container::class);
-        Blade::component('tabs-label', Label::class);
-        Blade::component('tabs-tab', Tab::class);
-        Blade::component('alert', Alert::class);
-        Blade::component('bible-selector', BibleSelector::class);
-        Blade::component('song-selector', SongSelector::class);
-
         $this->commands([]);
     }
 
@@ -74,7 +59,6 @@ class BookGroupServiceProvider extends ServiceProvider
         // $this->app->make('Soranoiseki\BookGroup\Http\Controllers\PowerpointController');
         // $this->app->make('Soranoiseki\BookGroup\Http\Controllers\LibraryController');
         // $this->app->make('Soranoiseki\BookGroup\Http\Controllers\CalendarController');
-        // $this->app->make('Soranoiseki\BookGroup\Http\Controllers\PowerpointAjaxController');
         // $this->app->make('Soranoiseki\BookGroup\Http\Controllers\SongController');
         // $this->app->make('Soranoiseki\BookGroup\Http\Controllers\TaskPlanController');
 
