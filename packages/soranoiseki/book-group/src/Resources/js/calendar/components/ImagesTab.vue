@@ -6,7 +6,7 @@ import ImageSlot from './ImageSlot.vue';
 import AlertBox from '../../ppt/components/ui/AlertBox.vue';
 
 const cal = useCalendarStore();
-const { images, busySlots, year, requiredImagesDone } = storeToRefs(cal);
+const { images, busySlots, year, requiredImagesDone, editable } = storeToRefs(cal);
 
 const bulkInput = ref<HTMLInputElement | null>(null);
 const lightbox = ref<string | null>(null);
@@ -77,15 +77,18 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
         <!-- Intro + bulk upload -->
         <div class="flex flex-wrap items-start justify-between gap-4">
             <div class="space-y-3 max-w-2xl">
-                <p class="text-sm text-gray-600 dark:text-gray-300">
+                <p v-if="editable" class="text-sm text-gray-600 dark:text-gray-300">
                     {{ year }} 年日历共需要 <b>封面 + 12 张月份图片</b>（已完成 {{ requiredImagesDone }}/13），
                     叠加层和页脚为可选。点击预览图可查看大图，也可以直接把图片拖到对应卡片上。
                 </p>
-                <AlertBox type="tip" title="批量上传">
+                <p v-else class="text-sm text-gray-600 dark:text-gray-300">
+                    历史版本只能查看已上传的图片（{{ requiredImagesDone }}/13），点击预览图可查看大图。
+                </p>
+                <AlertBox v-if="editable" type="tip" title="批量上传">
                     一次选择多张图片，系统会按文件名自动归位：cover、01 至 12、overlay、footer（例如 03.jpg 会放到 3 月）。
                 </AlertBox>
             </div>
-            <div>
+            <div v-if="editable">
                 <button type="button" @click="bulkInput?.click()"
                     class="inline-flex items-center gap-2 h-11 px-5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-700 shadow-md shadow-primary-700/25 hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-600">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -102,14 +105,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
         <section>
             <h3 class="mb-3 text-sm font-bold text-main dark:text-gray-100">封面与装饰</h3>
             <div class="grid gap-4 grid-cols-1 sm:grid-cols-3 lg:grid-cols-4">
-                <ImageSlot label="封面" aspect="h-64" fit="cover" hint="竖版，建议与 A3 同比例（297:420）。JPG 或 PNG。" required
+                <ImageSlot :readonly="!editable" label="封面" aspect="h-64" fit="cover" hint="竖版，建议与 A3 同比例（297:420）。JPG 或 PNG。" required
                     :info="images.cover" :busy="busySlots.cover" @upload="upload('cover', $event)" @remove="remove('cover')"
                     @view="lightbox = $event" />
-                <ImageSlot label="叠加层" aspect="h-64" fit="contain"
+                <ImageSlot :readonly="!editable" label="叠加层" aspect="h-64" fit="contain"
                     hint="透明 PNG，盖在每月图片上方（例如渐变遮罩，让经文更清晰）。" :info="images.overlay"
                     :busy="busySlots.overlay" @upload="upload('overlay', $event)" @remove="remove('overlay')"
                     @view="lightbox = $event" />
-                <ImageSlot label="页脚" aspect="h-64" fit="contain" hint="每页底部的教会标识和联系方式，宽图。"
+                <ImageSlot :readonly="!editable" label="页脚" aspect="h-64" fit="contain" hint="每页底部的教会标识和联系方式，宽图。"
                     :info="images.footer" :busy="busySlots.footer" @upload="upload('footer', $event)"
                     @remove="remove('footer')" @view="lightbox = $event" />
             </div>
@@ -119,7 +122,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
         <section>
             <h3 class="mb-3 text-sm font-bold text-main dark:text-gray-100">每月图片</h3>
             <div class="grid gap-4 grid-cols-1 sm:grid-cols-3 lg:grid-cols-4">
-                <ImageSlot v-for="slot in MONTH_SLOTS" :key="slot" :label="slotLabel(slot)" :hint="slot === '01' ? '横版 2:1（宽是高的两倍），会按此比例裁切。' : undefined"
+                <ImageSlot :readonly="!editable" v-for="slot in MONTH_SLOTS" :key="slot" :label="slotLabel(slot)" :hint="slot === '01' ? '横版 2:1（宽是高的两倍），会按此比例裁切。' : undefined"
                     :info="images[slot]" :busy="busySlots[slot]" :required="REQUIRED_SLOTS.includes(slot)"
                     @upload="upload(slot, $event)" @remove="remove(slot)" @view="lightbox = $event" />
             </div>

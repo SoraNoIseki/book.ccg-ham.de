@@ -6,7 +6,16 @@ import SearchSelect from '../../ppt/components/ui/SearchSelect.vue';
 defineProps<{ compact?: boolean }>();
 
 const cal = useCalendarStore();
-const { year, selectedYear, versionOptions, isLoading, isCurrent } = storeToRefs(cal);
+const { year, defaultYear, selectedYear, versionOptions, isLoading, isCurrent, editable } = storeToRefs(cal);
+
+function onChange(value: string): void {
+    if (!value) return;
+    if (cal.designDirty && !confirm('有未保存的外观修改，切换版本会丢弃这些修改。要继续吗？')) {
+        cal.selectedYear = String(cal.year); // put the select back
+        return;
+    }
+    cal.fetch(value);
+}
 </script>
 
 <template>
@@ -28,8 +37,8 @@ const { year, selectedYear, versionOptions, isLoading, isCurrent } = storeToRefs
                     <span class="font-bold text-main dark:text-gray-100 tabular-nums transition-all duration-300 ease-out"
                         :class="compact ? 'text-base' : 'text-lg'">{{ year ? year + ' 年' : '--' }}</span>
                     <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
-                        :class="isCurrent ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'">
-                        {{ isCurrent ? '当前版本' : '历史版本' }}
+                        :class="isCurrent ? 'bg-green-100 text-green-800' : editable ? 'bg-sky-100 text-sky-800' : 'bg-gray-100 text-gray-600'">
+                        {{ isCurrent ? '当前版本' : editable ? '后续版本' : '历史版本 · 只读' }}
                     </span>
                 </div>
             </div>
@@ -40,7 +49,7 @@ const { year, selectedYear, versionOptions, isLoading, isCurrent } = storeToRefs
             <div class="text-xs text-gray-500 overflow-hidden transition-all duration-300 ease-out"
                 :class="compact ? 'max-h-0 opacity-0 mb-0' : 'max-h-5 opacity-100 mb-1'">切换版本</div>
             <SearchSelect v-model="selectedYear" :options="versionOptions" :disabled="isLoading"
-                placeholder="选择或搜索年份..." @change="(v: string) => v && cal.fetch(v)" />
+                placeholder="选择或搜索年份..." @change="onChange" />
         </div>
     </div>
 </template>

@@ -5,7 +5,7 @@ import { useCalendarStore } from '../store/calendar';
 import CsvImport from './CsvImport.vue';
 
 const cal = useCalendarStore();
-const { details, year } = storeToRefs(cal);
+const { details, year, editable } = storeToRefs(cal);
 
 function checkRow(row: Record<string, string>): string | null {
     const month = Number(row.month);
@@ -26,7 +26,9 @@ const months = computed(() =>
 
 <template>
     <div class="space-y-8">
-        <CsvImport kind="bible-texts" title="每月经文" :columns="['year', 'month', 'text', 'source']"
+        <p v-if="!editable" class="text-sm text-gray-600 dark:text-gray-300">历史版本只能查看，不能上传或修改。</p>
+
+        <CsvImport v-if="editable" kind="bible-texts" title="每月经文" :columns="['year', 'month', 'text', 'source']"
             :labels="['年份', '月份', '经文', '出处']" template-name="每月经文模板.csv"
             :template-rows="[[String(year), '1', '你们要常常喜乐|不住地祷告|凡事谢恩', '帖撒罗尼迦前书 5章16-18节']]"
             :check-row="checkRow" warning="同一年同一月已有的经文会被更新，其他月份保持不变。"

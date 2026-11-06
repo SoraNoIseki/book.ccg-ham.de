@@ -4,6 +4,7 @@ namespace Soranoiseki\BookGroup\Services;
 
 use Overtrue\ChineseCalendar\Calendar as ChineseCalendar;
 use Soranoiseki\BookGroup\Models\Calendar\Calendar;
+use Soranoiseki\BookGroup\Models\Calendar\Design;
 use Soranoiseki\BookGroup\Models\Calendar\Detail;
 use Soranoiseki\BookGroup\Models\Calendar\Event;
 use Soranoiseki\BookGroup\Models\Calendar\Holiday;
@@ -33,13 +34,22 @@ class CalendarDataBuilder
     private array $events = [];
     private array $holidays = [];
 
-    public function __construct(private CalendarImageService $images)
+    public function __construct(private CalendarImageService $images, private CalendarSettings $settings)
     {
         $this->lunar = new ChineseCalendar();
     }
 
-    public function build(Calendar $calendar): array
+    /**
+     * @param array|null  $settings  parameters to apply on top of the design (e.g. unsaved changes from the preview)
+     * @param int|null    $onlyMonth render just this month (no cover page); used for the quick preview
+     * @param string|null $styles    custom CSS to render with instead of the design's (unsaved changes from the preview)
+     * @param Design|null $design    design to render with; defaults to the one the calendar uses
+     */
+    public function build(Calendar $calendar, ?array $settings = null, ?int $onlyMonth = null, ?string $styles = null, ?Design $design = null): array
     {
+        $design ??= $calendar->effectiveDesign();
+        $base = $this->settings->forDesign($design);
+
         $year = (int) $calendar->year;
 
         $this->events = [];
@@ -62,7 +72,7 @@ class CalendarDataBuilder
         }
 
         $months = [];
-        foreach (range(1, 12) as $month) {
+        foreach ($onlyMonth ? [$onlyMonth] : range(1, 12) as $month) {
             $slot = str_pad((string) $month, 2, '0', STR_PAD_LEFT);
             $detail = $details[$month] ?? null;
             $weeks = $this->buildMonth($year, $month);
@@ -82,7 +92,10 @@ class CalendarDataBuilder
         return [
             'year' => $year,
             'weekdays' => self::WEEKDAYS,
-            'cover' => $this->images->absolutePath($year, 'cover'),
+            'settings' => $settings !== null ? $this->settings->resolve(array_replace($base, $settings)) : $base,
+            'styles' => $styles ?? (string) ($design->styles ?? ''),
+            'images_dir' => $this->images->directory($year),
+            'cover' => $onlyMonth ? null : $this->images->absolutePath($year, 'cover'),
             'overlay' => $this->images->absolutePath($year, 'overlay'),
             'footer' => $this->images->absolutePath($year, 'footer'),
             'months' => $months,

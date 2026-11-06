@@ -31,6 +31,7 @@ class UpdateUserRolesCommand extends Command
             ['internal_name' => 'admin', 'name' => '管理员'],
             ['internal_name' => 'library', 'name' => '图书馆'],
             ['internal_name' => 'calendar', 'name' => '年历制作'],
+            ['internal_name' => 'calendar_design', 'name' => '年历外观设计'],
             ['internal_name' => 'songs_management', 'name' => '歌曲管理'],
             ['internal_name' => 'planer_admin', 'name' => '服事安排（管理员）'],
             ['internal_name' => 'visitor', 'name' => '访客'],

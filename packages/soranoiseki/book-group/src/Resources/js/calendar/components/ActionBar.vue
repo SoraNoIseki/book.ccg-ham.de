@@ -5,11 +5,12 @@ import { useCalendarStore } from '../store/calendar';
 defineProps<{ compact?: boolean }>();
 
 const cal = useCalendarStore();
-const { hasCalendar, isGenerating, isLoading } = storeToRefs(cal);
+const { hasCalendar, isGenerating, isLoading, editable } = storeToRefs(cal);
 </script>
 
 <template>
-    <div v-if="hasCalendar" class="flex flex-wrap items-center gap-3">
+    <!-- History versions cannot be generated or downloaded -->
+    <div v-if="hasCalendar && editable" class="flex flex-wrap items-center gap-3">
         <span v-if="isGenerating" class="text-xs text-gray-500">正在生成，大约需要十几秒...</span>
 
         <button type="button" :disabled="isGenerating || isLoading" @click="cal.generatePdf('preview')"

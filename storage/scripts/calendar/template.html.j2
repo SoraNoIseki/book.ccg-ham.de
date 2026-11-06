@@ -7,8 +7,12 @@
         @page { size: {{ page_w }}mm {{ page_h }}mm; margin: 0; }
         html { font-size: {{ rem }}mm; }
         .page { width: {{ page_w }}mm; height: {{ page_h }}mm; }
+        :root {
+        {{ css_vars }}
+        }
     </style>
-    <link rel="stylesheet" href="calendar.css">
+    <link rel="stylesheet" href="{{ css_uri }}">
+    {% if custom_css %}<style id="custom-css">{{ custom_css|safe }}</style>{% endif %}
 </head>
 <body>
 {% if cover_uri %}
@@ -18,7 +22,7 @@
 {% endif %}
 
 {% for m in months %}
-<section class="page month">
+<section class="page month month-{{ m.month }}">
     <!-- Header photo with optional overlay and the bible verse -->
     <div class="header" style="height: {{ header_h }}mm;">
         {% if m.image_uri %}<img class="photo" src="{{ m.image_uri }}" alt="">{% else %}<div class="photo missing"></div>{% endif %}
@@ -48,10 +52,10 @@
     <!-- Day grid: row height is fixed so the grid always fills the area -->
     <div class="days" style="top: {{ days_top }}mm; height: {{ days_h }}mm; left: {{ side_pad }}mm; right: {{ side_pad }}mm; grid-template-rows: repeat({{ m.week_count }}, {{ m.row_h }}mm);">
         {% for d in m.days %}
-        <div class="day-cell{% if not d.in_month %} other-month{% endif %}">
+        <div class="day-cell{% if not d.in_month %} other-month{% endif %}" data-date="{{ d.date }}">
             <div class="day{% if d.red %} red{% endif %}">{{ d.day }}</div>
-            {% if d.lunar %}<div class="lunar{% if d.red %} red{% endif %}">{{ d.lunar }}</div>{% endif %}
-            {% if d.holiday %}<div class="holiday red">{{ d.holiday }}</div>{% endif %}
+            {% if d.lunar and settings.show_lunar %}<div class="lunar{% if d.red %} red{% endif %}">{{ d.lunar }}</div>{% endif %}
+            {% if d.holiday and settings.show_holiday_name %}<div class="holiday red">{{ d.holiday }}</div>{% endif %}
             {% if d.events %}
             <div class="events">
                 {% for e in d.events %}

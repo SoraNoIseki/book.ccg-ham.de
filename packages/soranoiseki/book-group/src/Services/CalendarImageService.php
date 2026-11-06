@@ -62,6 +62,12 @@ class CalendarImageService
         return null;
     }
 
+    /** Absolute folder of a year's images (the only place custom CSS may read files from). */
+    public function directory(int|string $year): string
+    {
+        return $this->disk()->path($this->dir($year));
+    }
+
     /** Absolute filesystem path for the PDF generator, or null. */
     public function absolutePath(int|string $year, string $slot): ?string
     {

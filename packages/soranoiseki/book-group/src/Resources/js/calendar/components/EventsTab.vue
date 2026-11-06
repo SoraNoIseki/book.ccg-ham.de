@@ -4,7 +4,7 @@ import { useCalendarStore } from '../store/calendar';
 import CsvImport from './CsvImport.vue';
 
 const cal = useCalendarStore();
-const { events, year } = storeToRefs(cal);
+const { events, year, editable } = storeToRefs(cal);
 
 function checkRow(row: Record<string, string>): string | null {
     if (!row.event) return '事件内容为空';
@@ -28,7 +28,9 @@ function weekday(date: string): string {
 
 <template>
     <div class="space-y-8">
-        <CsvImport kind="events" title="大事历" :columns="['date', 'event']" :labels="['日期', '事件']"
+        <p v-if="!editable" class="text-sm text-gray-600 dark:text-gray-300">历史版本只能查看，不能上传或修改。</p>
+
+        <CsvImport v-if="editable" kind="events" title="大事历" :columns="['date', 'event']" :labels="['日期', '事件']"
             template-name="大事历模板.csv"
             :template-rows="[[`${year}-01-18`, '会友大会|登录事选举'], [`${year}-04-05`, '复活节主日']]"
             :check-row="checkRow"

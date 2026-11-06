@@ -8,6 +8,7 @@ use Soranoiseki\BookGroup\Http\Controllers\PowerpointApiController;
 use Soranoiseki\BookGroup\Http\Controllers\LibraryController;
 use Soranoiseki\BookGroup\Http\Controllers\CalendarController;
 use Soranoiseki\BookGroup\Http\Controllers\CalendarApiController;
+use Soranoiseki\BookGroup\Http\Controllers\CalendarDesignController;
 use Soranoiseki\BookGroup\Http\Controllers\SongController;
 use Soranoiseki\BookGroup\Http\Controllers\SongApiController;
 use Soranoiseki\BookGroup\Http\Controllers\TaskPlanController;
@@ -61,6 +62,14 @@ Route::middleware(['web', 'auth'])->group(function () {
     });
 
     Route::group(['prefix' => 'api/calendar', 'middleware' => 'role:calendar'], function() {
+        Route::get('/designs', [CalendarDesignController::class, 'index'])->name('book-group.calendar.api.designs');
+        Route::post('/designs', [CalendarDesignController::class, 'store'])->name('book-group.calendar.api.designs.store');
+        Route::get('/designs/{design}', [CalendarDesignController::class, 'show'])->where('design', '[0-9]+')->name('book-group.calendar.api.designs.show');
+        Route::patch('/designs/{design}', [CalendarDesignController::class, 'rename'])->where('design', '[0-9]+')->name('book-group.calendar.api.designs.rename');
+        Route::put('/designs/{design}/content', [CalendarDesignController::class, 'update'])->where('design', '[0-9]+')->name('book-group.calendar.api.designs.update');
+        Route::delete('/designs/{design}', [CalendarDesignController::class, 'destroy'])->where('design', '[0-9]+')->name('book-group.calendar.api.designs.destroy');
+        Route::post('/designs/{design}/restore/{revision}', [CalendarDesignController::class, 'restore'])->where(['design' => '[0-9]+', 'revision' => '[0-9]+'])->name('book-group.calendar.api.designs.restore');
+
         Route::get('/', [CalendarApiController::class, 'show'])->name('book-group.calendar.api.show');
         Route::post('/', [CalendarApiController::class, 'create'])->name('book-group.calendar.api.create');
         Route::post('/{calendar}/events', [CalendarApiController::class, 'importEvents'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.import-events');
@@ -68,6 +77,8 @@ Route::middleware(['web', 'auth'])->group(function () {
         Route::post('/{calendar}/images/{slot}', [CalendarApiController::class, 'uploadImage'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.upload-image');
         Route::delete('/{calendar}/images/{slot}', [CalendarApiController::class, 'deleteImage'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.delete-image');
         Route::post('/{calendar}/holidays', [CalendarApiController::class, 'refreshHolidays'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.holidays');
+        Route::put('/{calendar}/use-design', [CalendarApiController::class, 'useDesign'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.use-design');
+        Route::post('/{calendar}/preview', [CalendarApiController::class, 'preview'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.preview');
         Route::post('/{calendar}/pdf', [CalendarApiController::class, 'pdf'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.pdf');
     });
 

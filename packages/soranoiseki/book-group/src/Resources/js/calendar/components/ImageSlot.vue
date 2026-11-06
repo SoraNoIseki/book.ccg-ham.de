@@ -8,6 +8,8 @@ const props = defineProps<{
     info?: ImageInfo;
     busy?: boolean;
     required?: boolean;
+    /** History versions: look only, no upload, replace or delete */
+    readonly?: boolean;
     /** Tailwind size class of the preview box (aspect-* or h-*) */
     aspect?: string;
     /** cover = fill and crop; contain = show the whole image (wide or transparent artwork) */
@@ -24,7 +26,7 @@ const input = ref<HTMLInputElement | null>(null);
 const dragging = ref(false);
 
 function pick(): void {
-    if (!props.busy) input.value?.click();
+    if (!props.busy && !props.readonly) input.value?.click();
 }
 
 function onFile(e: Event): void {
@@ -37,7 +39,7 @@ function onFile(e: Event): void {
 function onDrop(e: DragEvent): void {
     dragging.value = false;
     const file = e.dataTransfer?.files?.[0];
-    if (file && !props.busy) emit('upload', file);
+    if (file && !props.busy && !props.readonly) emit('upload', file);
 }
 
 // Light checkerboard so transparent PNGs (overlay) are visible
@@ -55,7 +57,7 @@ function formatSize(bytes: number | null | undefined): string {
 <template>
     <div class="group rounded-2xl bg-white dark:bg-gray-800 ring-1 transition"
         :class="dragging ? 'ring-primary-500 ring-2 bg-primary-100/40' : 'ring-gray-200 dark:ring-gray-700'"
-        @dragover.prevent="dragging = true" @dragleave.prevent="dragging = false" @drop.prevent="onDrop">
+        @dragover.prevent="!readonly && (dragging = true)" @dragleave.prevent="dragging = false" @drop.prevent="onDrop">
         <!-- Preview -->
         <div class="relative overflow-hidden rounded-t-2xl bg-gray-100 dark:bg-gray-900" :class="aspect ?? 'aspect-[2/1]'"
             :style="fit === 'contain' && info?.exists ? checker : undefined">
@@ -65,15 +67,15 @@ function formatSize(bytes: number | null | undefined): string {
                     :class="fit === 'contain' ? 'object-contain' : 'object-cover'" />
             </button>
 
-            <button v-else type="button" @click="pick"
-                class="absolute inset-0 w-full h-full flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-primary-700 transition">
+            <button v-else type="button" @click="pick" :disabled="readonly" :class="readonly ? 'cursor-default' : 'hover:text-primary-700'"
+                class="absolute inset-0 w-full h-full flex flex-col items-center justify-center gap-2 text-gray-400 transition">
                 <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="3" y="3" width="18" height="18" rx="2" />
                     <circle cx="9" cy="9" r="1.5" />
                     <path d="m21 15-5-5L5 21" />
                 </svg>
-                <span class="text-xs font-medium">点击或拖入图片</span>
+                <span class="text-xs font-medium">{{ readonly ? '未上传' : '点击或拖入图片' }}</span>
             </button>
 
             <!-- Uploading overlay -->
@@ -92,11 +94,12 @@ function formatSize(bytes: number | null | undefined): string {
                     <div class="text-sm font-semibold text-main dark:text-gray-100 truncate">{{ label }}</div>
                     <div class="text-xs mt-0.5" :class="info?.exists ? 'text-green-700' : required ? 'text-orange-600' : 'text-gray-400'">
                         <template v-if="info?.exists">已上传 · {{ formatSize(info.size) }}</template>
+                        <template v-else-if="readonly">未上传</template>
                         <template v-else>{{ required ? '未上传（必需）' : '未上传（可选）' }}</template>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-1 shrink-0">
+                <div v-if="!readonly" class="flex items-center gap-1 shrink-0">
                     <button type="button" :disabled="busy" @click="pick"
                         class="h-8 px-3 rounded-lg text-xs font-semibold text-primary-800 bg-primary-100/70 hover:bg-primary-100 disabled:opacity-50 transition">
                         {{ info?.exists ? '替换' : '上传' }}

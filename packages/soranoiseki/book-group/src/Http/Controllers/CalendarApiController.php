@@ -4,15 +4,20 @@ namespace Soranoiseki\BookGroup\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Soranoiseki\BookGroup\Imports\Calendar\ImportBibleTexts;
 use Soranoiseki\BookGroup\Imports\Calendar\ImportEvents;
 use Soranoiseki\BookGroup\Models\Calendar\Calendar;
 use Soranoiseki\BookGroup\Models\Calendar\Detail;
+use Soranoiseki\BookGroup\Models\Calendar\Design;
 use Soranoiseki\BookGroup\Models\Calendar\Event;
 use Soranoiseki\BookGroup\Models\Calendar\Holiday;
 use Soranoiseki\BookGroup\Services\CalendarDataBuilder;
+use Soranoiseki\BookGroup\Services\CalendarDesigns;
 use Soranoiseki\BookGroup\Services\CalendarImageService;
+use Soranoiseki\BookGroup\Services\CalendarSettings;
+use Soranoiseki\BookGroup\Services\CalendarStyles;
 use Soranoiseki\Core\Controllers\Controller;
 use Symfony\Component\Process\Process;
 
@@ -22,8 +27,26 @@ use Symfony\Component\Process\Process;
  */
 class CalendarApiController extends Controller
 {
-    public function __construct(private CalendarImageService $images)
+    public function __construct(
+        private CalendarImageService $images,
+        private CalendarSettings $settings,
+        private CalendarStyles $styles,
+        private CalendarDesigns $designs,
+    ) {
+    }
+
+    /**
+     * Calendars of earlier years are history: they can be looked at (and previewed with any design),
+     * but not changed. The current calendar and later ones can be edited.
+     */
+    private function isEditable(Calendar $calendar): bool
     {
+        return (int) $calendar->year >= $this->defaultYear();
+    }
+
+    private function lockedResponse(Calendar $calendar): ?JsonResponse
+    {
+        return $this->isEditable($calendar) ? null : $this->fail('历史版本不能修改，也不能下载。', 403);
     }
 
     /** Calendars are usually prepared at the end of the year for the next year. */
@@ -54,6 +77,10 @@ class CalendarApiController extends Controller
             return $this->fail('年份无效。', 422);
         }
 
+        if ($year < $this->defaultYear()) {
+            return $this->fail('不能创建历史年份的日历。', 403);
+        }
+
         $calendar = Calendar::where('year', $year)->first();
         if ($calendar) {
             return $this->fail($year . ' 年的日历已经存在。', 409);
@@ -61,6 +88,9 @@ class CalendarApiController extends Controller
 
         $calendar = new Calendar();
         $calendar->year = $year;
+        // New calendars use the design of the closest earlier year (or the first design if there is none)
+        $source = Calendar::where('year', '<', $year)->whereNotNull('design_id')->orderBy('year', 'desc')->first();
+        $calendar->design_id = $source?->design_id ?? Design::orderBy('id')->value('id');
         $calendar->save();
 
         $message = '已创建 ' . $year . ' 年日历。';
@@ -78,6 +108,10 @@ class CalendarApiController extends Controller
      */
     public function importEvents(Request $request, Calendar $calendar): JsonResponse
     {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+
         $request->validate(['file' => 'required|file|mimes:csv,txt']);
 
         try {
@@ -95,6 +129,10 @@ class CalendarApiController extends Controller
      */
     public function importBibleTexts(Request $request, Calendar $calendar): JsonResponse
     {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+
         $request->validate(['file' => 'required|file|mimes:csv,txt']);
 
         try {
@@ -112,6 +150,10 @@ class CalendarApiController extends Controller
      */
     public function uploadImage(Request $request, Calendar $calendar, string $slot): JsonResponse
     {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+
         if (!$this->images->isValidSlot($slot)) {
             return $this->fail('未知的图片位置。', 404);
         }
@@ -134,6 +176,10 @@ class CalendarApiController extends Controller
      */
     public function deleteImage(Calendar $calendar, string $slot): JsonResponse
     {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+
         if (!$this->images->isValidSlot($slot)) {
             return $this->fail('未知的图片位置。', 404);
         }
@@ -148,6 +194,10 @@ class CalendarApiController extends Controller
      */
     public function refreshHolidays(Calendar $calendar): JsonResponse
     {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+
         try {
             $this->fetchHolidays((int) $calendar->year);
         } catch (\Throwable $e) {
@@ -158,13 +208,88 @@ class CalendarApiController extends Controller
     }
 
     /**
+     * PUT /api/calendar/{calendar}/use-design  { design_id }
+     * Chooses which design this calendar renders with. Designs themselves are managed in CalendarDesignController.
+     */
+    public function useDesign(Request $request, Calendar $calendar): JsonResponse
+    {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+
+        $data = $request->validate([
+            'design_id' => ['required', 'integer', \Illuminate\Validation\Rule::exists('calendar_design', 'id')->whereNull('deleted_at')],
+        ], ['design_id.required' => '请选择一套外观。', 'design_id.exists' => '所选的外观不存在。']);
+
+        $calendar->design_id = $data['design_id'];
+        $calendar->save();
+
+        return response()->json($this->payload((int) $calendar->year, $calendar->refresh()) + ['message' => '已更换本日历使用的外观。']);
+    }
+
+    /**
+     * POST /api/calendar/{calendar}/preview  { month: 1..12, design_id?, settings?, styles? }
+     * Renders a single month as a one-page PDF. Any design can be previewed on any calendar (history included);
+     * unsaved `settings` and `styles` on top of it are honoured only for users who may edit designs.
+     */
+    public function preview(Request $request, Calendar $calendar, CalendarDataBuilder $builder)
+    {
+        $monthMessage = '月份必须是 1 到 12 之间的整数。';
+        $request->validate([
+            'month' => 'required|integer|min:1|max:12',
+            'design_id' => 'nullable|integer',
+            'settings' => 'nullable|array',
+            'styles' => 'nullable|string',
+        ], [
+            'month.required' => $monthMessage,
+            'month.integer' => $monthMessage,
+            'month.min' => $monthMessage,
+            'month.max' => $monthMessage,
+        ]);
+
+        $design = $request->filled('design_id') ? Design::find($request->input('design_id')) : $calendar->effectiveDesign();
+        if (!$design) {
+            return $this->fail('所选的外观不存在。', 404);
+        }
+
+        $settings = null;
+        $styles = null;
+        if ($this->designs->isDesigner($request->user())) {
+            if ($request->has('settings')) {
+                $settings = array_replace($this->settings->forDesign($design), $this->settings->validate($request->input('settings')));
+            }
+            if ($request->has('styles')) {
+                $styles = $this->styles->validate($request->input('styles'));
+            }
+        }
+
+        return $this->renderPdf(
+            $calendar,
+            $builder->build($calendar, $settings, (int) $request->input('month'), $styles, $design),
+            'calendar_' . $calendar->year . '_' . $request->input('month') . '.pdf'
+        );
+    }
+
+    /**
      * POST /api/calendar/{calendar}/pdf
      * Collect data -> JSON file -> python renders the PDF -> stream it back.
      */
     public function pdf(Calendar $calendar, CalendarDataBuilder $builder)
     {
-        $data = $builder->build($calendar);
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
 
+        return $this->renderPdf($calendar, $builder->build($calendar), 'calendar_' . $calendar->year . '.pdf');
+    }
+
+    // ----------------------------
+    // internal helpers
+    // ----------------------------
+
+    /** Hand the data to the python script and stream the resulting PDF back. */
+    private function renderPdf(Calendar $calendar, array $data, string $downloadName)
+    {
         $dir = storage_path('app/tmp/calendar');
         if (!is_dir($dir)) {
             mkdir($dir, 0775, true);
@@ -194,14 +319,21 @@ class CalendarApiController extends Controller
             return $this->fail('生成 PDF 失败：' . ($detail !== '' ? $detail : '未知错误'), 500);
         }
 
+        // CSS problems found by the script (unknown property, invalid value, ...), one "CSS_WARNING<TAB>text" per line
+        $warnings = [];
+        foreach (explode("\n", $process->getErrorOutput()) as $line) {
+            if (str_starts_with($line, "CSS_WARNING\t")) {
+                $warnings[] = trim(substr($line, 12));
+            }
+        }
+
         return response()
-            ->download($pdfPath, 'calendar_' . $calendar->year . '.pdf', ['Content-Type' => 'application/pdf'])
+            ->download($pdfPath, $downloadName, [
+                'Content-Type' => 'application/pdf',
+                'X-Calendar-Warnings' => rawurlencode(json_encode(array_slice($warnings, 0, 20), JSON_UNESCAPED_UNICODE)),
+            ])
             ->deleteFileAfterSend(true);
     }
-
-    // ----------------------------
-    // internal helpers
-    // ----------------------------
 
     private function fail(string $message, int $status): JsonResponse
     {
@@ -244,6 +376,11 @@ class CalendarApiController extends Controller
             'details' => $details,
             'images' => $images,
             'holidayCount' => Holiday::where('year', $year)->count(),
+            'editable' => $calendar ? $this->isEditable($calendar) : $year >= $this->defaultYear(),
+            'design_id' => $calendar?->effectiveDesign()?->id,
+            'designs' => $this->designs->list(),
+            'canDesign' => $this->designs->isDesigner(request()->user()),
+            'settingsSchema' => $this->settings->schema(),
         ];
     }
 
