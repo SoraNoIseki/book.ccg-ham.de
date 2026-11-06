@@ -51,3 +51,7 @@ appPptGenerator.mount("#app-ppt-generator");
 const appCalendar = createApp(BookGroupApps.AppCalendar);
 appCalendar.use(createPinia());
 appCalendar.mount("#app-calendar");
+
+const appLibrary = createApp(BookGroupApps.AppLibrary);
+appLibrary.use(createPinia());
+appLibrary.mount("#app-library");

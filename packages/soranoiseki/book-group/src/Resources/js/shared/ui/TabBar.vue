@@ -20,7 +20,7 @@ defineEmits<{ (e: 'update:modelValue', id: string): void }>();
         <nav class="inline-flex min-w-full sm:min-w-0 gap-1 p-1 rounded-2xl bg-gray-100 dark:bg-gray-900" role="tablist">
             <button v-for="t in tabs" :key="t.id" type="button" role="tab" :aria-selected="modelValue === t.id"
                 @click="$emit('update:modelValue', t.id)" :class="[
-                    'flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-300 ease-out outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
+                    'flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-300 ease-out outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
                     compact ? 'py-1.5' : 'py-2.5',
                     modelValue === t.id
                         ? 'bg-white text-primary-800 shadow-sm dark:bg-gray-700 dark:text-white'

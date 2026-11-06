@@ -81,6 +81,7 @@ class BookGroupServiceProvider extends ServiceProvider
         $this->commands([
             \Soranoiseki\BookGroup\Console\Commands\SyncSongs::class,
             \Soranoiseki\BookGroup\Console\Commands\FetchDropboxPublicLinks::class,
+            \Soranoiseki\BookGroup\Console\Commands\ImportOpenBiblio::class,
         ]);
     }
 

@@ -2,47 +2,29 @@
 
 namespace Soranoiseki\BookGroup\Models\Library;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Soranoiseki\BookGroup\Models\Library\Copy;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Book extends Model
 {
-    use HasFactory;
-
-    protected $connection = 'openbiblio';
-
-    protected $table = 'biblio';
-
-    protected $primaryKey = 'bibid';
-
-    const CREATED_AT = 'create_dt';
-    
-    const UPDATED_AT = 'last_change_dt';
-
-    public function copies() {
-        return $this->hasMany(Copy::class, 'bibid', 'bibid');
-    }
+    protected $table = 'library_books';
 
     protected $fillable = [
-        'create_dt',
-        'last_change_dt',
-        'last_change_userid',
-        'material_cd',
-        'collection_cd',
-        'call_nmbr1',
-        'call_nmbr2',
-        'call_nmbr3',
-        'title',
-        'title_remainder',
-        'responsibility_stmt',
-        'author',
-        'topic1',
-        'topic2',
-        'topic3',
-        'topic4',
-        'topic5',
-        'opac_flg',
+        'code', 'isbn', 'title', 'subtitle', 'author', 'publisher', 'category', 'cover_url', 'is_visible', 'legacy_id',
     ];
 
+    protected $casts = [
+        'is_visible' => 'boolean',
+    ];
+
+    public function copies(): HasMany
+    {
+        return $this->hasMany(Copy::class, 'book_id')->orderBy('number');
+    }
+
+    /** Title with subtitle, as shown in lists. */
+    public function getDisplayTitleAttribute(): string
+    {
+        return $this->subtitle ? $this->title . ' - ' . $this->subtitle : $this->title;
+    }
 }

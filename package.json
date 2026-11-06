@@ -26,6 +26,8 @@
     "dependencies": {
         "@vueform/multiselect": "^2.6.11",
         "@vuepic/vue-datepicker": "^8.8.0",
+        "@zxing/browser": "^0.2.1",
+        "@zxing/library": "^0.23.0",
         "luxon": "^3.4.4",
         "mqtt": "^5.10.4",
         "pinia": "^2.1.7",

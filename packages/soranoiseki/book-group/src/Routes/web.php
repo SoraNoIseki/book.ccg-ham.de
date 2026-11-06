@@ -6,6 +6,7 @@ use Soranoiseki\BookGroup\Http\Controllers\PowerpointController;
 use Soranoiseki\BookGroup\Http\Controllers\PowerpointAjaxController;
 use Soranoiseki\BookGroup\Http\Controllers\PowerpointApiController;
 use Soranoiseki\BookGroup\Http\Controllers\LibraryController;
+use Soranoiseki\BookGroup\Http\Controllers\LibraryApiController;
 use Soranoiseki\BookGroup\Http\Controllers\CalendarController;
 use Soranoiseki\BookGroup\Http\Controllers\CalendarApiController;
 use Soranoiseki\BookGroup\Http\Controllers\CalendarDesignController;
@@ -47,14 +48,23 @@ Route::middleware(['web', 'auth'])->group(function () {
     
     Route::group(['prefix' => 'library', 'middleware' => 'role:library'], function() {
         Route::get('/', [LibraryController::class, 'index'])->name('library.index');
+    });
 
-        Route::get('/book/{bookId}/{copyId}/borrow', [LibraryController::class, 'borrowBook'])->name('library.book.borrow');
-        Route::get('/book/{bookId}/{copyId}/return', [LibraryController::class, 'returnBook'])->name('library.book.return');
-        // Route::get('/book/');
-
-        Route::get('/import', [LibraryController::class, 'importBooks'])->name('library.import');
-        Route::post('/import/books', [LibraryController::class, 'importBooks'])->name('library.import.books');
-        Route::post('/import/members', [LibraryController::class, 'importMembers'])->name('library.import.members');
+    Route::group(['prefix' => 'api/library', 'middleware' => 'role:library'], function() {
+        Route::get('/summary', [LibraryApiController::class, 'summary'])->name('library.api.summary');
+        Route::get('/books', [LibraryApiController::class, 'books'])->name('library.api.books');
+        Route::post('/books', [LibraryApiController::class, 'saveBook'])->name('library.api.books.save');
+        Route::patch('/books/{book}', [LibraryApiController::class, 'updateBook'])->where('book', '[0-9]+')->name('library.api.books.update');
+        Route::post('/books/{book}/copies', [LibraryApiController::class, 'addCopy'])->where('book', '[0-9]+')->name('library.api.books.add-copy');
+        Route::get('/lookup', [LibraryApiController::class, 'lookup'])->name('library.api.lookup');
+        Route::get('/metadata', [LibraryApiController::class, 'metadata'])->name('library.api.metadata');
+        Route::post('/copies/{copy}/borrow', [LibraryApiController::class, 'borrow'])->where('copy', '[0-9]+')->name('library.api.borrow');
+        Route::post('/copies/{copy}/return', [LibraryApiController::class, 'return'])->where('copy', '[0-9]+')->name('library.api.return');
+        Route::post('/loans/{loan}/renew', [LibraryApiController::class, 'renew'])->where('loan', '[0-9]+')->name('library.api.renew');
+        Route::get('/loans', [LibraryApiController::class, 'loans'])->name('library.api.loans');
+        Route::get('/members', [LibraryApiController::class, 'members'])->name('library.api.members');
+        Route::post('/members', [LibraryApiController::class, 'createMember'])->name('library.api.members.create');
+        Route::post('/import/books', [LibraryApiController::class, 'importBooks'])->name('library.api.import-books');
     });
 
     Route::group(['prefix' => 'calendar', 'middleware' => 'role:calendar'], function() {
