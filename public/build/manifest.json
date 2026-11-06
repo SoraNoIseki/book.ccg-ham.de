@@ -1,28 +1,33 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-d3e464c5.css",
-    "isEntry": true,
-    "src": "resources/css/app.css"
+    "file": "assets/app-BrctuTWM.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
   },
   "resources/css/project.css": {
-    "file": "assets/project-4ed993c7.js",
-    "isEntry": true,
-    "src": "resources/css/project.css"
+    "file": "assets/project-x1XGuNl0.css",
+    "name": "project",
+    "names": [
+      "project.css"
+    ],
+    "src": "resources/css/project.css",
+    "isEntry": true
   },
   "resources/images/loading.gif": {
-    "file": "assets/loading-65c2fc8c.gif",
+    "file": "assets/loading-oCXEX8IM.gif",
     "src": "resources/images/loading.gif"
   },
-  "resources/js/app.css": {
-    "file": "assets/app-e1aa736a.css",
-    "src": "resources/js/app.css"
-  },
   "resources/js/app.ts": {
-    "css": [
-      "assets/app-e1aa736a.css"
-    ],
-    "file": "assets/app-f56f50b7.js",
+    "file": "assets/app-B6i9NPZ3.js",
+    "name": "app",
+    "src": "resources/js/app.ts",
     "isEntry": true,
-    "src": "resources/js/app.ts"
+    "css": [
+      "assets/app-CJPhsFik.css"
+    ]
   }
 }

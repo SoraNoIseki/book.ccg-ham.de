@@ -5,8 +5,9 @@ module.exports = {
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
-        './**/*.blade.php',
-        './**/*.vue',
+        './resources/**/*.{blade.php,vue,ts,js}',
+        './packages/**/src/**/*.{blade.php,vue,ts,js}',
+        './app/**/*.php',
     ],
 
     theme: {

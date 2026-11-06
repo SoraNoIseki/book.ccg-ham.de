@@ -45,7 +45,7 @@
                     </span>
                 </span>
             </p>
-            <p class="my-4 text-gray-700 dark:text-gray-400 font-semibold text-sm" v-if="possibleMemberNames.length > 0">
+            <div class="my-4 text-gray-700 dark:text-gray-400 font-semibold text-sm" v-if="possibleMemberNames.length > 0">
                 <p class="mb-2">你是否想添加：</p>
                 <p v-for="name in possibleMemberNames" :key="name" class="mb-1">
                     {{ name }}
@@ -54,7 +54,7 @@
                         立即前往<span class="text-primary-600 hover:underline px-0.5 cursor-pointer" @click="scrollToId(name)">组员编辑</span>模块
                     </span>
                 </p>
-            </p>
+            </div>
         </div>
     </div>
 </template>

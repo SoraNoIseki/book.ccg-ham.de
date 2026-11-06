@@ -12,7 +12,7 @@ export default defineConfig({
               host: "0.0.0.0",
               port: 5173,
               strictPort: true,
-              // laravel-vite-plugin 0.7.x builds public/hot from the hmr settings
+              // laravel-vite-plugin builds public/hot from the hmr settings
               hmr: { protocol: "wss", host: new URL(ddevUrl).hostname, clientPort: 5173 },
               origin: `${ddevUrl.replace(/:\d+$/, "")}:5173`,
               cors: { origin: /https?:\/\/([A-Za-z0-9\-.]+)?(\.ddev\.site)(?::\d+)?$/ },
@@ -31,8 +31,8 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            "@": path.resolve(__dirname, "./resources/js"),
-            "@book": path.resolve(__dirname, "./packages/soranoiseki/book-group/src/Resources/js"),
+            "@": path.resolve(import.meta.dirname, "./resources/js"),
+            "@book": path.resolve(import.meta.dirname, "./packages/soranoiseki/book-group/src/Resources/js"),
         },
     },
 });

@@ -11,10 +11,12 @@ Alpine.start();
 
 import './project';
 
+// Register static assets in the Vite manifest so Vite::asset() can resolve them.
+// `eager` is required: Vite 8 (Rolldown) drops an unused lazy glob and the assets never get emitted.
 import.meta.glob([
     '../images/**',
     '../fonts/**',
-]);
+], { eager: true });
 
 import { createApp } from 'vue';
 import { createPinia } from "pinia";
