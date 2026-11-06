@@ -1,7 +1,6 @@
 import './bootstrap';
 
 import Alpine from 'alpinejs';
-import 'flowbite';
 
 import "@vueform/multiselect/themes/default.css";
 import 'vue-toast-notification/dist/theme-sugar.css';

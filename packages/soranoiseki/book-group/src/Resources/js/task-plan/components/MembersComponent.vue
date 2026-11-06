@@ -102,8 +102,9 @@
         </table>
     </div>
 
-    <div id="delete-popup-modal" tabindex="-1"
-        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div v-if="isDeleteModalOpen" id="delete-popup-modal" tabindex="-1" role="dialog" aria-modal="true"
+        @click.self="closeDeleteModal" @keydown.esc="closeDeleteModal"
+        class="overflow-y-auto overflow-x-hidden fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-gray-900/50 dark:bg-gray-900/80">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
                 <button type="button" @click="closeDeleteModal"
@@ -135,8 +136,9 @@
         </div>
     </div>
 
-    <div id="delete-error-popup-modal" tabindex="-1"
-        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div v-if="isErrorModalOpen" id="delete-error-popup-modal" tabindex="-1" role="dialog" aria-modal="true"
+        @click.self="closeErrorModal" @keydown.esc="closeErrorModal"
+        class="overflow-y-auto overflow-x-hidden fixed inset-0 z-50 flex justify-center items-center w-full h-full bg-gray-900/50 dark:bg-gray-900/80">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <div class="relative bg-white rounded-lg shadow-sm dark:bg-gray-700">
                 <button type="button" @click="closeErrorModal"
@@ -168,31 +170,21 @@
 
 <script setup lang="ts">
 
-import { ref, Ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useTaskPlanStore } from '../stores';
 import { storeToRefs } from 'pinia';
-import { Modal } from 'flowbite';
 import { GroupFilterComponent } from './';
 import { TaskPlanService } from '../services';
 
 const taskPlanStore = useTaskPlanStore();
 const { groupMembers, groups, groupFilter, isUserHasEditPermission } = storeToRefs(taskPlanStore);
 
-const deleteTargetEl: Ref<HTMLElement | null> = ref(null);
-const deleteModal: Ref<Modal | null> = ref(null);
-const errorTargetEl: Ref<HTMLElement | null> = ref(null);
-const errorModal: Ref<Modal | null> = ref(null);
+const isDeleteModalOpen = ref<boolean>(false);
+const isErrorModalOpen = ref<boolean>(false);
 const errorMessage = ref<string>('');
 
 const search = ref<string>("");
 const tooltipBgColor = ref<string>("");
-
-onMounted(async () => {
-    deleteTargetEl.value = document.getElementById('delete-popup-modal');
-    deleteModal.value = new Modal(deleteTargetEl.value);
-    errorTargetEl.value = document.getElementById('delete-error-popup-modal');
-    errorModal.value = new Modal(errorTargetEl.value);
-});
 
 const toDelete = ref<string>('');
 const onDeleteMember = (member: GroupMember) => {
@@ -205,36 +197,26 @@ const onDeleteMember = (member: GroupMember) => {
     if (Array.isArray(isUserCanDeleteMember) && isUserCanDeleteMember.length > 0) {
         const errorGroupNames = [...new Set(isUserCanDeleteMember.map((group: Group) => group.group))];
         errorMessage.value = `组员 <strong>${member.name}</strong> 无法删除，因为他/她同时也是 <strong>${errorGroupNames.join('、')}</strong> 的成员。`;
-        if (errorModal.value) {
-            errorModal.value.show();
-        }
+        isErrorModalOpen.value = true;
         return;
     }
 
     toDelete.value = member.name;
-    if (deleteModal.value) {
-        deleteModal.value.show();
-    }
+    isDeleteModalOpen.value = true;
 };
 
 const confirmDelete = () => {
     taskPlanStore.deleteMember(toDelete.value);
-    if (deleteModal.value) {
-        deleteModal.value.hide();
-    }
+    isDeleteModalOpen.value = false;
 };
 
 const closeDeleteModal = () => {
     toDelete.value = "";
-    if (deleteModal.value) {
-        deleteModal.value.hide();
-    }
+    isDeleteModalOpen.value = false;
 };
 
 const closeErrorModal = () => {
-    if (errorModal.value) {
-        errorModal.value.hide();
-    }
+    isErrorModalOpen.value = false;
 };
 
 const isMemberInGroup = (member: GroupMember, groupRole: string) => {
