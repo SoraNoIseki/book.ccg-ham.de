@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, Ref, onMounted } from 'vue';
+import { ref, Ref, onMounted } from 'vue';
 import axios from 'axios';
 
 

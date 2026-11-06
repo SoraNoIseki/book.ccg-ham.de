@@ -1,0 +1,37 @@
+{
+    "groups": [
+        { "id": "colors", "label": "颜色" },
+        { "id": "sizes", "label": "字号" },
+        { "id": "layout", "label": "版面" },
+        { "id": "display", "label": "显示内容" }
+    ],
+    "settings": [
+        { "key": "accent", "group": "colors", "label": "星期栏主色", "type": "color", "default": "#899211", "css": true },
+        { "key": "weekend", "group": "colors", "label": "周末与节假日红色", "type": "color", "default": "#e5383b", "css": true },
+        { "key": "cell_bg", "group": "colors", "label": "日期格子背景", "type": "color", "default": "#f6f6f6", "css": true },
+        { "key": "event_color", "group": "colors", "label": "大事历文字颜色", "type": "color", "default": "#343a40", "css": true },
+        { "key": "verse_color", "group": "colors", "label": "经文文字颜色", "type": "color", "default": "#ffffff", "css": true },
+
+        { "key": "title_size", "group": "sizes", "label": "月份标题", "type": "number", "unit": "rem", "min": 1.2, "max": 4, "step": 0.1, "default": 2.4, "css": true },
+        { "key": "weekday_size", "group": "sizes", "label": "星期栏", "type": "number", "unit": "rem", "min": 0.8, "max": 2.4, "step": 0.1, "default": 1.3, "css": true },
+        { "key": "day_size", "group": "sizes", "label": "日期数字", "type": "number", "unit": "rem", "min": 1.4, "max": 4, "step": 0.1, "default": 2.4, "css": true },
+        { "key": "lunar_size", "group": "sizes", "label": "农历", "type": "number", "unit": "rem", "min": 0.8, "max": 2.4, "step": 0.1, "default": 1.3, "css": true },
+        { "key": "holiday_size", "group": "sizes", "label": "节假日名称", "type": "number", "unit": "rem", "min": 0.8, "max": 2.4, "step": 0.1, "default": 1.2, "css": true },
+        { "key": "event_size", "group": "sizes", "label": "大事历文字", "type": "number", "unit": "rem", "min": 0.8, "max": 2.4, "step": 0.1, "default": 1.2, "css": true },
+        { "key": "verse_size", "group": "sizes", "label": "经文", "type": "number", "unit": "rem", "min": 1, "max": 3.5, "step": 0.1, "default": 2, "css": true },
+        { "key": "verse_source_size", "group": "sizes", "label": "经文出处", "type": "number", "unit": "rem", "min": 0.8, "max": 3, "step": 0.1, "default": 1.75, "css": true },
+        { "key": "day_weight", "group": "sizes", "label": "日期数字字重", "type": "select", "default": 300, "css": true,
+          "options": [ { "value": 300, "label": "细体" }, { "value": 400, "label": "常规" }, { "value": 500, "label": "中粗" } ] },
+
+        { "key": "header_ratio", "group": "layout", "label": "每月图片高度（占页宽的比例）", "type": "number", "unit": "", "min": 0.3, "max": 0.8, "step": 0.01, "default": 0.5, "css": false,
+          "hint": "0.5 表示每月图片的高度是页宽的一半（2:1）。调大后日历格子会相应变矮。" },
+        { "key": "title_gap", "group": "layout", "label": "月份标题与日历的间距", "type": "number", "unit": "rem", "min": 0, "max": 8, "step": 0.5, "default": 3, "css": false },
+        { "key": "cell_pad", "group": "layout", "label": "格子内边距", "type": "number", "unit": "rem", "min": 0.4, "max": 3, "step": 0.1, "default": 1.2, "css": true },
+        { "key": "event_line_height", "group": "layout", "label": "大事历行距", "type": "number", "unit": "", "min": 1, "max": 2, "step": 0.05, "default": 1.2, "css": true },
+
+        { "key": "show_lunar", "group": "display", "label": "显示农历", "type": "toggle", "default": true, "css": false },
+        { "key": "show_holiday_name", "group": "display", "label": "显示节假日名称", "type": "toggle", "default": true, "css": false },
+        { "key": "show_overlay", "group": "display", "label": "显示叠加层", "type": "toggle", "default": true, "css": false },
+        { "key": "show_footer", "group": "display", "label": "显示页脚", "type": "toggle", "default": true, "css": false }
+    ]
+}

@@ -1,33 +1,33 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-d6566904.css",
-    "isEntry": true,
-    "src": "resources/css/app.css"
-  },
-  "resources/css/calendar.css": {
-    "file": "assets/calendar-a315bfef.css",
-    "isEntry": true,
-    "src": "resources/css/calendar.css"
+    "file": "assets/app-CFLFEYtu.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
   },
   "resources/css/project.css": {
-    "file": "assets/project-4ed993c7.js",
-    "isEntry": true,
-    "src": "resources/css/project.css"
+    "file": "assets/project-x1XGuNl0.css",
+    "name": "project",
+    "names": [
+      "project.css"
+    ],
+    "src": "resources/css/project.css",
+    "isEntry": true
   },
   "resources/images/loading.gif": {
-    "file": "assets/loading-65c2fc8c.gif",
+    "file": "assets/loading-oCXEX8IM.gif",
     "src": "resources/images/loading.gif"
   },
-  "resources/js/app.css": {
-    "file": "assets/app-3f665efa.css",
-    "src": "resources/js/app.css"
-  },
   "resources/js/app.ts": {
-    "css": [
-      "assets/app-3f665efa.css"
-    ],
-    "file": "assets/app-1263c713.js",
+    "file": "assets/app-CcBhykol.js",
+    "name": "app",
+    "src": "resources/js/app.ts",
     "isEntry": true,
-    "src": "resources/js/app.ts"
+    "css": [
+      "assets/app-CJPhsFik.css"
+    ]
   }
 }

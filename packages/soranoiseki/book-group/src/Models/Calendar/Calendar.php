@@ -18,8 +18,21 @@ class Calendar extends Model
      */
     protected $table = 'calendar';
 
+    protected $casts = [
+        'settings' => 'array',
+    ];
+
     public function events() {
         return $this->hasMany(Event::class, 'calendar_id', 'id');
+    }
+
+    public function design() {
+        return $this->belongsTo(Design::class, 'design_id');
+    }
+
+    /** The design this calendar renders with; falls back to the first design if none is set. */
+    public function effectiveDesign(): ?Design {
+        return $this->design ?? Design::orderBy('id')->first();
     }
 
     public function details() {

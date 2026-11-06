@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>CCGH Calendar {{ year }}</title>
+    <style>
+        @page { size: {{ page_w }}mm {{ page_h }}mm; margin: 0; }
+        html { font-size: {{ rem }}mm; }
+        .page { width: {{ page_w }}mm; height: {{ page_h }}mm; }
+        :root {
+        {{ css_vars }}
+        }
+    </style>
+    <link rel="stylesheet" href="{{ css_uri }}">
+    {% if custom_css %}<style id="custom-css">{{ custom_css|safe }}</style>{% endif %}
+</head>
+<body>
+{% if cover_uri %}
+<section class="page cover">
+    <img src="{{ cover_uri }}" alt="">
+</section>
+{% endif %}
+
+{% for m in months %}
+<section class="page month month-{{ m.month }}">
+    <!-- Header photo with optional overlay and the bible verse -->
+    <div class="header" style="height: {{ header_h }}mm;">
+        {% if m.image_uri %}<img class="photo" src="{{ m.image_uri }}" alt="">{% else %}<div class="photo missing"></div>{% endif %}
+        {% if overlay_uri %}<img class="overlay-bg" src="{{ overlay_uri }}" alt="">{% endif %}
+        {% if m.bible_lines %}
+        <div class="verse">
+            <div class="verse-text">{% for line in m.bible_lines %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>
+            {% if m.bible_source %}<div class="verse-source">{{ m.bible_source }}</div>{% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Month title -->
+    <div class="title" style="top: {{ title_top }}mm; height: {{ title_h }}mm;">
+        <div class="title-inner">
+            <span class="zh">{{ m.title_zh }}</span><span class="de">{{ m.title_de }}</span>
+        </div>
+    </div>
+
+    <!-- Weekday bar -->
+    <div class="weekdays" style="top: {{ weekday_top }}mm; height: {{ weekday_h }}mm; left: {{ side_pad }}mm; right: {{ side_pad }}mm;">
+        {% for w in weekdays %}
+        <div class="weekday{% if w.weekend %} weekend{% endif %}">{{ w.de }} {{ w.zh }}</div>
+        {% endfor %}
+    </div>
+
+    <!-- Day grid: row height is fixed so the grid always fills the area -->
+    <div class="days" style="top: {{ days_top }}mm; height: {{ days_h }}mm; left: {{ side_pad }}mm; right: {{ side_pad }}mm; grid-template-rows: repeat({{ m.week_count }}, {{ m.row_h }}mm);">
+        {% for d in m.days %}
+        <div class="day-cell{% if not d.in_month %} other-month{% endif %}" data-date="{{ d.date }}">
+            <div class="day{% if d.red %} red{% endif %}">{{ d.day }}</div>
+            {% if d.lunar and settings.show_lunar %}<div class="lunar{% if d.red %} red{% endif %}">{{ d.lunar }}</div>{% endif %}
+            {% if d.holiday and settings.show_holiday_name %}<div class="holiday red">{{ d.holiday }}</div>{% endif %}
+            {% if d.events %}
+            <div class="events">
+                {% for e in d.events %}
+                <div class="event event-{{ e.type }}">{% for line in e.lines %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if footer_uri %}
+    <img class="footer" src="{{ footer_uri }}" alt="" style="left: {{ footer_side }}mm; width: {{ page_w - 2 * footer_side }}mm; bottom: {{ footer_bottom }}mm;">
+    {% endif %}
+</section>
+{% endfor %}
+</body>
+</html>

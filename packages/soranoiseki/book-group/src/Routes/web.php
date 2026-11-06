@@ -6,7 +6,10 @@ use Soranoiseki\BookGroup\Http\Controllers\PowerpointController;
 use Soranoiseki\BookGroup\Http\Controllers\PowerpointAjaxController;
 use Soranoiseki\BookGroup\Http\Controllers\PowerpointApiController;
 use Soranoiseki\BookGroup\Http\Controllers\LibraryController;
+use Soranoiseki\BookGroup\Http\Controllers\LibraryApiController;
 use Soranoiseki\BookGroup\Http\Controllers\CalendarController;
+use Soranoiseki\BookGroup\Http\Controllers\CalendarApiController;
+use Soranoiseki\BookGroup\Http\Controllers\CalendarDesignController;
 use Soranoiseki\BookGroup\Http\Controllers\SongController;
 use Soranoiseki\BookGroup\Http\Controllers\SongApiController;
 use Soranoiseki\BookGroup\Http\Controllers\TaskPlanController;
@@ -45,28 +48,48 @@ Route::middleware(['web', 'auth'])->group(function () {
     
     Route::group(['prefix' => 'library', 'middleware' => 'role:library'], function() {
         Route::get('/', [LibraryController::class, 'index'])->name('library.index');
+    });
 
-        Route::get('/book/{bookId}/{copyId}/borrow', [LibraryController::class, 'borrowBook'])->name('library.book.borrow');
-        Route::get('/book/{bookId}/{copyId}/return', [LibraryController::class, 'returnBook'])->name('library.book.return');
-        // Route::get('/book/');
-
-        Route::get('/import', [LibraryController::class, 'importBooks'])->name('library.import');
-        Route::post('/import/books', [LibraryController::class, 'importBooks'])->name('library.import.books');
-        Route::post('/import/members', [LibraryController::class, 'importMembers'])->name('library.import.members');
+    Route::group(['prefix' => 'api/library', 'middleware' => 'role:library'], function() {
+        Route::get('/summary', [LibraryApiController::class, 'summary'])->name('library.api.summary');
+        Route::get('/books', [LibraryApiController::class, 'books'])->name('library.api.books');
+        Route::post('/books', [LibraryApiController::class, 'saveBook'])->name('library.api.books.save');
+        Route::patch('/books/{book}', [LibraryApiController::class, 'updateBook'])->where('book', '[0-9]+')->name('library.api.books.update');
+        Route::post('/books/{book}/copies', [LibraryApiController::class, 'addCopy'])->where('book', '[0-9]+')->name('library.api.books.add-copy');
+        Route::get('/lookup', [LibraryApiController::class, 'lookup'])->name('library.api.lookup');
+        Route::get('/metadata', [LibraryApiController::class, 'metadata'])->name('library.api.metadata');
+        Route::post('/copies/{copy}/borrow', [LibraryApiController::class, 'borrow'])->where('copy', '[0-9]+')->name('library.api.borrow');
+        Route::post('/copies/{copy}/return', [LibraryApiController::class, 'return'])->where('copy', '[0-9]+')->name('library.api.return');
+        Route::post('/loans/{loan}/renew', [LibraryApiController::class, 'renew'])->where('loan', '[0-9]+')->name('library.api.renew');
+        Route::get('/loans', [LibraryApiController::class, 'loans'])->name('library.api.loans');
+        Route::get('/members', [LibraryApiController::class, 'members'])->name('library.api.members');
+        Route::post('/members', [LibraryApiController::class, 'createMember'])->name('library.api.members.create');
+        Route::post('/import/books', [LibraryApiController::class, 'importBooks'])->name('library.api.import-books');
     });
 
     Route::group(['prefix' => 'calendar', 'middleware' => 'role:calendar'], function() {
         Route::get('/', [CalendarController::class, 'index'])->name('book-group.calendar.index');
-        Route::get('/{calendar}', [CalendarController::class, 'show'])->where('calendar', '[0-9]+')->name('book-group.calendar.show');
-        Route::put('/{calendar}', [CalendarController::class, 'update'])->where('calendar', '[0-9]+')->name('book-group.calendar.update');
-        Route::delete('/{calendar}', [CalendarController::class, 'delete'])->where('calendar', '[0-9]+')->name('book-group.calendar.delete');
-        Route::post('/create', [CalendarController::class, 'create'])->name('book-group.calendar.create');
-        Route::get('/versions', [CalendarController::class, 'getVersions'])->name('book-group.calendar.versions');
-        Route::get('/pdf/{calendar}', [CalendarController::class, 'downloadPdf'])->where('calendar', '[0-9]+')->name('book-group.calendar.generate');
-        Route::get('/preview/{calendar}', [CalendarController::class, 'generatePreview'])->where('calendar', '[0-9]+')->name('book-group.calendar.preview');
-        Route::post('/import/events/{calendar}', [CalendarController::class, 'importEvents'])->where('calendar', '[0-9]+')->name('book-group.calendar.import-events');
-        Route::post('/import/bible-texts/{calendar}', [CalendarController::class, 'importBibleTexts'])->where('calendar', '[0-9]+')->name('book-group.calendar.import-bible-texts');
-        Route::get('/update-holidays', [CalendarController::class, 'updateHolidays'])->name('book-group.calendar.update-holidays');
+    });
+
+    Route::group(['prefix' => 'api/calendar', 'middleware' => 'role:calendar'], function() {
+        Route::get('/designs', [CalendarDesignController::class, 'index'])->name('book-group.calendar.api.designs');
+        Route::post('/designs', [CalendarDesignController::class, 'store'])->name('book-group.calendar.api.designs.store');
+        Route::get('/designs/{design}', [CalendarDesignController::class, 'show'])->where('design', '[0-9]+')->name('book-group.calendar.api.designs.show');
+        Route::patch('/designs/{design}', [CalendarDesignController::class, 'rename'])->where('design', '[0-9]+')->name('book-group.calendar.api.designs.rename');
+        Route::put('/designs/{design}/content', [CalendarDesignController::class, 'update'])->where('design', '[0-9]+')->name('book-group.calendar.api.designs.update');
+        Route::delete('/designs/{design}', [CalendarDesignController::class, 'destroy'])->where('design', '[0-9]+')->name('book-group.calendar.api.designs.destroy');
+        Route::post('/designs/{design}/restore/{revision}', [CalendarDesignController::class, 'restore'])->where(['design' => '[0-9]+', 'revision' => '[0-9]+'])->name('book-group.calendar.api.designs.restore');
+
+        Route::get('/', [CalendarApiController::class, 'show'])->name('book-group.calendar.api.show');
+        Route::post('/', [CalendarApiController::class, 'create'])->name('book-group.calendar.api.create');
+        Route::post('/{calendar}/events', [CalendarApiController::class, 'importEvents'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.import-events');
+        Route::post('/{calendar}/bible-texts', [CalendarApiController::class, 'importBibleTexts'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.import-bible-texts');
+        Route::post('/{calendar}/images/{slot}', [CalendarApiController::class, 'uploadImage'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.upload-image');
+        Route::delete('/{calendar}/images/{slot}', [CalendarApiController::class, 'deleteImage'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.delete-image');
+        Route::post('/{calendar}/holidays', [CalendarApiController::class, 'refreshHolidays'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.holidays');
+        Route::put('/{calendar}/use-design', [CalendarApiController::class, 'useDesign'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.use-design');
+        Route::post('/{calendar}/preview', [CalendarApiController::class, 'preview'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.preview');
+        Route::post('/{calendar}/pdf', [CalendarApiController::class, 'pdf'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.pdf');
     });
 
     Route::group(['prefix' => 'planer', 'middleware' => 'role.wildcard:planer*'], function() {

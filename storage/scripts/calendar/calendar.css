@@ -1,0 +1,118 @@
+/* Calendar PDF styles. Units are mm / rem (1rem is about 3mm on A3); see calendar_pdf.py.
+   Tunable values are CSS variables (--accent, --day-size, ...) injected from settings_schema.json
+   plus the per-calendar settings, so design tweaks do not need CSS edits. */
+
+/* Main fonts: Noto Sans SC static instances reduced to GB2312 + Latin (about 2 MB each, see tools/build_fonts.py).
+   Embedding a full CJK font takes seconds per render; these take a fraction of a second. */
+@font-face { font-family: "NotoSC"; font-weight: 300; src: url("fonts/NotoSC-Light-GB2312.ttf"); }
+@font-face { font-family: "NotoSC"; font-weight: 400; src: url("fonts/NotoSC-Regular-GB2312.ttf"); }
+@font-face { font-family: "NotoSC"; font-weight: 500; src: url("fonts/NotoSC-Medium-GB2312.ttf"); }
+
+/* Fallback for rare characters outside GB2312 (some names). Only embedded in the PDF when actually used. */
+@font-face { font-family: "NotoSCFull"; font-weight: 300; src: url("fonts/NotoSC-Regular-Full.ttf"); }
+@font-face { font-family: "NotoSCFull"; font-weight: 400; src: url("fonts/NotoSC-Regular-Full.ttf"); }
+@font-face { font-family: "NotoSCFull"; font-weight: 500; src: url("fonts/NotoSC-Regular-Full.ttf"); }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: "NotoSC", "NotoSCFull", sans-serif;
+    font-weight: 400;
+    color: #212529;
+}
+
+.page {
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    page-break-after: always;
+}
+
+.page:last-child { page-break-after: auto; }
+
+.red { color: var(--weekend); }
+
+/* Cover */
+.cover img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Header photo */
+.header { position: absolute; top: 0; left: 0; right: 0; overflow: hidden; background: #ddd; }
+.header .photo { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+.header .photo.missing { background: #cfcfcf; }
+.header .overlay-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; }
+
+.verse {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    padding: 1.5rem 5rem;
+    text-align: center;
+    color: var(--verse-color);
+    font-size: var(--verse-size);
+    line-height: 1.5;
+}
+.verse-source { margin-top: 0.75rem; font-size: var(--verse-source-size); letter-spacing: 0.1rem; opacity: 0.85; }
+
+/* Month title */
+.title { position: absolute; left: 0; right: 0; text-align: center; }
+.title-inner {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 1.2rem 7rem 1.1rem;
+    font-size: var(--title-size);
+    letter-spacing: 1rem;
+    border-top: 0.25mm solid #999;
+    border-bottom: 0.25mm solid #999;
+}
+.title .de { margin-left: 1rem; color: #777; text-transform: uppercase; }
+
+/* Weekday bar */
+.weekdays {
+    position: absolute;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border-radius: 1.7mm 1.7mm 0 0;
+    overflow: hidden;
+}
+.weekday {
+    background: var(--accent);
+    color: #fff;
+    font-size: var(--weekday-size);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+    line-height: 5rem;
+}
+.weekday.weekend { background: var(--weekend); }
+
+/* Day grid */
+.days {
+    position: absolute;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border: 0.25mm solid #ccc;
+    border-top: none;
+    border-radius: 0 0 1.7mm 1.7mm;
+    overflow: hidden;
+}
+.day-cell { position: relative; border: 0.12mm solid #ccc; background: var(--cell-bg); overflow: hidden; }
+.day { position: absolute; left: var(--cell-pad); top: 0.8rem; font-size: var(--day-size); font-weight: var(--day-weight); line-height: 1.1; }
+.lunar { position: absolute; top: 1.3rem; right: var(--cell-pad); font-size: var(--lunar-size); text-align: left; }
+.holiday { position: absolute; left: var(--cell-pad); right: var(--cell-pad); top: 4rem; font-size: var(--holiday-size); }
+.events {
+    position: absolute;
+    left: 0; right: var(--cell-pad); bottom: 1rem;
+    text-align: right;
+    font-size: var(--event-size);
+    line-height: var(--event-line-height);
+    color: var(--event-color);
+}
+.event + .event { margin-top: 0.3rem; }
+
+.day-cell.other-month .day,
+.day-cell.other-month .lunar,
+.day-cell.other-month .holiday,
+.day-cell.other-month .events { color: #999; }
+
+/* Footer image */
+.footer { position: absolute; height: auto; }

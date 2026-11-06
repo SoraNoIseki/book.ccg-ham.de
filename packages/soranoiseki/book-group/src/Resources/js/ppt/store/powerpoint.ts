@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios from "axios";
 import type { AllContent, PowerpointInit, TabId, ApiSuccess } from "../types";
 import { getQueryParam, setQueryParam } from "../url";
+import { setupAxiosCsrf, extractErrors, downloadBlob } from "../../shared/http";
 
 // All comments in English as requested.
 
@@ -58,65 +59,7 @@ const REQUIRED_FIELDS: Array<[TabId, string]> = [
     ["worker", "item2"],
 ];
 
-function setupAxiosCsrf(): void {
-    const token = document
-        .querySelector('meta[name="csrf-token"]')
-        ?.getAttribute("content");
-    axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
-    if (token) axios.defaults.headers.common["X-CSRF-TOKEN"] = token;
-}
-
-async function extractErrors(e: unknown): Promise<string[]> {
-    const err = e as AxiosError<any>;
-    const resp = err?.response;
-    let body = resp?.data;
-
-    // Requests with responseType "blob" deliver JSON error bodies as a Blob - decode it first.
-    if (body instanceof Blob) {
-        try {
-            body = JSON.parse(await body.text());
-        } catch {
-            body = undefined;
-        }
-    }
-
-    if (body?.errors) {
-        const all: string[] = [];
-        for (const k of Object.keys(body.errors)) {
-            all.push(...body.errors[k]);
-        }
-        return all;
-    }
-
-    if (body?.message) return [String(body.message)];
-    return ["有错误发生，请先保存。"];
-}
-
-function downloadBlob(res: AxiosResponse<Blob>, fallbackName: string): void {
-    const blob = new Blob([res.data], {
-        type:
-            (res.headers["content-type"] as string) ||
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    });
-
-    const cd = res.headers["content-disposition"] as string | undefined;
-    let filename = fallbackName;
-    if (cd) {
-        const m = cd.match(/filename\*=UTF-8''([^;]+)|filename="?([^"]+)"?/i);
-        filename = decodeURIComponent(
-            (m?.[1] || m?.[2] || fallbackName) as string,
-        );
-    }
-
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-}
+const FALLBACK_ERROR = "有错误发生，请先保存。";
 
 export const usePowerpointStore = defineStore("powerpoint", {
     state: (): PowerpointState => {
@@ -239,7 +182,7 @@ export const usePowerpointStore = defineStore("powerpoint", {
                 if (this.date) setQueryParam("v", this.date);
                 setQueryParam("tab", this.activeTab);
             } catch (e) {
-                this.errors = await extractErrors(e);
+                this.errors = await extractErrors(e, FALLBACK_ERROR);
                 // Roll the selector back to the version that is actually shown
                 this.selectedDate = this.date;
             } finally {
@@ -310,7 +253,7 @@ export const usePowerpointStore = defineStore("powerpoint", {
                 );
                 this.successMessage = data.message ?? "已保存。";
             } catch (e) {
-                this.errors = await extractErrors(e);
+                this.errors = await extractErrors(e, FALLBACK_ERROR);
             } finally {
                 this.isSubmitting = false;
             }
@@ -335,7 +278,7 @@ export const usePowerpointStore = defineStore("powerpoint", {
                 downloadBlob(res, `${this.date}.pptx`);
                 this.successMessage = "已保存，正在下载...";
             } catch (e) {
-                this.errors = await extractErrors(e);
+                this.errors = await extractErrors(e, FALLBACK_ERROR);
             } finally {
                 this.isSubmitting = false;
             }
@@ -357,7 +300,7 @@ export const usePowerpointStore = defineStore("powerpoint", {
                 );
                 downloadBlob(res, `${this.date}.pptx`);
             } catch (e) {
-                this.errors = await extractErrors(e);
+                this.errors = await extractErrors(e, FALLBACK_ERROR);
             } finally {
                 this.isSubmitting = false;
             }

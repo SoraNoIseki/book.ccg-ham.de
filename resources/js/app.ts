@@ -1,7 +1,6 @@
 import './bootstrap';
 
 import Alpine from 'alpinejs';
-import 'flowbite';
 
 import "@vueform/multiselect/themes/default.css";
 import 'vue-toast-notification/dist/theme-sugar.css';
@@ -12,10 +11,12 @@ Alpine.start();
 
 import './project';
 
+// Register static assets in the Vite manifest so Vite::asset() can resolve them.
+// `eager` is required: Vite 8 (Rolldown) drops an unused lazy glob and the assets never get emitted.
 import.meta.glob([
     '../images/**',
     '../fonts/**',
-]);
+], { eager: true });
 
 import { createApp } from 'vue';
 import { createPinia } from "pinia";
@@ -46,3 +47,11 @@ const appPptGenerator = createApp(BookGroupApps.AppPptGenerator);
 appPptGenerator.use(createPinia());
 appPptGenerator.use(ToastPlugin);
 appPptGenerator.mount("#app-ppt-generator");
+
+const appCalendar = createApp(BookGroupApps.AppCalendar);
+appCalendar.use(createPinia());
+appCalendar.mount("#app-calendar");
+
+const appLibrary = createApp(BookGroupApps.AppLibrary);
+appLibrary.use(createPinia());
+appLibrary.mount("#app-library");

@@ -2,46 +2,29 @@
 
 namespace Soranoiseki\BookGroup\Models\Library;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Member extends Model
 {
-    use HasFactory;
-
-    protected $connection = 'openbiblio';
-
-    protected $table = 'member';
-
-    protected $primaryKey = 'mbrid';
-
-    const CREATED_AT = 'create_dt';
-
-    const UPDATED_AT = 'last_change_dt';
-    
-    protected $appends = [
-        'full_name'
-    ];
+    protected $table = 'library_members';
 
     protected $fillable = [
-        'barcode_nmbr',
-        'create_dt',
-        'last_change_dt',
-        'last_change_userid',
-        'last_name',
-        'first_name',
-        'address',
-        'home_phone',
-        'work_phone',
-        'email',
-        'classification',
-        'mbrshipend',
+        'card_no', 'first_name', 'last_name', 'email', 'phone', 'membership_ends_at', 'legacy_id',
     ];
 
-    public function getFullNameAttribute() {
-        // TODO: english names?
-        return trim($this->last_name) . trim($this->first_name);
+    protected $casts = [
+        'membership_ends_at' => 'date',
+    ];
+
+    public function loans(): HasMany
+    {
+        return $this->hasMany(Loan::class, 'member_id');
     }
 
-    
+    /** Chinese names are written family name first and without a space. */
+    public function getFullNameAttribute(): string
+    {
+        return trim(trim($this->last_name) . trim($this->first_name));
+    }
 }

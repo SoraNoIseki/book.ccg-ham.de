@@ -2,42 +2,34 @@
 
 namespace Soranoiseki\BookGroup\Models\Library;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Soranoiseki\BookGroup\Models\Library\Book;
-use Soranoiseki\BookGroup\Models\Library\Member;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Copy extends Model
 {
-    use HasFactory;
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_LOST = 'lost';
+    public const STATUS_RETIRED = 'retired';
 
-    protected $connection = 'openbiblio';
+    protected $table = 'library_copies';
 
-    protected $table = 'biblio_copy';
+    protected $fillable = ['book_id', 'number', 'code', 'status', 'legacy_id'];
 
-    protected $primaryKey = 'bibid,copyid';
-
-    public $timestamps = false;
-
-    public function book() {
-        return $this->belongsTo(Book::class, 'bibid', 'bibid');
+    public function book(): BelongsTo
+    {
+        return $this->belongsTo(Book::class, 'book_id');
     }
 
-    public function member() {
-        return $this->belongsTo(Member::class, 'mbrid', 'mbrid');
+    public function loans(): HasMany
+    {
+        return $this->hasMany(Loan::class, 'copy_id');
     }
 
-    protected $fillable = [
-        'bibid',
-        'copyid',
-        'create_dt',
-        'copy_desc',
-        'barcode_nmbr',
-        'status_cd',
-        'status_begin_dt',
-        'due_back_dt',
-        'mbrid',
-        'renewal_count',
-    ];
-
+    /** The loan that has not been returned yet (a copy has at most one). */
+    public function activeLoan(): HasOne
+    {
+        return $this->hasOne(Loan::class, 'copy_id')->whereNull('returned_at');
+    }
 }
