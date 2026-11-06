@@ -107,8 +107,8 @@ ddev:
 
     ddev exec 'python3 -m venv storage/app/pyvenv-ddev && storage/app/pyvenv-ddev/bin/pip install weasyprint jinja2'
 
-then point `COMMON_PYTHON_PATH` in `.env` to `/var/www/html/storage/app/pyvenv-ddev/bin/python3`.
-(`PYTHON_PATH`, used for the PPT generator, can use the same virtual environment.)
+then point `PYTHON_PATH` in `.env` to `/var/www/html/storage/app/pyvenv-ddev/bin/python3`.
+The PPT generator uses the same `PYTHON_PATH`, so both scripts share one virtual environment.
 
 ## Images
 
