@@ -30,8 +30,16 @@ async function loadPlan(item: 'item1' | 'item2', planDate: string): Promise<void
     <ContentField tab="worker" item="item1" label="服事列表（本周）" :rows="12">
         <template #toolbar>
             <button type="button" :disabled="!!loading" @click="loadPlan('item1', date)"
-                class="text-sm w-64 px-3 py-2.5 mb-3 bg-blue-100 rounded-md font-semibold border border-gray-300 disabled:opacity-50">
-                加载 {{ date }} 主日服事表
+                class="mb-3 inline-flex items-center gap-2 h-10 px-4 rounded-xl text-sm font-semibold text-primary-800 bg-white ring-1 ring-primary-600/40 hover:bg-primary-100/60 active:scale-95 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-primary-600 disabled:opacity-50 disabled:cursor-not-allowed dark:text-primary-200 dark:bg-gray-800 dark:ring-primary-400/50 dark:hover:bg-gray-700">
+                <svg v-if="loading === 'item1'" class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".25" stroke-width="3" />
+                    <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                <svg v-else class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                </svg>
+                {{ loading === 'item1' ? '加载中...' : '加载 ' + date + ' 主日服事表' }}
             </button>
         </template>
         <template #hint>
@@ -53,8 +61,16 @@ async function loadPlan(item: 'item1' | 'item2', planDate: string): Promise<void
     <ContentField tab="worker" item="item2" label="服事列表（下周）" :rows="12">
         <template #toolbar>
             <button type="button" :disabled="!!loading" @click="loadPlan('item2', nextWeek)"
-                class="text-sm w-64 px-3 py-2.5 mb-3 bg-blue-100 rounded-md font-semibold border border-gray-300 disabled:opacity-50">
-                加载 {{ nextWeek }} 主日服事表
+                class="mb-3 inline-flex items-center gap-2 h-10 px-4 rounded-xl text-sm font-semibold text-primary-800 bg-white ring-1 ring-primary-600/40 hover:bg-primary-100/60 active:scale-95 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-primary-600 disabled:opacity-50 disabled:cursor-not-allowed dark:text-primary-200 dark:bg-gray-800 dark:ring-primary-400/50 dark:hover:bg-gray-700">
+                <svg v-if="loading === 'item2'" class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".25" stroke-width="3" />
+                    <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                <svg v-else class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+                </svg>
+                {{ loading === 'item2' ? '加载中...' : '加载 ' + nextWeek + ' 主日服事表' }}
             </button>
         </template>
     </ContentField>

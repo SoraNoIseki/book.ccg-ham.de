@@ -1,3 +1,71 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * Dark mode for form controls.
+ * @tailwindcss/forms gives every input a white background; without this, components that only set a
+ * text colour end up with light text on white. The rules live in the base layer, so any utility
+ * class on a control (bg-*, border-*, text-*) still wins.
+ */
+@layer base {
+    @media (prefers-color-scheme: dark) {
+        :root {
+            color-scheme: dark;
+        }
+
+        [type='text'],
+        [type='email'],
+        [type='url'],
+        [type='password'],
+        [type='number'],
+        [type='date'],
+        [type='datetime-local'],
+        [type='month'],
+        [type='search'],
+        [type='tel'],
+        [type='time'],
+        [type='week'],
+        [multiple],
+        textarea,
+        select {
+            background-color: #111827; /* gray-900 */
+            border-color: #4b5563; /* gray-600 */
+            color: #f3f4f6; /* gray-100 */
+        }
+
+        [type='checkbox'],
+        [type='radio'] {
+            background-color: #374151; /* gray-700 */
+            border-color: #6b7280; /* gray-500 */
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #9ca3af;
+        }
+    }
+}
+
+/* Theme of @vueform/multiselect (search selects of the PPT, calendar and planer pages) in dark mode */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ms-bg: #374151;
+        --ms-bg-disabled: #1f2937;
+        --ms-border-color: #4b5563;
+        --ms-dropdown-bg: #1f2937;
+        --ms-dropdown-border-color: #4b5563;
+        --ms-option-bg-pointed: #374151;
+        --ms-option-color-pointed: #f3f4f6;
+        --ms-option-bg-selected: #72790e;
+        --ms-option-color-selected: #fff;
+        --ms-option-bg-selected-pointed: #899211;
+        --ms-placeholder-color: #9ca3af;
+        --ms-caret-color: #9ca3af;
+        --ms-clear-color: #9ca3af;
+        --ms-clear-color-hover: #fff;
+        --ms-empty-color: #9ca3af;
+        --ms-group-label-bg: #374151;
+        --ms-group-label-color: #e5e7eb;
+    }
+}

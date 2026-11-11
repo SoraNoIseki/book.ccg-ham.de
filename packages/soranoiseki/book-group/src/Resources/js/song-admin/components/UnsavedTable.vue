@@ -30,7 +30,7 @@ const shown = (v: string | null) => (v && v.toLowerCase() !== 'na' ? v : '');
                 <template v-for="r in rows" :key="r.id">
                     <tr class="border-t border-gray-100 dark:border-gray-700">
                         <td class="px-4 py-3">
-                            <button type="button" class="inline-flex items-center gap-2 font-semibold text-main dark:text-gray-100 hover:text-primary-700"
+                            <button type="button" class="inline-flex items-center gap-2 font-semibold text-main dark:text-gray-100 hover:text-primary-700 dark:hover:text-primary-300"
                                 :aria-expanded="!!expanded[r.id]" @click="expanded[r.id] = !expanded[r.id]">
                                 <ChevronDownIcon class="w-4 h-4 text-gray-400 transition-transform" :class="expanded[r.id] ? 'rotate-180' : ''" />
                                 {{ r.name }}

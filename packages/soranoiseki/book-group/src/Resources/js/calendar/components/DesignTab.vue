@@ -110,7 +110,7 @@ const viewerSrc = computed(() => (previewUrl.value ? previewUrl.value + '#toolba
     <DesignLibrary />
 
     <!-- Notice: kept prominent on purpose, unsaved changes are easy to forget -->
-    <div v-if="canDesign" role="note" class="mb-6 flex items-center gap-3 p-4 rounded-2xl bg-amber-50 ring-1 ring-amber-300 text-amber-900 shadow-sm">
+    <div v-if="canDesign" role="note" class="mb-6 flex items-center gap-3 p-4 rounded-2xl bg-amber-50 ring-1 ring-amber-300 text-amber-900 dark:bg-amber-950/40 dark:ring-amber-800 dark:text-amber-200 shadow-sm">
         <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-amber-100 text-amber-600 shrink-0">
             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M12 2 1 21h22L12 2Zm1 15h-2v-2h2v2Zm0-4h-2V9h2v4Z" />
@@ -137,11 +137,11 @@ const viewerSrc = computed(() => (previewUrl.value ? previewUrl.value + '#toolba
                     {{ isImporting ? '保存中...' : '保存外观' }}
                 </button>
                 <button type="button" :disabled="!designDirty" @click="revert"
-                    class="h-10 px-4 rounded-xl text-sm font-semibold text-gray-600 bg-white ring-1 ring-gray-300 hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    class="h-10 px-4 rounded-xl text-sm font-semibold text-gray-600 bg-white ring-1 ring-gray-300 hover:bg-gray-50 dark:text-gray-200 dark:bg-gray-800 dark:ring-gray-600 dark:hover:bg-gray-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
                     放弃修改
                 </button>
                 <button type="button" @click="cal.resetDraft()"
-                    class="h-10 px-4 rounded-xl text-sm font-semibold text-gray-600 hover:text-primary-700 transition">
+                    class="h-10 px-4 rounded-xl text-sm font-semibold text-gray-600 hover:text-primary-700 dark:hover:text-primary-300 transition">
                     参数全部恢复默认
                 </button>
                 <span v-if="designDirty" class="text-xs font-medium text-orange-600">有未保存的修改</span>
@@ -172,7 +172,7 @@ const viewerSrc = computed(() => (previewUrl.value ? previewUrl.value + '#toolba
                 <div class="flex items-center gap-2">
                     <label for="preview-month" class="text-sm font-semibold text-main dark:text-gray-100">预览月份</label>
                     <select id="preview-month" v-model.number="month"
-                        class="h-9 pl-3 pr-8 rounded-lg border border-gray-200 bg-white text-sm outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500">
+                        class="h-9 pl-3 pr-8 rounded-lg border border-gray-200 bg-white text-sm outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100">
                         <option v-for="m in 12" :key="m" :value="m">{{ m }} 月</option>
                     </select>
                 </div>
@@ -193,7 +193,7 @@ const viewerSrc = computed(() => (previewUrl.value ? previewUrl.value + '#toolba
                 <span v-else-if="previewUrl && !previewing" class="text-gray-400">预览与当前表单一致</span>
                 <span v-else />
                 <a v-if="previewUrl" :href="previewUrl" target="_blank" rel="noopener"
-                    class="font-medium text-primary-700 hover:underline">在新窗口打开</a>
+                    class="font-medium text-primary-700 hover:underline dark:text-primary-300">在新窗口打开</a>
             </div>
 
             <div class="relative overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-900 ring-1 ring-gray-200 dark:ring-gray-700 aspect-[297/420]">
@@ -213,7 +213,7 @@ const viewerSrc = computed(() => (previewUrl.value ? previewUrl.value + '#toolba
                     </div>
                 </div>
 
-                <div v-if="previewError" class="absolute inset-x-3 bottom-3 p-3 text-xs text-red-800 rounded-xl bg-red-50 ring-1 ring-red-200">
+                <div v-if="previewError" class="absolute inset-x-3 bottom-3 p-3 text-xs text-red-800 rounded-xl bg-red-50 ring-1 ring-red-200 dark:text-red-200 dark:bg-red-950/40 dark:ring-red-900">
                     {{ previewError }}
                 </div>
             </div>

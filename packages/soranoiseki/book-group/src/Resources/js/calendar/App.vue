@@ -64,7 +64,7 @@ const tabs = computed<TabItem[]>(() => {
             <MessageList :errors="errors" :success="successMessage" />
 
             <div v-if="hasCalendar && !editable" role="status"
-                class="flex items-center gap-3 p-4 text-sm text-gray-700 rounded-xl bg-gray-100 ring-1 ring-gray-200">
+                class="flex items-center gap-3 p-4 text-sm text-gray-700 rounded-xl bg-gray-100 ring-1 ring-gray-200 dark:text-gray-200 dark:bg-gray-900 dark:ring-gray-700">
                 <svg class="w-5 h-5 shrink-0 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="4" y="11" width="16" height="10" rx="2" />
@@ -74,7 +74,7 @@ const tabs = computed<TabItem[]>(() => {
             </div>
 
             <div v-if="hasCalendar && editable && holidayCount === 0" role="status"
-                class="flex flex-wrap items-center justify-between gap-3 p-4 text-sm text-amber-900 rounded-xl bg-amber-50 ring-1 ring-amber-200">
+                class="flex flex-wrap items-center justify-between gap-3 p-4 text-sm text-amber-900 rounded-xl bg-amber-50 ring-1 ring-amber-200 dark:text-amber-200 dark:bg-amber-950/40 dark:ring-amber-800">
                 <span>还没有 {{ year }} 年的节假日数据，日历上不会标出法定节假日。</span>
                 <button type="button" :disabled="isLoading" @click="cal.refreshHolidays()"
                     class="h-8 px-4 rounded-lg text-xs font-semibold text-amber-900 bg-amber-100 hover:bg-amber-200 disabled:opacity-50 transition">
@@ -86,7 +86,7 @@ const tabs = computed<TabItem[]>(() => {
         <!-- No calendar for this year yet -->
         <section v-if="!hasCalendar && !isLoading && year"
             class="rounded-2xl bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-200/70 dark:ring-gray-700 p-10 text-center text-main dark:text-gray-100">
-            <div class="mx-auto mb-4 flex items-center justify-center w-14 h-14 rounded-2xl bg-primary-100 text-primary-800">
+            <div class="mx-auto mb-4 flex items-center justify-center w-14 h-14 rounded-2xl bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200">
                 <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="3" y="4" width="18" height="18" rx="2" />

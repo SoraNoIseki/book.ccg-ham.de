@@ -35,7 +35,7 @@ const value = computed({
             <div class="col-span-3">
                 <textarea :id="id" v-model="value" :rows="rows" :placeholder="placeholder ?? label"
                     :disabled="disabled"
-                    class="w-full resize-y rounded-xl border border-gray-200 bg-gray-50/60 dark:bg-gray-900 py-3 px-4 text-base text-main dark:text-light placeholder:text-gray-400 outline-none transition focus:bg-white focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 disabled:bg-gray-100" />
+                    class="w-full resize-y rounded-xl border border-gray-200 bg-gray-50/60 dark:bg-gray-900 py-3 px-4 text-base text-main dark:text-light placeholder:text-gray-400 outline-none transition focus:bg-white dark:focus:bg-gray-900 focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 disabled:bg-gray-100 dark:disabled:bg-gray-800" />
             </div>
             <div v-if="slots.hint" class="space-y-5">
                 <slot name="hint" />

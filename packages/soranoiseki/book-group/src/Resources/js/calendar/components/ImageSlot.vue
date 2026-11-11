@@ -67,7 +67,7 @@ function formatSize(bytes: number | null | undefined): string {
                     :class="fit === 'contain' ? 'object-contain' : 'object-cover'" />
             </button>
 
-            <button v-else type="button" @click="pick" :disabled="readonly" :class="readonly ? 'cursor-default' : 'hover:text-primary-700'"
+            <button v-else type="button" @click="pick" :disabled="readonly" :class="readonly ? 'cursor-default' : 'hover:text-primary-700 dark:hover:text-primary-300'"
                 class="absolute inset-0 w-full h-full flex flex-col items-center justify-center gap-2 text-gray-400 transition">
                 <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -80,7 +80,7 @@ function formatSize(bytes: number | null | undefined): string {
 
             <!-- Uploading overlay -->
             <div v-if="busy" class="absolute inset-0 flex items-center justify-center bg-white/70 dark:bg-gray-900/70">
-                <svg class="w-6 h-6 animate-spin text-primary-700" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <svg class="w-6 h-6 animate-spin text-primary-700 dark:text-primary-300" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".25" stroke-width="3" />
                     <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
                 </svg>
@@ -101,7 +101,7 @@ function formatSize(bytes: number | null | undefined): string {
 
                 <div v-if="!readonly" class="flex items-center gap-1 shrink-0">
                     <button type="button" :disabled="busy" @click="pick"
-                        class="h-8 px-3 rounded-lg text-xs font-semibold text-primary-800 bg-primary-100/70 hover:bg-primary-100 disabled:opacity-50 transition">
+                        class="h-8 px-3 rounded-lg text-xs font-semibold text-primary-800 bg-primary-100/70 hover:bg-primary-100 dark:text-primary-200 dark:bg-primary-900/50 dark:hover:bg-primary-900/80 disabled:opacity-50 transition">
                         {{ info?.exists ? '替换' : '上传' }}
                     </button>
                     <button v-if="info?.exists" type="button" :disabled="busy" title="删除"

@@ -15,7 +15,7 @@ function submitManual(): void {
     lib.lookup(code);
 }
 
-const icon: Record<string, string> = { borrow: 'bg-primary-100 text-primary-800', return: 'bg-green-100 text-green-800', renew: 'bg-sky-100 text-sky-800' };
+const icon: Record<string, string> = { borrow: 'bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200', return: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300', renew: 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300' };
 const label: Record<string, string> = { borrow: '借出', return: '归还', renew: '续借' };
 </script>
 
@@ -47,7 +47,7 @@ const label: Record<string, string> = { borrow: '借出', return: '归还', rene
                 placeholder="手动输入条码 / ISBN / 编号"
                 class="flex-1 min-w-0 h-12 px-4 rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 focus:border-primary-500 focus:ring-primary-500" />
             <button type="submit" :disabled="isBusy || !manual.trim()"
-                class="h-12 px-6 rounded-xl text-sm font-semibold text-primary-800 bg-white ring-1 ring-primary-600/40 hover:bg-primary-100/60 disabled:opacity-50 active:scale-95 transition">
+                class="h-12 px-6 rounded-xl text-sm font-semibold text-primary-800 bg-white ring-1 ring-primary-600/40 dark:text-primary-200 dark:bg-gray-800 dark:ring-primary-400/50 dark:hover:bg-gray-700 hover:bg-primary-100/60 disabled:opacity-50 active:scale-95 transition">
                 查找
             </button>
         </form>

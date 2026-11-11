@@ -6,7 +6,7 @@
 
         <p class="my-4 text-gray-700 dark:text-gray-400 font-semibold text-sm">
             请将组员分配到对应的小组和角色中，每个组员至少有一个角色。已分配的组员名字将会作为选项显示在计划表中。<br>
-            添加新组员请前往<span @click="scrollToId('add-member-component')" class="text-primary-600 hover:underline px-0.5 cursor-pointer">添加组员</span>模块。
+            添加新组员请前往<span @click="scrollToId('add-member-component')" class="text-primary-600 hover:underline dark:text-primary-300 px-0.5 cursor-pointer">添加组员</span>模块。
         </p>
 
         <GroupFilterComponent class="my-4" />
@@ -130,7 +130,7 @@
                         删除
                     </button>
                     <button type="button" @click="closeDeleteModal"
-                        class="w-full px-5 py-2.5 mb-4 text-base font-medium text-gray-900 focus:outline-none bg-gray-100 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">取消</button>
+                        class="w-full px-5 py-2.5 mb-4 text-base font-medium text-gray-900 focus:outline-none bg-gray-100 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 dark:hover:text-primary-300 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">取消</button>
                 </div>
             </div>
         </div>
@@ -160,7 +160,7 @@
                         <span v-html="errorMessage"></span>
                     </h3>
                     <button type="button" @click="closeErrorModal"
-                        class="w-full px-5 py-2.5 mb-4 text-base font-medium text-gray-900 focus:outline-none bg-gray-100 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">关闭</button>
+                        class="w-full px-5 py-2.5 mb-4 text-base font-medium text-gray-900 focus:outline-none bg-gray-100 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 dark:hover:text-primary-300 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">关闭</button>
                 </div>
             </div>
         </div>

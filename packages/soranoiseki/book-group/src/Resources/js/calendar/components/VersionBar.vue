@@ -22,7 +22,7 @@ function onChange(value: string): void {
     <div class="flex flex-wrap items-center gap-x-6 gap-y-4">
         <!-- Current year + current/history badge -->
         <div class="flex items-center gap-3">
-            <div class="flex items-center justify-center rounded-xl bg-primary-100 text-primary-800 transition-all duration-300 ease-out"
+            <div class="flex items-center justify-center rounded-xl bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200 transition-all duration-300 ease-out"
                 :class="compact ? 'w-8 h-8' : 'w-11 h-11'">
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -37,7 +37,7 @@ function onChange(value: string): void {
                     <span class="font-bold text-main dark:text-gray-100 tabular-nums transition-all duration-300 ease-out"
                         :class="compact ? 'text-base' : 'text-lg'">{{ year ? year + ' 年' : '--' }}</span>
                     <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
-                        :class="isCurrent ? 'bg-green-100 text-green-800' : editable ? 'bg-sky-100 text-sky-800' : 'bg-gray-100 text-gray-600'">
+                        :class="isCurrent ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : editable ? 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'">
                         {{ isCurrent ? '当前版本' : editable ? '后续版本' : '历史版本 · 只读' }}
                     </span>
                 </div>

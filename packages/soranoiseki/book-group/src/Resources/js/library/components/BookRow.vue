@@ -23,7 +23,7 @@ const free = computed(() => props.book.copies.filter((c) => c.status === 'active
             </div>
         </div>
         <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold tabular-nums"
-            :class="free ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+            :class="free ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'">
             {{ free ? `在馆 ${free}/${total}` : '已借完' }}
         </span>
     </button>

@@ -13,7 +13,7 @@ const { date, selectedDate, versionOptions, isLoading, saveEnabled } = storeToRe
     <div class="flex flex-wrap items-center gap-x-6 gap-y-4">
         <!-- Current version: date + editable/readonly badge -->
         <div class="flex items-center gap-3">
-            <div class="flex items-center justify-center rounded-xl bg-primary-100 text-primary-800 transition-all duration-300 ease-out"
+            <div class="flex items-center justify-center rounded-xl bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200 transition-all duration-300 ease-out"
                 :class="compact ? 'w-8 h-8' : 'w-11 h-11'">
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -28,7 +28,7 @@ const { date, selectedDate, versionOptions, isLoading, saveEnabled } = storeToRe
                     <span class="font-bold text-main dark:text-gray-100 tabular-nums transition-all duration-300 ease-out"
                         :class="compact ? 'text-base' : 'text-lg'">{{ date || '--' }}</span>
                     <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
-                        :class="saveEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'">
+                        :class="saveEnabled ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'">
                         {{ saveEnabled ? '本周 · 可编辑' : '历史 · 仅下载' }}
                     </span>
                 </div>

@@ -13,7 +13,7 @@ const { saveEnabled, isSubmitting, isLoading, canDownload } = storeToRefs(ppt);
         <template v-if="saveEnabled">
             <button type="button" :disabled="isSubmitting || isLoading" @click="ppt.save()"
                 :class="compact ? 'h-9' : 'h-11'"
-                class="inline-flex items-center gap-2 px-5 rounded-xl text-sm font-semibold ease-out text-primary-800 bg-white ring-1 ring-primary-600/40 hover:bg-primary-100/60 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary-600 outline-none">
+                class="inline-flex items-center gap-2 px-5 rounded-xl text-sm font-semibold ease-out text-primary-800 bg-white ring-1 ring-primary-600/40 dark:text-primary-200 dark:bg-gray-800 dark:ring-primary-400/50 dark:hover:bg-gray-700 hover:bg-primary-100/60 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-primary-600 outline-none">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z" />

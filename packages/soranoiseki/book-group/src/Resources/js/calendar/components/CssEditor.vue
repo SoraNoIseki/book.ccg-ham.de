@@ -44,7 +44,7 @@ function insert(selector: string): void {
             :aria-expanded="open" @click="open = !open">
             <span class="text-sm font-bold text-main dark:text-gray-100">
                 高级：自定义 CSS
-                <span v-if="model.trim()" class="ml-2 px-2 py-0.5 rounded-full text-xs font-semibold bg-primary-100 text-primary-800">已启用</span>
+                <span v-if="model.trim()" class="ml-2 px-2 py-0.5 rounded-full text-xs font-semibold bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200">已启用</span>
             </span>
             <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" viewBox="0 0 24 24"
                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -56,9 +56,9 @@ function insert(selector: string): void {
             <p class="text-xs leading-relaxed text-gray-500">
                 这里的样式排在最后，会覆盖上面的参数和基础样式。<b>格子内部的元素</b>（日期、农历、大事历、节假日）可以放心调整；
                 每月图片、标题、星期栏和日期网格的<b>整体位置</b>由程序按纸张尺寸计算，请用上面的参数调整，否则容易错位。
-                可以使用参数对应的变量，例如 <code class="px-1 rounded bg-gray-100">var(--accent)</code>、
-                <code class="px-1 rounded bg-gray-100">var(--weekend)</code>。图片请直接写文件名，例如
-                <code class="px-1 rounded bg-gray-100">url(01.jpg)</code>（取自本年度的图片目录）。
+                可以使用参数对应的变量，例如 <code class="px-1 rounded bg-gray-100 dark:bg-gray-700">var(--accent)</code>、
+                <code class="px-1 rounded bg-gray-100 dark:bg-gray-700">var(--weekend)</code>。图片请直接写文件名，例如
+                <code class="px-1 rounded bg-gray-100 dark:bg-gray-700">url(01.jpg)</code>（取自本年度的图片目录）。
             </p>
 
             <textarea v-model="model" rows="10" spellcheck="false" autocapitalize="off" autocomplete="off"
@@ -87,7 +87,7 @@ function insert(selector: string): void {
                 <div class="mb-1.5 text-xs font-semibold text-gray-600">可用的选择器（点击插入规则）</div>
                 <div class="flex flex-wrap gap-1.5">
                     <button v-for="s in selectors" :key="s.selector" type="button" :title="s.selector" @click="insert(s.selector)"
-                        class="px-2.5 py-1 rounded-lg text-xs bg-gray-100 text-gray-700 hover:bg-primary-100 hover:text-primary-800 transition">
+                        class="px-2.5 py-1 rounded-lg text-xs bg-gray-100 text-gray-700 hover:bg-primary-100 hover:text-primary-800 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white transition">
                         {{ s.label }}
                     </button>
                 </div>

@@ -54,7 +54,7 @@ const field = 'w-full h-11 px-3 rounded-xl border-gray-300 dark:border-gray-600 
         <button type="button" @click="toggle" :aria-expanded="open"
             class="w-full flex items-center gap-3 p-3 text-left rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
             <span class="flex items-center justify-center w-10 h-10 rounded-full shrink-0"
-                :class="borrower ? 'bg-primary-100 text-primary-800' : 'bg-gray-200 text-gray-500'">
+                :class="borrower ? 'bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200' : 'bg-gray-200 text-gray-500'">
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M20 21a8 8 0 0 0-16 0M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />

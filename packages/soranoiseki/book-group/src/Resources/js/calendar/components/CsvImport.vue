@@ -95,7 +95,7 @@ function downloadTemplate(): void {
         <div class="flex flex-wrap items-start justify-between gap-3">
             <p class="text-sm text-gray-600 dark:text-gray-300 max-w-2xl">{{ description }}</p>
             <button type="button" @click="downloadTemplate"
-                class="inline-flex items-center gap-2 h-9 px-4 rounded-xl text-sm font-semibold text-primary-800 bg-white ring-1 ring-primary-600/40 hover:bg-primary-100/60 transition">
+                class="inline-flex items-center gap-2 h-9 px-4 rounded-xl text-sm font-semibold text-primary-800 bg-white ring-1 ring-primary-600/40 dark:text-primary-200 dark:bg-gray-800 dark:ring-primary-400/50 dark:hover:bg-gray-700 hover:bg-primary-100/60 transition">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
@@ -107,13 +107,13 @@ function downloadTemplate(): void {
         <!-- Drop zone -->
         <div v-if="!file" @dragover.prevent="dragging = true" @dragleave.prevent="dragging = false" @drop.prevent="onDrop"
             class="rounded-2xl border-2 border-dashed transition"
-            :class="dragging ? 'border-primary-500 bg-primary-100/40' : 'border-gray-300 bg-gray-50 hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-600'">
+            :class="dragging ? 'border-primary-500 bg-primary-100/40 dark:bg-primary-900/30' : 'border-gray-300 bg-gray-50 hover:bg-gray-100 dark:bg-gray-900 dark:border-gray-600'">
             <button type="button" class="w-full py-8 flex flex-col items-center gap-2 text-gray-500" @click="input?.click()">
                 <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
                 </svg>
-                <span class="text-sm"><b class="text-primary-700">点击选择</b> 或拖入 CSV 文件</span>
+                <span class="text-sm"><b class="text-primary-700 dark:text-primary-300">点击选择</b> 或拖入 CSV 文件</span>
                 <span class="text-xs text-gray-400">必需的列：{{ columns.join('、') }}</span>
             </button>
             <input ref="input" type="file" accept=".csv,.txt,text/csv" class="hidden" @change="onPick" />
@@ -157,7 +157,7 @@ function downloadTemplate(): void {
                         </tr>
                     </tbody>
                 </table>
-                <div v-if="checked.length > PREVIEW_LIMIT" class="px-4 py-2 text-xs text-gray-500 bg-gray-50">
+                <div v-if="checked.length > PREVIEW_LIMIT" class="px-4 py-2 text-xs text-gray-500 bg-gray-50 dark:bg-gray-900 dark:text-gray-400">
                     仅预览前 {{ PREVIEW_LIMIT }} 行，其余 {{ checked.length - PREVIEW_LIMIT }} 行将一并导入。
                 </div>
             </div>

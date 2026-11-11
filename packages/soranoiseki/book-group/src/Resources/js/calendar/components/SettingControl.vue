@@ -42,7 +42,7 @@ function setNumber(raw: string | number): void {
         <div class="flex items-center justify-between gap-3">
             <label class="text-sm font-medium text-main dark:text-gray-100">{{ item.label }}</label>
             <button v-if="changed" type="button" title="恢复默认" @click="emit('reset')"
-                class="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-primary-700 transition">
+                class="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-primary-700 dark:hover:text-primary-300 transition">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5" />
@@ -79,7 +79,7 @@ function setNumber(raw: string | number): void {
                 <button v-for="o in item.options" :key="o.value" type="button" role="radio" :aria-checked="modelValue === o.value"
                     @click="emit('update:modelValue', o.value)"
                     class="px-4 py-1.5 rounded-lg text-sm font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
-                    :class="modelValue === o.value ? 'bg-white text-primary-800 shadow-sm' : 'text-gray-500 hover:text-main'">
+                    :class="modelValue === o.value ? 'bg-white text-primary-800 shadow-sm dark:bg-gray-700 dark:text-white' : 'text-gray-500 hover:text-main'">
                     {{ o.label }}
                 </button>
             </div>

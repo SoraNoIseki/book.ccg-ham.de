@@ -6,7 +6,7 @@
 
         <p class="my-4 text-gray-700 dark:text-gray-400 font-semibold text-sm">
             请仔细检查组员名字，确保名字正确无误。已添加的组员名字将会作为选项显示在计划表中。<br>
-            管理组员请前往<span  @click="scrollToId('members-component')" class="text-primary-600 hover:underline px-0.5 cursor-pointer">组员管理</span>模块。
+            管理组员请前往<span  @click="scrollToId('members-component')" class="text-primary-600 hover:underline dark:text-primary-300 px-0.5 cursor-pointer">组员管理</span>模块。
         </p>
 
         <div class="flex items-center mb-4 bg-white dark:bg-gray-700 dark:text-gray-400 gap-x-4">
@@ -41,7 +41,7 @@
                 <span v-else class="text-red-700">
                     <span>错误：{{ previewMemberName }}</span>
                     <span v-if="redirectToMember !== ''" @click="scrollToId(redirectToMember)">
-                        立即前往<span class="text-primary-600 hover:underline px-0.5 cursor-pointer">组员编辑</span>模块
+                        立即前往<span class="text-primary-600 hover:underline dark:text-primary-300 px-0.5 cursor-pointer">组员编辑</span>模块
                     </span>
                 </span>
             </p>
@@ -51,7 +51,7 @@
                     {{ name }}
                     <span class="mx-2">|</span>
                     <span>
-                        立即前往<span class="text-primary-600 hover:underline px-0.5 cursor-pointer" @click="scrollToId(name)">组员编辑</span>模块
+                        立即前往<span class="text-primary-600 hover:underline dark:text-primary-300 px-0.5 cursor-pointer" @click="scrollToId(name)">组员编辑</span>模块
                     </span>
                 </p>
             </div>

@@ -59,10 +59,10 @@ async function restore(entry: HistoryEntry): Promise<void> {
                     <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-main dark:text-gray-100">
                         <span class="font-medium tabular-nums">{{ formatTime(entry.created_at) }}</span>
                         <span class="px-2 py-0.5 rounded-full text-xs font-semibold"
-                            :class="entry.action === 'restore' ? 'bg-amber-100 text-amber-800' : entry.action === 'initial' ? 'bg-gray-100 text-gray-600' : entry.action === 'create' ? 'bg-sky-100 text-sky-800' : 'bg-primary-100 text-primary-800'">
+                            :class="entry.action === 'restore' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : entry.action === 'initial' ? 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300' : entry.action === 'create' ? 'bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-300' : 'bg-primary-100 text-primary-800 dark:bg-primary-900/50 dark:text-primary-200'">
                             {{ actionLabel[entry.action] }}
                         </span>
-                        <span v-if="index === 0" class="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">当前</span>
+                        <span v-if="index === 0" class="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">当前</span>
                     </div>
 
                     <div class="mt-0.5 text-xs text-gray-500">
@@ -81,7 +81,7 @@ async function restore(entry: HistoryEntry): Promise<void> {
                 <!-- Every record has the button; for the current design it is disabled because there is nothing to restore -->
                 <button type="button" :disabled="isImporting || index === 0" :title="index === 0 ? '这已经是当前的外观' : '恢复到这条记录的外观'"
                     @click="restore(entry)"
-                    class="shrink-0 h-8 px-3 rounded-lg text-xs font-semibold text-primary-800 bg-primary-100/70 hover:bg-primary-100 disabled:opacity-40 disabled:hover:bg-primary-100/70 disabled:cursor-not-allowed transition">
+                    class="shrink-0 h-8 px-3 rounded-lg text-xs font-semibold text-primary-800 bg-primary-100/70 hover:bg-primary-100 dark:text-primary-200 dark:bg-primary-900/50 dark:hover:bg-primary-900/80 disabled:opacity-40 disabled:hover:bg-primary-100/70 disabled:cursor-not-allowed transition">
                     恢复到此
                 </button>
             </li>

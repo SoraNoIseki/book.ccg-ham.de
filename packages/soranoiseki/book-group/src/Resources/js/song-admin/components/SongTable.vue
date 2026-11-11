@@ -61,7 +61,7 @@ const shown = (v: string) => (v && v.toLowerCase() !== 'na' ? v : '');
                         :class="highlightId === s.id ? 'bg-primary-50 dark:bg-gray-700/60' : 'hover:bg-gray-50 dark:hover:bg-gray-700/40'">
                         <td class="px-4 py-3">
                             <a :href="`/songs/${s.id}`" @click.prevent="$emit('open', s.id)"
-                                class="font-semibold text-main dark:text-gray-100 hover:text-primary-700">{{ s.name }}</a>
+                                class="font-semibold text-main dark:text-gray-100 hover:text-primary-700 dark:hover:text-primary-300">{{ s.name }}</a>
                             <div class="text-xs text-gray-400 sm:hidden">
                                 {{ [shown(s.band), shown(s.album)].filter(Boolean).join(' | ') }}
                             </div>
@@ -79,7 +79,7 @@ const shown = (v: string) => (v && v.toLowerCase() !== 'na' ? v : '');
                         <td class="px-4 py-3 text-gray-500 tabular-nums hidden sm:table-cell">{{ s.count || '' }}</td>
                         <td class="px-4 py-3 text-right whitespace-nowrap">
                             <a :href="`/songs/${s.id}`" @click.prevent="$emit('open', s.id)"
-                                class="font-medium text-primary-700 hover:underline">编辑</a>
+                                class="font-medium text-primary-700 hover:underline dark:text-primary-300">编辑</a>
                             <button type="button" class="ml-4 font-medium text-gray-400 hover:text-red-600 transition"
                                 @click="$emit('remove', s)">删除</button>
                         </td>

@@ -89,7 +89,7 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload));
     <div>
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
             <button type="button" @click="back"
-                class="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl text-sm font-semibold text-gray-600 bg-white ring-1 ring-gray-300 hover:bg-gray-50 transition dark:bg-gray-800 dark:text-gray-200 dark:ring-gray-600">
+                class="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl text-sm font-semibold text-gray-600 bg-white ring-1 ring-gray-300 hover:bg-gray-50 dark:text-gray-200 dark:bg-gray-800 dark:ring-gray-600 dark:hover:bg-gray-700 transition dark:bg-gray-800 dark:text-gray-200 dark:ring-gray-600">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
                 返回诗歌列表
@@ -133,7 +133,7 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload));
                     <div class="flex items-center justify-between mb-2">
                         <h3 class="text-sm font-bold text-main dark:text-gray-100">歌词</h3>
                         <button type="button" @click="text = beautifySongText(text)"
-                            class="h-8 px-3 rounded-lg text-xs font-semibold text-primary-800 bg-primary-50 hover:bg-primary-100 transition">
+                            class="h-8 px-3 rounded-lg text-xs font-semibold text-primary-800 bg-primary-50 hover:bg-primary-100 dark:text-primary-200 dark:bg-primary-900/40 dark:hover:bg-primary-900/70 transition">
                             自动优化格式
                         </button>
                     </div>
@@ -145,7 +145,7 @@ onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload));
                     <h3 class="mb-2 text-sm font-bold text-main dark:text-gray-100">PPT 中收集到的内容（{{ contents.length }}）</h3>
                     <div v-for="c in contents" :key="c.id" class="mb-5">
                         <button type="button" @click="text = c.text"
-                            class="mb-2 w-full h-9 rounded-lg text-xs font-semibold text-primary-800 bg-primary-50 hover:bg-primary-100 transition">
+                            class="mb-2 w-full h-9 rounded-lg text-xs font-semibold text-primary-800 bg-primary-50 hover:bg-primary-100 dark:text-primary-200 dark:bg-primary-900/40 dark:hover:bg-primary-900/70 transition">
                             应用到左边
                         </button>
                         <textarea readonly rows="14" :value="c.text"
