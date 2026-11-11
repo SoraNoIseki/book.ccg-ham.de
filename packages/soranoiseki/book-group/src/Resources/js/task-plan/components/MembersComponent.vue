@@ -22,9 +22,9 @@
         </div>
 
         <table class="w-full text-sm text-left rtl:text-right text-gray-700 dark:text-gray-400 rounded-md overflow-hidden">
-            <thead class="text-sm font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 text-center">
+            <thead class="text-sm font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-100 text-center">
                 <tr>
-                    <th scope="col" class="p-2 bg-primary-400"></th>
+                    <th scope="col" class="p-2 bg-primary-400 text-gray-900"></th>
                     <template v-for="group in groups">
                         <th scope="col" :colspan="group.roles.filter(role => role.type === 'select').length" class="p-2" v-show="isGroupVisible(group)" :style="`background-color: ${group.color}55;`">
                             {{ group.group }}
@@ -33,7 +33,7 @@
                     <th scope="col" class="p-2 bg-red-500"></th>
                 </tr>
                 <tr class="border-b dark:border-gray-700 border-gray-200">
-                    <th scope="col" class="py-2 px-4 bg-primary-400 text-left">
+                    <th scope="col" class="py-2 px-4 bg-primary-400 text-gray-900 text-left">
                         名字
                     </th>
                     <template v-for="group in groups">
@@ -52,7 +52,7 @@
             <tbody>
                 <tr v-for="member in groupMembers" :id="member.name" :key="member.name" v-show="isMemberShown(member)"
                     class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200">
-                    <th scope="row" class="py-2 px-4 font-medium text-gray-900 whitespace-nowrap dark:text-white bg-primary-400">
+                    <th scope="row" class="py-2 px-4 font-medium text-gray-900 whitespace-nowrap dark:text-gray-900 bg-primary-400">
                         {{ member.name }}
                     </th>
 

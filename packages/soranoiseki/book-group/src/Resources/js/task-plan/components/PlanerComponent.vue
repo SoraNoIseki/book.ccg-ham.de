@@ -6,7 +6,7 @@
 
         <GroupFilterComponent class="my-4" />
 
-        <div class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-orange-300 border border-orange-200 dark:border-none" role="alert" v-show="conflictMembers.length > 0 && !loadingPlan">
+        <div class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-orange-950 dark:text-orange-200 border border-orange-200 dark:border-orange-800" role="alert" v-show="conflictMembers.length > 0 && !loadingPlan">
             <template v-for="conflict in conflictMembers">
                 <p class="mb-2">
                     <span class="font-semibold">{{ conflict.name }}</span> 在 <span class="font-semibold">{{ conflict.date }}</span> 有多个服事：
@@ -49,14 +49,14 @@
 
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 table-fixed rounded-md">
             <thead class="text-sm text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr class="bg-primary-200 border-b dark:border-gray-700 border-gray-200">
+                <tr class="bg-primary-200 text-primary-900 border-b dark:border-gray-700 border-gray-200">
                     <th scope="col" class="w-36 h-12"></th>
                     <template v-for="date in sundays">
                         <th scope="col" class="p-2 w-1/{{ sundays.length }}">
                             <span class="flex w-full gap-x-2 items-center">
                                 {{ date.toFormat('yyyy年M月d日') }}
                                 <button type="button" title="复制当日服事表文本（PPT用）" @click="taskPlanStore.copyTaskPlanText(date.toISODate() ?? '')">
-                                    <svg class="block cursor-pointer w-4 h-4 fill-current text-primary-700 hover:text-primary-800 dark:text-primary-300 dark:hover:text-primary-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M208 0L332.1 0c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9L448 336c0 26.5-21.5 48-48 48l-192 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48zM48 128l80 0 0 64-64 0 0 256 192 0 0-32 64 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 176c0-26.5 21.5-48 48-48z"/></svg>
+                                    <svg class="block cursor-pointer w-4 h-4 fill-current text-primary-700 hover:text-primary-800 dark:text-primary-800 dark:hover:text-primary-900" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M208 0L332.1 0c12.7 0 24.9 5.1 33.9 14.1l67.9 67.9c9 9 14.1 21.2 14.1 33.9L448 336c0 26.5-21.5 48-48 48l-192 0c-26.5 0-48-21.5-48-48l0-288c0-26.5 21.5-48 48-48zM48 128l80 0 0 64-64 0 0 256 192 0 0-32 64 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 176c0-26.5 21.5-48 48-48z"/></svg>
                                 </button>
                             </span>
                         </th>

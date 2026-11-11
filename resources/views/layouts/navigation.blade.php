@@ -17,7 +17,7 @@
                     </x-nav-link>
                     @if (Auth::user()->hasRole('library'))
                         <x-nav-link :href="route('library.index')" :active="request()->routeIs('library.index')">
-                            {{ __('Library ') }}
+                            {{ __('Library') }}
                         </x-nav-link>
                     @endif 
                     @if (Auth::user()->hasRole('ppt'))
@@ -102,7 +102,7 @@
             </x-responsive-nav-link>
             @if (Auth::user()->hasRole('library'))
                 <x-responsive-nav-link :href="route('library.index')" :active="request()->routeIs('library.index')">
-                    {{ __('Library ') }}
+                    {{ __('Library') }}
                 </x-responsive-nav-link>
             @endif 
             @if (Auth::user()->hasRole('ppt'))
