@@ -15,7 +15,7 @@ const { hasCalendar, isGenerating, isLoading, editable } = storeToRefs(cal);
 
         <button type="button" :disabled="isGenerating || isLoading" @click="cal.generatePdf('preview')"
             :class="compact ? 'h-9' : 'h-11'"
-            class="inline-flex items-center gap-2 px-5 rounded-xl text-sm font-semibold text-primary-800 bg-white ring-1 ring-primary-600/40 hover:bg-primary-100/60 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-primary-600">
+            class="inline-flex items-center gap-2 px-5 rounded-xl text-sm font-semibold text-primary-800 bg-white ring-1 ring-primary-600/40 dark:text-primary-200 dark:bg-gray-800 dark:ring-primary-400/50 dark:hover:bg-gray-700 hover:bg-primary-100/60 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-primary-600">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" />

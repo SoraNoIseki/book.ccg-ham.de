@@ -36,7 +36,7 @@ defineEmits<{ (e: 'update:modelValue', id: string): void }>();
                     <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.4-4-4 1.4-1.4 2.6 2.6 5-5 1.4 1.4-6.4 6.4Z" />
                 </svg>
                 <span v-else-if="t.status === 'partial'"
-                    class="px-1.5 py-0.5 rounded-full text-[11px] leading-none font-bold bg-orange-100 text-orange-700 tabular-nums">
+                    class="px-1.5 py-0.5 rounded-full text-[11px] leading-none font-bold bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 tabular-nums">
                     {{ t.badge }}
                 </span>
             </button>

@@ -70,13 +70,13 @@ onBeforeUnmount(() => sortable?.destroy());
                         @input="update(i, ($event.target as HTMLTextAreaElement).value)"
                         class="w-full resize-none rounded-md border border-gray-200 bg-white dark:bg-gray-900 py-3 px-6 text-base font-medium text-main dark:text-light outline-none focus:ring-primary-500 focus:border-primary-500 focus:shadow-md" />
                     <div class="ml-3 flex flex-col justify-between text-gray-500">
-                        <button type="button" title="拖动排序" class="move cursor-move hover:text-primary-700">
+                        <button type="button" title="拖动排序" class="move cursor-move hover:text-primary-700 dark:hover:text-primary-300">
                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 16H4l6 6V2H8zm6-11v17h2V8h4l-6-6z" /></svg>
                         </button>
                         <button type="button" title="删除" @click="remove(i)" class="hover:text-red-600">
                             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4c-4.419 0-8 3.582-8 8s3.581 8 8 8 8-3.582 8-8-3.581-8-8-8zm3.707 10.293c.391.391.391 1.023 0 1.414-.195.195-.451.293-.707.293s-.512-.098-.707-.293l-2.293-2.293-2.293 2.293c-.195.195-.451.293-.707.293s-.512-.098-.707-.293c-.391-.391-.391-1.023 0-1.414l2.293-2.293-2.293-2.293c-.391-.391-.391-1.023 0-1.414s1.023-.391 1.414 0l2.293 2.293 2.293-2.293c.391-.391 1.023-.391 1.414 0s.391 1.023 0 1.414l-2.293 2.293 2.293 2.293z" /></svg>
                         </button>
-                        <button type="button" title="在下方添加" @click="add(i)" class="hover:text-primary-700">
+                        <button type="button" title="在下方添加" @click="add(i)" class="hover:text-primary-700 dark:hover:text-primary-300">
                             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
                         </button>
                     </div>

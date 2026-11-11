@@ -31,7 +31,7 @@ function change(value: string): void {
             <div class="w-full sm:w-72">
                 <SearchSelect v-if="editable" :model-value="calendarDesignId !== null ? String(calendarDesignId) : ''" :options="options"
                     :disabled="isImporting" placeholder="选择外观..." @change="change" />
-                <div v-else class="h-10 px-3 inline-flex items-center rounded-lg bg-gray-100 text-sm text-gray-600">
+                <div v-else class="h-10 px-3 inline-flex items-center rounded-lg bg-gray-100 text-sm text-gray-600 dark:bg-gray-700 dark:text-gray-300">
                     {{ current?.name ?? '未设置' }}
                 </div>
             </div>

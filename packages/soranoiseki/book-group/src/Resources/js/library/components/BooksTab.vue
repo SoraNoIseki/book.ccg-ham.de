@@ -76,7 +76,7 @@ const filters = [
         <p v-if="isLoadingBooks" class="py-4 text-center text-sm text-gray-500">加载中...</p>
 
         <button v-if="booksPage < booksLastPage && !isLoadingBooks" type="button" @click="lib.loadBooks()"
-            class="w-full h-12 rounded-xl text-sm font-semibold text-primary-800 bg-white ring-1 ring-primary-600/40 hover:bg-primary-100/60 active:scale-95 transition">
+            class="w-full h-12 rounded-xl text-sm font-semibold text-primary-800 bg-white ring-1 ring-primary-600/40 dark:text-primary-200 dark:bg-gray-800 dark:ring-primary-400/50 dark:hover:bg-gray-700 hover:bg-primary-100/60 active:scale-95 transition">
             加载更多
         </button>
 
@@ -84,7 +84,7 @@ const filters = [
             <p class="mb-2">批量导入：CSV 或 Excel，每行一本书：编号;书名;作者;出版社;分类;册数</p>
             <input ref="fileInput" type="file" accept=".csv,.xlsx,.xls,.txt" class="hidden" @change="onFile" />
             <button type="button" @click="fileInput?.click()" :disabled="lib.isBusy"
-                class="h-10 px-4 rounded-lg text-sm font-semibold text-primary-800 ring-1 ring-primary-600/40 hover:bg-primary-100/60 disabled:opacity-50 transition">
+                class="h-10 px-4 rounded-lg text-sm font-semibold text-primary-800 ring-1 ring-primary-600/40 dark:text-primary-200 dark:ring-primary-400/50 dark:hover:bg-gray-700 hover:bg-primary-100/60 disabled:opacity-50 transition">
                 选择文件导入
             </button>
         </div>

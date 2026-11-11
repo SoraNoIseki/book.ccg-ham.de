@@ -53,7 +53,7 @@ function usedBy(years: number[]): string {
         <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
             <h3 class="text-sm font-bold text-main dark:text-gray-100">外观方案</h3>
             <button v-if="canDesign && mode === null" type="button" @click="open('create')"
-                class="inline-flex items-center gap-1.5 h-9 px-4 rounded-xl text-sm font-semibold text-primary-800 bg-white ring-1 ring-primary-600/40 hover:bg-primary-100/60 transition">
+                class="inline-flex items-center gap-1.5 h-9 px-4 rounded-xl text-sm font-semibold text-primary-800 bg-white ring-1 ring-primary-600/40 dark:text-primary-200 dark:bg-gray-800 dark:ring-primary-400/50 dark:hover:bg-gray-700 hover:bg-primary-100/60 transition">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
                     <path d="M12 5v14M5 12h14" />
                 </svg>
@@ -71,7 +71,7 @@ function usedBy(years: number[]): string {
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100'">
                 {{ d.name }}
                 <span v-if="d.id === calendarDesignId" class="px-1.5 py-0.5 rounded-full text-[11px] leading-none font-bold"
-                    :class="d.id === designId ? 'bg-white/25 text-white' : 'bg-green-100 text-green-800'">使用中</span>
+                    :class="d.id === designId ? 'bg-white/25 text-white' : 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'">使用中</span>
             </button>
         </div>
 
@@ -93,7 +93,7 @@ function usedBy(years: number[]): string {
         <!-- Actions on the selected design -->
         <div v-if="canDesign && mode === null && designId" class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
             <span class="text-gray-500">当前选中：<b class="text-gray-700">{{ designName }}</b></span>
-            <button type="button" class="font-medium text-primary-700 hover:underline" @click="open('rename')">重命名</button>
+            <button type="button" class="font-medium text-primary-700 hover:underline dark:text-primary-300" @click="open('rename')">重命名</button>
             <button type="button" class="font-medium text-gray-500 hover:text-red-600" @click="remove">删除</button>
         </div>
     </section>

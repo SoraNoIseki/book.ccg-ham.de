@@ -107,7 +107,7 @@ const field = 'w-full h-11 px-3 rounded-xl border-gray-300 dark:border-gray-600 
                         </svg>
                     </button>
                     <button type="button" @click="lookup" :disabled="isLookingUpIsbn || !draft.isbn.trim()"
-                        class="shrink-0 h-11 px-4 rounded-xl text-sm font-semibold text-primary-800 ring-1 ring-primary-600/40 hover:bg-primary-100/60 disabled:opacity-50 active:scale-95 transition">
+                        class="shrink-0 h-11 px-4 rounded-xl text-sm font-semibold text-primary-800 ring-1 ring-primary-600/40 dark:text-primary-200 dark:ring-primary-400/50 dark:hover:bg-gray-700 hover:bg-primary-100/60 disabled:opacity-50 active:scale-95 transition">
                         {{ isLookingUpIsbn ? '查询中...' : '查询资料' }}
                     </button>
                 </div>

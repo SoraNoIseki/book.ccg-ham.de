@@ -34,7 +34,7 @@ const btn = 'inline-flex items-center justify-center h-10 px-4 rounded-xl text-s
                         <p class="mt-0.5 text-sm text-gray-500">{{ l.member.name }} · <span class="font-mono">{{ l.copyCode }}</span></p>
                     </div>
                     <span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap"
-                        :class="l.overdue ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-700'">
+                        :class="l.overdue ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' : 'bg-gray-100 text-gray-700'">
                         {{ dueText(l.dueAt) }}
                     </span>
                 </div>

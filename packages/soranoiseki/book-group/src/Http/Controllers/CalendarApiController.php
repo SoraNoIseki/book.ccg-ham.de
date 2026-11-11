@@ -302,7 +302,7 @@ class CalendarApiController extends Controller
         file_put_contents($jsonPath, json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
         $process = new Process([
-            env('COMMON_PYTHON_PATH', '/usr/bin/python3'),
+            env('PYTHON_PATH', '/usr/bin/python3'),
             storage_path('scripts/calendar/calendar_pdf.py'),
             $jsonPath,
             $pdfPath,

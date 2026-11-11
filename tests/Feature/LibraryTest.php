@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Soranoiseki\BookGroup\Models\Library\Book;
 use Soranoiseki\BookGroup\Models\Library\Copy;
 use Soranoiseki\BookGroup\Models\Library\Loan;
@@ -13,11 +13,12 @@ use Soranoiseki\BookGroup\Services\LibraryService;
 use Tests\TestCase;
 
 /**
- * Uses transactions (not RefreshDatabase) so the development database is left untouched.
+ * Runs against the in-memory SQLite database configured in phpunit.xml
+ * (guarded in CreatesApplication), so the development database is never touched.
  */
 class LibraryTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     private function user(array $roles = ['library']): User
     {

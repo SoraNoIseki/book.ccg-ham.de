@@ -64,7 +64,7 @@ const btn = 'inline-flex items-center justify-center h-11 px-5 rounded-xl text-s
                 <div class="flex gap-2">
                     <button v-if="lib.canManage" type="button" :class="btn + ' flex-1 text-white bg-gradient-to-r from-primary-500 to-primary-700'"
                         @click="lib.startAddBook(result.isbn ?? '')">添加这本书</button>
-                    <button type="button" :class="btn + ' flex-1 text-primary-800 bg-white ring-1 ring-primary-600/40'" @click="scanNext">重新扫码</button>
+                    <button type="button" :class="btn + ' flex-1 text-primary-800 bg-white ring-1 ring-primary-600/40 dark:text-primary-200 dark:bg-gray-800 dark:ring-primary-400/50 dark:hover:bg-gray-700'" @click="scanNext">重新扫码</button>
                 </div>
             </template>
 

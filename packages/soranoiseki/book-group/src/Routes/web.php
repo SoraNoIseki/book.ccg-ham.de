@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Soranoiseki\BookGroup\Http\Middleware\VerifyWebsiteApiToken;
 use Soranoiseki\BookGroup\Http\Controllers\PowerpointController;
-use Soranoiseki\BookGroup\Http\Controllers\PowerpointAjaxController;
 use Soranoiseki\BookGroup\Http\Controllers\PowerpointApiController;
 use Soranoiseki\BookGroup\Http\Controllers\LibraryController;
 use Soranoiseki\BookGroup\Http\Controllers\LibraryApiController;
@@ -12,6 +11,7 @@ use Soranoiseki\BookGroup\Http\Controllers\CalendarApiController;
 use Soranoiseki\BookGroup\Http\Controllers\CalendarDesignController;
 use Soranoiseki\BookGroup\Http\Controllers\SongController;
 use Soranoiseki\BookGroup\Http\Controllers\SongApiController;
+use Soranoiseki\BookGroup\Http\Controllers\SongAdminApiController;
 use Soranoiseki\BookGroup\Http\Controllers\TaskPlanController;
 use Soranoiseki\BookGroup\Http\Controllers\TaskPlanApiController;
 use Soranoiseki\BookGroup\Http\Controllers\Api\WebsiteApiController;
@@ -20,13 +20,6 @@ use Soranoiseki\BookGroup\Http\Controllers\Api\WebsiteApiController;
 Route::middleware(['web', 'auth'])->group(function () {
     Route::group(['prefix' => 'ppt', 'middleware' => 'role:ppt'], function() {
         Route::get('/', [PowerpointController::class, 'index'])->name('book-group.ppt.index');
-        Route::post('/save', [PowerpointController::class, 'store'])->name('book-group.ppt.store');
-        Route::post('/download', [PowerpointController::class, 'download'])->name('book-group.ppt.download');
-        Route::post('/save-download', [PowerpointController::class, 'storeAndDownload'])->name('book-group.ppt.store-download');
-
-        Route::group(['prefix' => 'ajax'], function() {
-            Route::get('/song', [PowerpointAjaxController::class, 'getSong'])->name('book-group.ppt.ajax.get-song');
-        });
     });
 
     Route::group(['prefix' => 'api/powerpoint', 'middleware' => 'role:ppt'], function() {
@@ -40,12 +33,17 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::group(['prefix' => 'songs', 'middleware' => 'role:songs_management'], function() {
         Route::get('/', [SongController::class, 'index'])->name('book-group.song.index');
-        Route::get('/{song}', [SongController::class, 'edit'])->name('book-group.song.edit');
-        Route::post('/{song}', [SongController::class, 'save'])->name('book-group.song.save');
-        Route::get('/{song}/delete', [SongController::class, 'delete'])->name('book-group.song.delete');
-        Route::get('/upload/{songContent}', [SongController::class, 'upload'])->name('book-group.song-content.upload');
+        Route::get('/{song}', [SongController::class, 'index'])->name('book-group.song.edit');
     });
-    
+
+    Route::group(['prefix' => 'api/songs-admin', 'middleware' => 'role:songs_management'], function() {
+        Route::get('/', [SongAdminApiController::class, 'index'])->name('book-group.song.api.index');
+        Route::post('/contents/{songContent}/upload', [SongAdminApiController::class, 'upload'])->name('book-group.song.api.upload');
+        Route::get('/{song}', [SongAdminApiController::class, 'show'])->name('book-group.song.api.show');
+        Route::put('/{song}', [SongAdminApiController::class, 'update'])->name('book-group.song.api.update');
+        Route::delete('/{song}', [SongAdminApiController::class, 'destroy'])->name('book-group.song.api.destroy');
+    });
+
     Route::group(['prefix' => 'library', 'middleware' => 'role:library'], function() {
         Route::get('/', [LibraryController::class, 'index'])->name('library.index');
     });

@@ -71,6 +71,8 @@ return new class extends Migration
         }
 
         Schema::table('calendar_design_revision', function (Blueprint $table) {
+            // SQLite (used by the test suite) cannot drop a column that is still indexed.
+            $table->dropIndex(['calendar_id']);
             $table->dropColumn('calendar_id');
         });
     }

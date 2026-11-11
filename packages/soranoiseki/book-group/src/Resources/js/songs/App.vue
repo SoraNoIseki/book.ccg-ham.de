@@ -2,11 +2,11 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-6">
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
             <div class="text-main dark:text-gray-100">
-                <div class="px-3 py-2 md:px-4 md:py-4 text-sm text-gray-700 font-semibold">
+                <div class="px-3 py-2 md:px-4 md:py-4 text-sm text-gray-700 dark:text-gray-300 font-semibold">
                     <p>提示：点击左边的折叠箭头可加载歌词。</p>
                 </div>
 
-                <div class="px-3 py-2 md:px-4 md:py-4 text-gray-700">
+                <div class="px-3 py-2 md:px-4 md:py-4 text-gray-700 dark:text-gray-300">
                     <input type="text" v-model="search" @input="onSearch" 
                         class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring focus:ring-primary-500 focus:border-primary-500" placeholder="搜索歌曲名称或乐队名称">
                 </div>
@@ -15,7 +15,7 @@
                     <div class="relative overflow-x-auto">
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                             <thead
-                                class="font-semibold text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                class="font-semibold text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
                                     <th colspan="3" class="px-2 py-2 md:px-3 md:py-4">
                                         <div class="flex items-center justify-between gap-2">
@@ -45,7 +45,7 @@
                                             <span v-if="song.album.toLowerCase() !== 'na'"> {{ song.album }}</span>
                                         </td>
                                         <td class="px-2 py-2 md:px-4 md:py-4">
-                                            <a target="_blank" :href="searchInYoutube(song)" class="text-primary-600 hover:text-primary-900">
+                                            <a target="_blank" :href="searchInYoutube(song)" class="text-primary-600 hover:text-primary-900 dark:text-primary-300 dark:hover:text-primary-200">
                                                 YouTube
                                             </a>
                                         </td>
@@ -54,7 +54,7 @@
                                         <td class="px-2 py-2 md:px-3 md:py-4"></td>
                                         <td colspan="2" class="px-2 py-2 md:px-4 md:py-4 text-left">
                                             <div v-if="loading">
-                                                <LoadingIcon class="w-6 h-6 text-gray-700"></LoadingIcon>
+                                                <LoadingIcon class="w-6 h-6 text-gray-700 dark:text-gray-300"></LoadingIcon>
                                             </div>
                                             <div v-else>
                                                 <pre class="text-sm text-gray-700 dark:text-gray-200" v-html="currentSongText?.text"></pre>
