@@ -2,3 +2,5 @@
 !.gitignore
 !images/
 !images/*
+# macOS (must come after the !images/** re-include)
+**/.DS_Store
