@@ -145,6 +145,149 @@ class CalendarApiController extends Controller
     }
 
     /**
+     * PUT /api/calendar/{calendar}/events/{event}  { date, name }
+     * Edit one imported entry of the year overview. Line breaks in the text are stored as "|" like in the CSV.
+     */
+    public function updateEvent(Request $request, Calendar $calendar, Event $event): JsonResponse
+    {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+        if ((int) $event->calendar_id !== (int) $calendar->id) {
+            return $this->fail('找不到这条大事历。', 404);
+        }
+
+        $data = $request->validate([
+            'date' => 'required|date_format:Y-m-d',
+            'name' => 'required|string',
+        ], [
+            'date.required' => '请填写日期。',
+            'date.date_format' => '日期格式应为 YYYY-MM-DD。',
+            'name.required' => '事件内容为空。',
+        ]);
+
+        $date = \Carbon\Carbon::createFromFormat('!Y-m-d', $data['date']);
+        $year = (int) $calendar->year;
+        [$min, $max] = $this->eventRange($year);
+        if ($date->lt($min) || $date->gt($max)) {
+            return $this->fail('日期不在 ' . $year . ' 年内。', 422);
+        }
+
+        $name = $this->normalizeLines($data['name']);
+        if ($name === '') {
+            return $this->fail('事件内容为空。', 422);
+        }
+        if (mb_strlen($name) > 255) {
+            return $this->fail('事件内容太长（最多 255 个字符）。', 422);
+        }
+
+        // One entry per day (the CSV import treats the date as the key as well)
+        $taken = Event::where('calendar_id', $calendar->id)
+            ->whereDate('date', $date->format('Y-m-d'))
+            ->where('id', '!=', $event->id)
+            ->exists();
+        if ($taken) {
+            return $this->fail('这一天已经有大事历，请直接编辑那一条。', 422);
+        }
+
+        $event->fill(['date' => $date->format('Y-m-d'), 'name' => $name])->save();
+
+        return response()->json($this->payload($year, $calendar) + ['message' => '大事历已保存。']);
+    }
+
+    /**
+     * PUT /api/calendar/{calendar}/bible-texts/{month}  { text, source }
+     * Edit (or set, if the month has none yet) the verse of one month.
+     */
+    public function updateBibleText(Request $request, Calendar $calendar, int $month): JsonResponse
+    {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+        if ($month < 1 || $month > 12) {
+            return $this->fail('月份应为 1 至 12。', 404);
+        }
+
+        $data = $request->validate([
+            'text' => 'required|string',
+            'source' => 'nullable|string|max:255',
+        ], [
+            'text.required' => '经文为空。',
+            'source.max' => '出处太长（最多 255 个字符）。',
+        ]);
+
+        $text = $this->normalizeLines($data['text']);
+        if ($text === '') {
+            return $this->fail('经文为空。', 422);
+        }
+
+        Detail::updateOrCreate(
+            ['calendar_id' => $calendar->id, 'year' => $calendar->year, 'month' => $month],
+            ['bible_text' => $text, 'bible_source' => trim((string) ($data['source'] ?? ''))],
+        );
+
+        return response()->json($this->payload((int) $calendar->year, $calendar) + ['message' => $month . ' 月经文已保存。']);
+    }
+
+    /**
+     * PUT /api/calendar/{calendar}/bible-texts/order  { order: [12 months] }
+     * Rearrange the verses: order[i] is the month whose verse moves to month i + 1 (a permutation of 1..12).
+     * Months without a verse move along (they just stay empty), so only existing rows change.
+     */
+    public function reorderBibleTexts(Request $request, Calendar $calendar): JsonResponse
+    {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+
+        $data = $request->validate([
+            'order' => 'required|array|size:12',
+            'order.*' => 'required|integer|between:1,12|distinct',
+        ], [
+            'order.*' => '顺序无效，请刷新页面后重试。',
+        ]);
+
+        // old month => new month
+        $target = [];
+        foreach (array_values($data['order']) as $i => $from) {
+            $target[(int) $from] = $i + 1;
+        }
+
+        DB::transaction(function () use ($calendar, $target) {
+            $rows = Detail::where('calendar_id', $calendar->id)->where('year', $calendar->year)->get();
+            foreach ($rows as $row) {
+                $new = $target[(int) $row->month] ?? null;
+                if ($new !== null && $new !== (int) $row->month) {
+                    $row->month = $new;
+                    $row->save();
+                }
+            }
+        });
+
+        return response()->json($this->payload((int) $calendar->year, $calendar) + ['message' => '经文顺序已保存。']);
+    }
+
+    /**
+     * Dates that can show up in the calendar of a year: the year itself plus the days that pad the weeks
+     * of January and December (weeks run Monday-Sunday). Same rule as eventRange.ts.
+     */
+    private function eventRange(int $year): array
+    {
+        return [
+            \Carbon\Carbon::create($year, 1, 1)->startOfWeek(\Carbon\Carbon::MONDAY)->startOfDay(),
+            \Carbon\Carbon::create($year, 12, 31)->endOfWeek(\Carbon\Carbon::SUNDAY)->endOfDay(),
+        ];
+    }
+
+    /** Text typed with real line breaks -> the "|" separated form used by the CSV files and the PDF. */
+    private function normalizeLines(string $text): string
+    {
+        $lines = preg_split('/\r\n|\r|\n|\|/', $text) ?: [];
+
+        return implode('|', array_values(array_filter(array_map('trim', $lines), fn ($l) => $l !== '')));
+    }
+
+    /**
      * POST /api/calendar/{calendar}/images/{slot}  (multipart: file)
      * slot = cover | 01..12 | overlay | footer
      */

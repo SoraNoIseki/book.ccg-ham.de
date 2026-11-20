@@ -395,6 +395,60 @@ export const useCalendarStore = defineStore("calendar", {
             }
         },
 
+        /** Edit one imported entry of the year overview. Returns true on success. */
+        async updateEvent(id: number, date: string, name: string): Promise<boolean> {
+            if (!this.calendarId) return false;
+            this.clearMessages();
+            this.isImporting = true;
+            try {
+                const { data } = await axios.put<CalendarPayload>(`/api/calendar/${this.calendarId}/events/${id}`, { date, name });
+                this.applyPayload(data);
+                this.successMessage = data.message ?? "已保存。";
+                return true;
+            } catch (e) {
+                this.errors = await extractErrors(e, "保存失败。");
+                return false;
+            } finally {
+                this.isImporting = false;
+            }
+        },
+
+        /** Edit (or set) the verse of one month. Returns true on success. */
+        async updateBibleText(month: number, text: string, source: string): Promise<boolean> {
+            if (!this.calendarId) return false;
+            this.clearMessages();
+            this.isImporting = true;
+            try {
+                const { data } = await axios.put<CalendarPayload>(`/api/calendar/${this.calendarId}/bible-texts/${month}`, { text, source });
+                this.applyPayload(data);
+                this.successMessage = data.message ?? "已保存。";
+                return true;
+            } catch (e) {
+                this.errors = await extractErrors(e, "保存失败。");
+                return false;
+            } finally {
+                this.isImporting = false;
+            }
+        },
+
+        /** Rearrange the verses: order[i] is the month whose verse moves to month i + 1. Returns true on success. */
+        async reorderBibleTexts(order: number[]): Promise<boolean> {
+            if (!this.calendarId) return false;
+            this.clearMessages();
+            this.isImporting = true;
+            try {
+                const { data } = await axios.put<CalendarPayload>(`/api/calendar/${this.calendarId}/bible-texts/order`, { order });
+                this.applyPayload(data);
+                this.successMessage = data.message ?? "已保存。";
+                return true;
+            } catch (e) {
+                this.errors = await extractErrors(e, "保存顺序失败。");
+                return false;
+            } finally {
+                this.isImporting = false;
+            }
+        },
+
         /**
          * Generate the PDF on the server. "preview" opens it in a new tab, "download" saves it.
          * The tab is opened synchronously (before the slow request) so that popup blockers allow it.
