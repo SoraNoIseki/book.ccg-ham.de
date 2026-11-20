@@ -4,7 +4,8 @@ import AlertBox from '../ui/AlertBox.vue';
 </script>
 
 <template>
-    <ContentField tab="preach" item="item0" label="讲道标题" :rows="5">
+    <ContentField tab="preach" item="item0" label="讲道标题" :rows="5"
+        tip="第一行为讲道标题，之后几行均为副标题">
         <template #hint>
             <AlertBox title="格式范例：">
                 <li>善仆与恶仆</li>
@@ -17,7 +18,7 @@ import AlertBox from '../ui/AlertBox.vue';
         </template>
     </ContentField>
 
-    <ContentField tab="preach" item="item1" label="讲道（引言）">
+    <ContentField tab="preach" item="item1" label="讲道（引言）" tip="按“1. ”编号，编号数字后请加空格">
         <template #hint>
             <AlertBox title="格式范例：">
                 <li>1. 引言1</li>
@@ -30,7 +31,7 @@ import AlertBox from '../ui/AlertBox.vue';
         </template>
     </ContentField>
 
-    <ContentField tab="preach" item="item2" label="讲道（经文理解与应用）">
+    <ContentField tab="preach" item="item2" label="讲道（经文理解与应用）" tip="按“1. ”编号，编号数字后请加空格">
         <template #hint>
             <AlertBox title="格式范例：">
                 <li>1. 大纲1</li>
@@ -43,7 +44,7 @@ import AlertBox from '../ui/AlertBox.vue';
         </template>
     </ContentField>
 
-    <ContentField tab="preach" item="item3" label="讲道（总结）">
+    <ContentField tab="preach" item="item3" label="讲道（总结）" tip="可输入多行，一般情况下不需要编号">
         <template #hint>
             <AlertBox type="danger" title="注意事项：">
                 <li>可输入多行，但一般情况下不需要编号</li>

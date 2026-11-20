@@ -29,6 +29,7 @@ Route::middleware(['web', 'auth'])->group(function () {
         Route::post('/download', [PowerpointApiController::class, 'download'])->name('book-group.ppt.api.download');
         Route::get('/songs', [PowerpointApiController::class, 'songs'])->name('book-group.ppt.api.songs');
         Route::get('/song', [PowerpointApiController::class, 'getSong'])->name('book-group.ppt.api.song');
+        Route::get('/response-scriptures', [PowerpointApiController::class, 'responseScriptures'])->name('book-group.ppt.api.response-scriptures');
     });
 
     Route::group(['prefix' => 'songs', 'middleware' => 'role:songs_management'], function() {

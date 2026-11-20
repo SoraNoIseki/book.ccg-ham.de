@@ -23,6 +23,9 @@ class StorePowerpointRequest extends FormRequest
     {
         return [
             'date' => 'required|date',
+            'song_v' => 'nullable|in:1,2',
+            'include_video' => 'nullable|boolean',
+            'force_holy_dinner' => 'nullable|boolean',
             // 'pray.item1' => 'required',
             // 'pray.item2' => 'required',
             // 'pray.item3' => 'required',

@@ -65,6 +65,8 @@ class PowerpointApiController extends Controller
             'nextWeek' => Carbon::parse($date)->addWeek()->format('Y-m-d'),
             'defaultDate' => $defaultDate,
             'content' => $content,
+            // Basic settings (communion set, extra communion, bell video) saved for this date; null = defaults
+            'settings' => $this->readSettings($date),
             'versions' => $versions->values(),
             'saveEnabled' => $defaultDate === $date,
             'infoMessage' => $infoMessage,
@@ -97,11 +99,27 @@ class PowerpointApiController extends Controller
 
         $this->saveContent($data);
 
-        $process = new Process([
+        // Holy communion Sundays alternate between two song/slide sets: '1' or '2'.
+        $songVersion = (string) ($data['song_v'] ?? '2');
+        if (!in_array($songVersion, ['1', '2'], true)) {
+            $songVersion = '2';
+        }
+
+        // Content files and the generated pptx live together in storage/pyworship/content.
+        $command = [
             env('PYTHON_PATH', '/usr/bin/python3'),
-            storage_path('pyworship/ppt_worker.py'),
-            $date
-        ]);
+            storage_path('pyworship/pygod/apps/ppt_worker/scripts/ppt_worker.py'),
+            $date,
+            '--v', $songVersion,
+            '--content-folder', storage_path('pyworship/content'),
+            filter_var($data['include_video'] ?? true, FILTER_VALIDATE_BOOLEAN) ? '--video' : '--no-video',
+        ];
+        // Add the communion flow also outside of the first week of the month.
+        if (filter_var($data['force_holy_dinner'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+            $command[] = '--force-holy-dinner';
+        }
+        $process = new Process($command);
+        $process->setTimeout(180);
 
         $process->run();
 
@@ -124,6 +142,36 @@ class PowerpointApiController extends Controller
     {
         $date = $request->input('date');
         return $this->downloadByDate($date);
+    }
+
+    /**
+     * GET /api/powerpoint/response-scriptures
+     * Library of responsive readings (启应经文) shipped with ppt_worker.
+     * Each entry has the library key, a display label ("23 会众合一"), the title without number and the text.
+     */
+    public function responseScriptures()
+    {
+        $path = 'pygod/apps/ppt_worker/src/bible/scriptures.json';
+        $items = [];
+
+        if ($this->getStorage()->exists($path)) {
+            $json = json_decode($this->getStorage()->get($path), true) ?: [];
+            foreach ($json as $key => $text) {
+                $key = (string) $key;
+                // "23会众合一" => number "23", title "会众合一" (the title line in the PPT has no number)
+                preg_match('/^(\d+)\s*(.*)$/u', $key, $m);
+                $number = $m[1] ?? '';
+                $title = $number !== '' ? $m[2] : $key;
+                $items[] = [
+                    'key' => $key,
+                    'label' => $number !== '' ? $number . ' ' . $title : $title,
+                    'title' => $title,
+                    'text' => (string) $text, // keeps the full-width space before 神
+                ];
+            }
+        }
+
+        return response()->json(['success' => true, 'data' => $items]);
     }
 
     /**
@@ -179,19 +227,22 @@ class PowerpointApiController extends Controller
     protected function downloadByDate(string $date)
     {
         $filename = $date . '.pptx';
-        if (!$this->getStorage()->exists($filename)) {
+        $path = 'content/' . $filename;
+        if (!$this->getStorage()->exists($path)) {
             return response()->json([
                 'success' => false,
                 'message' => '无法找到文件：' . $filename,
             ], 404);
         }
 
-        return $this->getStorage()->download($filename);
+        return $this->getStorage()->download($path, $filename);
     }
 
     protected function saveContent(array $requestData): void
     {
         $date = $requestData['date'] ?? '';
+
+        $this->saveSettings($requestData);
 
         foreach ($this->contentFields as $field) {
             if (!array_key_exists($field, $requestData)) continue;
@@ -211,6 +262,37 @@ class PowerpointApiController extends Controller
                 $this->saveToContentFile($field, $date, $input);
             }
         }
+    }
+
+    /**
+     * Per-date basic settings live next to the content files: content/settings_<date>.json
+     */
+    protected function saveSettings(array $requestData): void
+    {
+        $date = $requestData['date'] ?? '';
+        if ($date === '') return;
+
+        $settings = [];
+        if (isset($requestData['song_v']) && in_array((string) $requestData['song_v'], ['1', '2'], true)) {
+            $settings['song_v'] = (string) $requestData['song_v'];
+        }
+        foreach (['include_video', 'force_holy_dinner'] as $key) {
+            if (array_key_exists($key, $requestData)) {
+                $settings[$key] = filter_var($requestData[$key], FILTER_VALIDATE_BOOLEAN);
+            }
+        }
+        if ($settings === []) return;
+
+        $this->putContentFile('settings_' . $date . '.json', json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+
+    protected function readSettings(string $date): ?array
+    {
+        $filePath = 'content/settings_' . $date . '.json';
+        if (!$this->getStorage()->exists($filePath)) return null;
+
+        $settings = json_decode($this->getStorage()->get($filePath), true);
+        return is_array($settings) ? $settings : null;
     }
 
     protected function getStorage()

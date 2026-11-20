@@ -79,7 +79,8 @@ function beautify(item: string): void {
         </AlertBox>
     </div>
 
-    <ContentField v-for="(s, idx) in items" :key="s.item" tab="song" :item="s.item" :label="s.label" :rows="15">
+    <ContentField v-for="(s, idx) in items" :key="s.item" tab="song" :item="s.item" :label="s.label" :rows="15"
+        tip="前两行为标题和出处，诗歌段落用空行分隔">
         <template #toolbar>
             <div class="w-full flex gap-4">
                 <div class="w-full max-w-[500px] mb-3">
