@@ -100,12 +100,13 @@ Rebuild (needs the variable font, `brew install --cask font-noto-sans-sc`, and f
 
 ## Environment
 
-Python 3.10+ with `weasyprint` and `jinja2` (Pillow comes with WeasyPrint). WeasyPrint needs Pango
+Python 3.10+ with the packages in `storage/scripts/requirements.txt` (`weasyprint` and `jinja2` for the calendar,
+`python-pptx` and `click` for the PPT generator; Pillow comes with WeasyPrint). WeasyPrint needs Pango
 (`libpango-1.0-0`, present in the ddev web image).
 
 ddev:
 
-    ddev exec 'python3 -m venv storage/app/pyvenv-ddev && storage/app/pyvenv-ddev/bin/pip install weasyprint jinja2'
+    ddev exec 'python3 -m venv storage/app/pyvenv-ddev && storage/app/pyvenv-ddev/bin/pip install -r storage/scripts/requirements.txt'
 
 then point `PYTHON_PATH` in `.env` to `/var/www/html/storage/app/pyvenv-ddev/bin/python3`.
 The PPT generator uses the same `PYTHON_PATH`, so both scripts share one virtual environment.
