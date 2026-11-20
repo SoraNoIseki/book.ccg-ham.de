@@ -3,7 +3,7 @@ import { onBeforeUnmount, watch } from 'vue';
 
 // Modal that rises from the bottom on phones and is a centred card on larger screens.
 // Locks page scrolling while open and closes on Escape or a tap on the backdrop.
-const props = defineProps<{ open: boolean; title?: string }>();
+const props = defineProps<{ open: boolean; title?: string; wide?: boolean }>();
 const emit = defineEmits<{ (e: 'close'): void }>();
 
 function onKey(e: KeyboardEvent): void {
@@ -29,7 +29,8 @@ onBeforeUnmount(() => {
             <div v-if="open" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
                 @click.self="emit('close')">
                 <div role="dialog" aria-modal="true" :aria-label="title"
-                    class="w-full sm:max-w-lg max-h-[92dvh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-white dark:bg-gray-800 text-main dark:text-gray-100 shadow-2xl">
+                    :class="wide ? 'sm:max-w-3xl' : 'sm:max-w-lg'"
+                    class="w-full max-h-[92dvh] flex flex-col rounded-t-3xl sm:rounded-3xl bg-white dark:bg-gray-800 text-main dark:text-gray-100 shadow-2xl">
                     <div class="sm:hidden pt-2 pb-1 flex justify-center" aria-hidden="true">
                         <span class="w-10 h-1 rounded-full bg-gray-300"></span>
                     </div>

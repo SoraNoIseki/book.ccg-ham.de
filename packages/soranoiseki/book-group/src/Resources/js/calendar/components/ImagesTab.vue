@@ -1,15 +1,18 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { MONTH_SLOTS, REQUIRED_SLOTS, useCalendarStore } from '../store/calendar';
 import ImageSlot from './ImageSlot.vue';
+import CropSheet from './CropSheet.vue';
 import AlertBox from '../../ppt/components/ui/AlertBox.vue';
 
 const cal = useCalendarStore();
-const { images, busySlots, year, requiredImagesDone, editable } = storeToRefs(cal);
+const { images, crops, headerPreview, busySlots, year, requiredImagesDone, editable } = storeToRefs(cal);
 
 const bulkInput = ref<HTMLInputElement | null>(null);
 const lightbox = ref<string | null>(null);
+/** Month whose display range is being adjusted */
+const cropping = ref<number | null>(null);
 
 // ---- single upload / delete ----
 async function upload(slot: string, file: File): Promise<void> {
@@ -64,6 +67,12 @@ async function onBulk(e: Event): Promise<void> {
     }
     if (ok) cal.successMessage = `已上传 ${ok} 张图片。`;
 }
+
+/** The header ratio of the design (height / width), which decides how the photos are cut */
+const monthHint = computed(() => {
+    const r = headerPreview.value?.ratio ?? 0.5;
+    return `横版，高度是宽度的 ${r.toFixed(2)} 倍（当前外观设定），图片按此比例显示。` + (editable.value ? '点卡片下方的裁切图标可以调整显示的范围。' : '');
+});
 
 function onKey(e: KeyboardEvent): void {
     if (e.key === 'Escape') lightbox.value = null;
@@ -122,11 +131,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
         <section>
             <h3 class="mb-3 text-sm font-bold text-main dark:text-gray-100">每月图片</h3>
             <div class="grid gap-4 grid-cols-1 sm:grid-cols-3 lg:grid-cols-4">
-                <ImageSlot :readonly="!editable" v-for="slot in MONTH_SLOTS" :key="slot" :label="slotLabel(slot)" :hint="slot === '01' ? '横版 2:1（宽是高的两倍），会按此比例裁切。' : undefined"
+                <ImageSlot :readonly="!editable" v-for="slot in MONTH_SLOTS" :key="slot" :label="slotLabel(slot)" :hint="slot === '01' ? monthHint : undefined" :ratio="headerPreview?.ratio" :crop="crops[slot]"
                     :info="images[slot]" :busy="busySlots[slot]" :required="REQUIRED_SLOTS.includes(slot)"
-                    @upload="upload(slot, $event)" @remove="remove(slot)" @view="lightbox = $event" />
+                    @upload="upload(slot, $event)" @remove="remove(slot)" @view="lightbox = $event" @crop="cropping = Number(slot)" />
             </div>
         </section>
+
+        <CropSheet :month="cropping" @close="cropping = null" />
 
         <!-- Lightbox -->
         <Teleport to="body">

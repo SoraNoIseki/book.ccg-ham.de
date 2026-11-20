@@ -32,7 +32,7 @@ return new class extends Migration
         });
 
         // ---- move existing data ----
-        $schema = json_decode(file_get_contents(storage_path('scripts/calendar/settings_schema.json')), true);
+        $schema = json_decode(file_get_contents(storage_path('scripts/calendar/themes/classic/settings_schema.json')), true);
         $defaults = [];
         foreach ($schema['settings'] as $item) {
             $defaults[$item['key']] = $item['default'];

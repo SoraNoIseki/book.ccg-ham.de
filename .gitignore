@@ -35,3 +35,8 @@ Icon?
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+
+# Scratch folders and Python caches
+/_tmp/
+__pycache__/
+*.pyc

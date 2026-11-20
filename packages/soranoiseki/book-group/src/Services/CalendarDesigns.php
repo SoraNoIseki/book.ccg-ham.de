@@ -8,7 +8,7 @@ use Soranoiseki\BookGroup\Models\Calendar\Design;
 use Soranoiseki\BookGroup\Models\Calendar\DesignRevision;
 
 /**
- * Appearance designs: listing, saving with a change record, and the records themselves.
+ * Appearance designs (theme, parameters and custom CSS): listing, saving with a change record, and the records themselves.
  *
  * Every change is one row in calendar_design_revision (who, when, the full state afterwards). The page lists
  * only the latest HISTORY_SHOWN, but all of them are kept.
@@ -20,7 +20,7 @@ class CalendarDesigns
     /** Role that may create, edit, rename and delete designs (calendar makers can only choose one). */
     public const DESIGN_ROLE = 'calendar_design';
 
-    public function __construct(private CalendarSettings $settings)
+    public function __construct(private CalendarSettings $settings, private CalendarThemes $themes)
     {
     }
 
@@ -37,13 +37,14 @@ class CalendarDesigns
 
         // The default design is the first one ever created (it is also what new calendars fall back to);
         // all others follow, newest first.
-        $designs = Design::orderBy('id')->get(['id', 'name', 'created_at']);
+        $designs = Design::orderBy('id')->get(['id', 'name', 'theme', 'created_at']);
         $default = $designs->shift();
         $rest = $designs->sortByDesc(fn (Design $d) => [$d->created_at?->getTimestamp() ?? 0, $d->id]);
 
         return collect([$default])->filter()->concat($rest)->map(fn (Design $d) => [
             'id' => $d->id,
             'name' => $d->name,
+            'theme' => $this->themes->name($d->theme),
             'used_by' => $years[$d->id] ?? [],
         ])->values()->all();
     }
@@ -54,6 +55,9 @@ class CalendarDesigns
         return [
             'id' => $design->id,
             'name' => $design->name,
+            'theme' => $design->theme ?: CalendarThemes::DEFAULT,
+            'theme_name' => $this->themes->name($design->theme),
+            'settingsSchema' => $this->settings->schema($design->theme),
             'settings' => $this->settings->forDesign($design),
             'styles' => (string) $design->styles,
             'history' => $this->history($design),
@@ -75,7 +79,7 @@ class CalendarDesigns
     {
         DB::transaction(function () use ($design, $settings, $styles, $user, $action, $restoredFromId) {
             $current = $this->settings->forDesign($design);
-            $customised = $current != $this->settings->defaults() || (string) $design->styles !== '';
+            $customised = $current != $this->settings->defaults($design->theme) || (string) $design->styles !== '';
 
             if ($customised && !$design->revisions()->exists()) {
                 $initial = $design->revisions()->create([
@@ -104,6 +108,7 @@ class CalendarDesigns
             'restored_from_id' => $restoredFromId,
             'settings' => $settings,
             'styles' => $styles,
+            'theme' => $design->theme, // a design keeps its theme for good; stored with each record as a snapshot
         ]);
     }
 
@@ -115,7 +120,7 @@ class CalendarDesigns
         return $design->revisions()->with('restoredFrom:id,created_at,user_name')
             ->orderByDesc('id')->limit(self::HISTORY_SHOWN)->get()
             ->map(function (DesignRevision $r) use ($current, $design) {
-                $settings = $this->settings->resolve($r->settings);
+                $settings = $this->settings->resolve($r->settings, $design->theme);
 
                 return [
                     'id' => $r->id,

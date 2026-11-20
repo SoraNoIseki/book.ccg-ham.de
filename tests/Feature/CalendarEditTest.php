@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Soranoiseki\BookGroup\Models\Calendar\Calendar;
 use Soranoiseki\BookGroup\Models\Calendar\Detail;
 use Soranoiseki\BookGroup\Models\Calendar\Event;
@@ -131,6 +133,50 @@ class CalendarEditTest extends TestCase
         $this->assertSame([1 => 'Mar', 3 => 'Jan', 10 => 'Dez'], $texts());
     }
 
+    public function test_image_crop_is_saved_reset_and_validated(): void
+    {
+        Storage::fake('public');
+        $c = $this->calendar();
+        $user = $this->user();
+        $url = "/api/calendar/{$c->id}/images/03/crop";
+
+        // No picture yet
+        $this->actingAs($user)->putJson($url, ['x' => 0.3, 'y' => 0.6, 'zoom' => 1.5])->assertStatus(422);
+
+        Storage::disk('public')->put("images/calendar/{$c->year}/03.jpg", 'x');
+
+        $this->actingAs($user)->putJson($url, ['x' => 0.3, 'y' => 0.6, 'zoom' => 1.5])
+            ->assertOk()->assertJsonPath('crops.03.x', 0.3)->assertJsonPath('crops.03.zoom', 1.5);
+        $this->actingAs($user)->getJson("/api/calendar?year={$c->year}")
+            ->assertJsonPath('crops.03.y', 0.6)->assertJsonPath('headerPreview.ratio', 0.5);
+
+        foreach ([['x' => 1.2, 'y' => 0.5, 'zoom' => 1], ['x' => 0.5, 'y' => 0.5, 'zoom' => 0.5], ['x' => 0.5, 'y' => 0.5, 'zoom' => 5], ['x' => 0.5]] as $bad) {
+            $this->actingAs($user)->putJson($url, $bad)->assertStatus(422);
+        }
+        // Only the monthly photos have a range
+        $this->actingAs($user)->putJson("/api/calendar/{$c->id}/images/cover/crop", ['x' => 0.3, 'y' => 0.6, 'zoom' => 1])->assertNotFound();
+
+        // Centred without zoom is the default and is stored as nothing
+        $this->actingAs($user)->putJson($url, ['x' => 0.5, 'y' => 0.5, 'zoom' => 1])->assertOk();
+        $this->assertNull($c->fresh()->image_crops);
+    }
+
+    public function test_new_upload_or_delete_forgets_the_crop(): void
+    {
+        Storage::fake('public');
+        $c = $this->calendar();
+        $user = $this->user();
+        Storage::disk('public')->put("images/calendar/{$c->year}/03.jpg", 'x');
+        Storage::disk('public')->put("images/calendar/{$c->year}/04.jpg", 'x');
+        $this->actingAs($user)->putJson("/api/calendar/{$c->id}/images/03/crop", ['x' => 0.2, 'y' => 0.5, 'zoom' => 2])->assertOk();
+        $this->actingAs($user)->putJson("/api/calendar/{$c->id}/images/04/crop", ['x' => 0.7, 'y' => 0.5, 'zoom' => 2])->assertOk();
+
+        $this->actingAs($user)->post("/api/calendar/{$c->id}/images/03", ['file' => UploadedFile::fake()->image('new.jpg', 100, 80)], ['Accept' => 'application/json'])
+            ->assertOk()->assertJsonMissingPath('crops.03')->assertJsonPath('crops.04.x', 0.7);
+
+        $this->actingAs($user)->deleteJson("/api/calendar/{$c->id}/images/04")->assertOk()->assertJsonCount(0, 'crops');
+    }
+
     public function test_history_calendars_and_users_without_the_role_cannot_edit(): void
     {
         $old = $this->calendar((int) date('Y') - 1);
@@ -140,6 +186,7 @@ class CalendarEditTest extends TestCase
             ->assertForbidden();
         $this->actingAs($this->user())->putJson("/api/calendar/{$old->id}/bible-texts/1", ['text' => 'x'])->assertForbidden();
         $this->actingAs($this->user())->putJson("/api/calendar/{$old->id}/bible-texts/order", ['order' => range(1, 12)])->assertForbidden();
+        $this->actingAs($this->user())->putJson("/api/calendar/{$old->id}/images/03/crop", ['x' => 0.3, 'y' => 0.5, 'zoom' => 1])->assertForbidden();
 
         $c = $this->calendar();
         $nobody = User::factory()->create(['firstname' => 'No', 'lastname' => 'Body', 'enabled' => true]);

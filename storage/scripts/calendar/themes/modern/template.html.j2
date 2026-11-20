@@ -1,0 +1,95 @@
+{# Decoration: stars and a crescent moon as inline SVG backgrounds, in the decor color of the design #}
+{% set c = settings.decor_color|replace('#', '%23') %}
+{% set star %}data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='{{ c }}' d='M10 0C11 6 14 9 20 10C14 11 11 14 10 20C9 14 6 11 0 10C6 9 9 6 10 0Z'/%3E%3C/svg%3E{% endset %}
+{% set moon %}data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='{{ c }}' d='M40 5A29 29 0 1 0 59 44A23 23 0 1 1 40 5Z'/%3E%3C/svg%3E{% endset %}
+{# The dark scrim behind the verse: a 1x600 PNG (navy, alpha 0.78 at the bottom, 0.5 at 55%, 0 at the top). It is an image, not
+   a CSS gradient, because PDF viewers draw a dark hairline across the photo at the top edge of a semi-transparent gradient. #}
+{% set scrim %}data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAJYCAYAAACjC4yfAAAAP0lEQVR42mPgEtNlYGJgYGBgYmBgYKQZaygaPxokoyE+GuKjxpOljQGvBEmKqWPKqJWjDh8Nq9GwGg2r4WAlAGeIBcMRyNmZAAAAAElFTkSuQmCC{% endset %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>CCGH Calendar {{ year }}</title>
+    <style>
+        @page { size: {{ page_w }}mm {{ page_h }}mm; margin: 0; }
+        html { font-size: {{ rem }}mm; }
+        .page { width: {{ page_w }}mm; height: {{ page_h }}mm; }
+        :root {
+        {{ css_vars }}
+        }
+        .deco {
+            background-repeat: no-repeat;
+            background-image: url("{{ moon }}"), url("{{ star }}"), url("{{ star }}"), url("{{ star }}"), url("{{ star }}"), url("{{ star }}");
+            background-size: 16mm 16mm, 7mm 7mm, 4mm 4mm, 6mm 6mm, 3.5mm 3.5mm, 5mm 5mm;
+            background-position: right 22mm top 3mm, right 46mm top 3mm, right 10mm top 6mm, left 34mm top 4mm, left 20mm top 12mm, left 58mm top 13mm;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ css_uri }}">
+    {% if custom_css %}<style id="custom-css">{{ custom_css|safe }}</style>{% endif %}
+</head>
+<body>
+{% if cover_uri %}
+<section class="page cover">
+    <img src="{{ cover_uri }}" alt="">
+</section>
+{% endif %}
+
+{# The footer image has a white background: the page fades from its color to white above the footer #}
+{% set fade_from = days_top + days_h * 0.5 %}
+{% set fade_to = page_h - footer_bottom - footer_h %}
+{% for m in months %}
+<section class="page month month-{{ m.month }} weeks-{{ m.week_count }}" style="{% if settings.fade_footer %}background: linear-gradient(to bottom, var(--page-bg) {{ fade_from|round(1) }}mm, #fff {{ fade_to|round(1) }}mm);{% endif %}{% if m.week_count >= 6 %} --day-size: {{ (settings.day_size * 0.9)|round(2) }}rem; --lunar-size: {{ (settings.lunar_size * 0.9)|round(2) }}rem; --event-size: {{ (settings.event_size * 0.9)|round(2) }}rem;{% endif %}">
+    <!-- Header photo with optional overlay and the bible verse -->
+    <div class="header" style="height: {{ header_h }}mm;">
+        {% if m.image_uri %}<img class="photo" src="{{ m.image_uri }}" alt="">{% else %}<div class="photo missing"></div>{% endif %}
+        {% if overlay_uri %}<img class="overlay-bg" src="{{ overlay_uri }}" alt="">{% endif %}
+        {% if m.bible_lines %}
+        <div class="verse" style="background: url('{{ scrim }}') bottom / 100% 100% no-repeat;">
+            <div class="verse-text">{% for line in m.bible_lines %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>
+            {% if m.bible_source %}<div class="verse-source">{{ m.bible_source }}</div>{% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if settings.show_decor %}<div class="deco" style="position: absolute; left: 0; right: 0; top: {{ title_top }}mm; height: {{ title_h }}mm;"></div>{% endif %}
+
+    <!-- Month title -->
+    <div class="title" style="top: {{ title_top }}mm; height: {{ title_h }}mm;">
+        <div class="title-inner">
+            <span class="zh">{{ m.title_zh }}</span><span class="de">{{ m.title_de }}</span>
+        </div>
+    </div>
+
+    <!-- Weekday bar -->
+    <div class="weekdays" style="top: {{ weekday_top }}mm; height: {{ weekday_h }}mm; left: {{ side_pad }}mm; right: {{ side_pad }}mm;">
+        {% for w in weekdays %}
+        <div class="weekday{% if w.weekend %} weekend{% endif %}"><span class="zh">星期{{ w.zh }}</span><span class="de">{{ w.de }}</span></div>
+        {% endfor %}
+    </div>
+
+    <!-- Day grid: row height is fixed so the grid always fills the area -->
+    {% set gap = settings.weekday_gap * rem %}
+    <div class="days" style="top: {{ (days_top + gap)|round(2) }}mm; height: {{ (days_h - gap)|round(2) }}mm; left: {{ side_pad }}mm; right: {{ side_pad }}mm; grid-template-rows: repeat({{ m.week_count }}, {{ (m.row_h * (days_h - gap) / days_h)|round(3) }}mm);">
+        {% for d in m.days %}
+        <div class="day-cell{% if not d.in_month %} other-month{% endif %}{% if d.red %} red-day{% endif %}" data-date="{{ d.date }}">
+            <div class="day{% if d.red %} red{% endif %}">{{ d.day }}</div>
+            {% if d.lunar and settings.show_lunar %}<div class="lunar{% if d.red %} red{% endif %}">{{ d.lunar }}</div>{% endif %}
+            {% if d.holiday and settings.show_holiday_name %}<div class="holiday red">{{ d.holiday }}</div>{% endif %}
+            {% if d.events %}
+            <div class="events">
+                {% for e in d.events %}
+                <div class="event event-{{ e.type }}">{% for line in e.lines %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if footer_uri %}
+    <img class="footer" src="{{ footer_uri }}" alt="" style="left: {{ footer_side }}mm; width: {{ page_w - 2 * footer_side }}mm; bottom: {{ footer_bottom }}mm;">
+    {% endif %}
+</section>
+{% endfor %}
+</body>
+</html>

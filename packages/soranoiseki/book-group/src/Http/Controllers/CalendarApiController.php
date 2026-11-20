@@ -18,6 +18,7 @@ use Soranoiseki\BookGroup\Services\CalendarDesigns;
 use Soranoiseki\BookGroup\Services\CalendarImageService;
 use Soranoiseki\BookGroup\Services\CalendarSettings;
 use Soranoiseki\BookGroup\Services\CalendarStyles;
+use Soranoiseki\BookGroup\Services\CalendarThemes;
 use Soranoiseki\Core\Controllers\Controller;
 use Symfony\Component\Process\Process;
 
@@ -32,6 +33,7 @@ class CalendarApiController extends Controller
         private CalendarSettings $settings,
         private CalendarStyles $styles,
         private CalendarDesigns $designs,
+        private CalendarThemes $themes,
     ) {
     }
 
@@ -310,8 +312,10 @@ class CalendarApiController extends Controller
         ]);
 
         $this->images->store($calendar->year, $slot, $request->file('file'));
+        // A new picture is a different picture: the range chosen for the old one no longer fits
+        $this->forgetCrop($calendar, $slot);
 
-        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year), 'message' => '图片已上传。']);
+        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year), 'crops' => $this->cropsOf($calendar), 'message' => '图片已上传。']);
     }
 
     /**
@@ -328,8 +332,94 @@ class CalendarApiController extends Controller
         }
 
         $this->images->remove($calendar->year, $slot);
+        $this->forgetCrop($calendar, $slot);
 
-        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year), 'message' => '图片已删除。']);
+        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year), 'crops' => $this->cropsOf($calendar), 'message' => '图片已删除。']);
+    }
+
+    /**
+     * PUT /api/calendar/{calendar}/images/{slot}/crop  { x, y, zoom }
+     * Which part of a monthly photo shows in the header: the centre (fractions of the image, 0..1) and a zoom of 1..3.
+     * The default (centred, no zoom) is stored as "nothing".
+     */
+    public function saveImageCrop(Request $request, Calendar $calendar, string $slot): JsonResponse
+    {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+        if (!in_array($slot, CalendarImageService::MONTH_SLOTS, true)) {
+            return $this->fail('只有每月图片可以调整显示范围。', 404);
+        }
+        if (!$this->images->find($calendar->year, $slot)) {
+            return $this->fail('请先上传这张图片。', 422);
+        }
+
+        $data = $request->validate([
+            'x' => 'required|numeric|between:0,1',
+            'y' => 'required|numeric|between:0,1',
+            'zoom' => 'required|numeric|between:1,3',
+        ], [
+            'x.*' => '范围无效。',
+            'y.*' => '范围无效。',
+            'zoom.*' => '缩放应在 1 至 3 之间。',
+        ]);
+
+        $crop = ['x' => round((float) $data['x'], 4), 'y' => round((float) $data['y'], 4), 'zoom' => round((float) $data['zoom'], 3)];
+        if ($crop === ['x' => 0.5, 'y' => 0.5, 'zoom' => 1.0]) {
+            $this->forgetCrop($calendar, $slot);
+        } else {
+            $crops = $calendar->image_crops ?? [];
+            $crops[$slot] = $crop;
+            $calendar->image_crops = $crops;
+            $calendar->save();
+        }
+
+        return response()->json(['success' => true, 'crops' => $this->cropsOf($calendar), 'message' => (int) $slot . ' 月图片的显示范围已保存。']);
+    }
+
+    private function forgetCrop(Calendar $calendar, string $slot): void
+    {
+        $crops = $calendar->image_crops ?? [];
+        if (!isset($crops[$slot])) {
+            return;
+        }
+        unset($crops[$slot]);
+        $calendar->image_crops = $crops ?: null;
+        $calendar->save();
+    }
+
+    /** Crops by month slot; an empty object (not an empty list) when there are none, so that the client gets a map. */
+    private function cropsOf(Calendar $calendar): array|\stdClass
+    {
+        return ($calendar->image_crops ?? []) ?: new \stdClass();
+    }
+
+    /**
+     * What the crop editor needs to draw the header like the PDF: the height/width ratio of the design the calendar
+     * uses, whether the overlay shows, and how the verse looks. The verse is only an approximation of the theme's
+     * stylesheet (custom CSS is not applied); the numbers are in rem, 1 rem = remRatio x the page width.
+     */
+    private function headerPreview(Calendar $calendar): array
+    {
+        $design = $calendar->effectiveDesign();
+        $s = $this->settings->forDesign($design);
+        $modern = ($design?->theme) === 'modern';
+
+        return [
+            'ratio' => (float) ($s['header_ratio'] ?? 0.5),
+            'showOverlay' => (bool) ($s['show_overlay'] ?? true),
+            'remRatio' => 35.36 / 3508, // as REM / PAGE_W in calendar_pdf.py
+            'verse' => [
+                'color' => (string) ($s['verse_color'] ?? '#ffffff'),
+                'size' => (float) ($s['verse_size'] ?? 2),
+                'sourceSize' => (float) ($s['verse_source_size'] ?? 1.75),
+                // padding top, right, bottom, left (rem), as in the stylesheets of the themes
+                'padding' => $modern ? [9, 6, 2, 6] : [1.5, 5, 1.5, 5],
+                'lineHeight' => $modern ? 1.55 : 1.5,
+                'sourceGap' => $modern ? 0.7 : 0.75,
+                'gradient' => $modern,
+            ],
+        ];
     }
 
     /**
@@ -399,7 +489,7 @@ class CalendarApiController extends Controller
         $styles = null;
         if ($this->designs->isDesigner($request->user())) {
             if ($request->has('settings')) {
-                $settings = array_replace($this->settings->forDesign($design), $this->settings->validate($request->input('settings')));
+                $settings = array_replace($this->settings->forDesign($design), $this->settings->validate($request->input('settings'), $design->theme));
             }
             if ($request->has('styles')) {
                 $styles = $this->styles->validate($request->input('styles'));
@@ -518,12 +608,14 @@ class CalendarApiController extends Controller
             'events' => $events,
             'details' => $details,
             'images' => $images,
+            'crops' => $calendar ? $this->cropsOf($calendar) : new \stdClass(),
+            'headerPreview' => $calendar ? $this->headerPreview($calendar) : null,
             'holidayCount' => Holiday::where('year', $year)->count(),
             'editable' => $calendar ? $this->isEditable($calendar) : $year >= $this->defaultYear(),
             'design_id' => $calendar?->effectiveDesign()?->id,
             'designs' => $this->designs->list(),
+            'themes' => $this->themes->list(),
             'canDesign' => $this->designs->isDesigner(request()->user()),
-            'settingsSchema' => $this->settings->schema(),
         ];
     }
 
