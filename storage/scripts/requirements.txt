@@ -1,0 +1,7 @@
+# Python packages for the scripts under storage/scripts and the PPT generator (storage/pyworship).
+# Both use the virtual environment that PYTHON_PATH points to.
+# Install: pip install -r storage/scripts/requirements.txt
+weasyprint==70.0
+jinja2==3.1.6
+python-pptx==1.0.2
+click==8.5.1

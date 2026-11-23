@@ -1,0 +1,8 @@
+{
+    "key": "modern",
+    "name": "现代",
+    "description": "明亮的现代版式：大号日期、农历和星期，经文放在渐变遮罩上，标题旁有星星和月亮。",
+    "template": "template.html.j2",
+    "css": "calendar.css",
+    "settings": "settings_schema.json"
+}

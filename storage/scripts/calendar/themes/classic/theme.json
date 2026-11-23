@@ -1,0 +1,8 @@
+{
+    "key": "classic",
+    "name": "经典",
+    "description": "最初的版式。已发布的年历都用它，请不要再修改，需要新版式时另建主题。",
+    "template": "template.html.j2",
+    "css": "calendar.css",
+    "settings": "settings_schema.json"
+}

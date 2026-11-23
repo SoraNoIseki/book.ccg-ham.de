@@ -29,6 +29,7 @@ Route::middleware(['web', 'auth'])->group(function () {
         Route::post('/download', [PowerpointApiController::class, 'download'])->name('book-group.ppt.api.download');
         Route::get('/songs', [PowerpointApiController::class, 'songs'])->name('book-group.ppt.api.songs');
         Route::get('/song', [PowerpointApiController::class, 'getSong'])->name('book-group.ppt.api.song');
+        Route::get('/response-scriptures', [PowerpointApiController::class, 'responseScriptures'])->name('book-group.ppt.api.response-scriptures');
     });
 
     Route::group(['prefix' => 'songs', 'middleware' => 'role:songs_management'], function() {
@@ -82,7 +83,11 @@ Route::middleware(['web', 'auth'])->group(function () {
         Route::post('/', [CalendarApiController::class, 'create'])->name('book-group.calendar.api.create');
         Route::post('/{calendar}/events', [CalendarApiController::class, 'importEvents'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.import-events');
         Route::post('/{calendar}/bible-texts', [CalendarApiController::class, 'importBibleTexts'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.import-bible-texts');
+        Route::put('/{calendar}/events/{event}', [CalendarApiController::class, 'updateEvent'])->where(['calendar' => '[0-9]+', 'event' => '[0-9]+'])->name('book-group.calendar.api.update-event');
+        Route::put('/{calendar}/bible-texts/order', [CalendarApiController::class, 'reorderBibleTexts'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.reorder-bible-texts');
+        Route::put('/{calendar}/bible-texts/{month}', [CalendarApiController::class, 'updateBibleText'])->where(['calendar' => '[0-9]+', 'month' => '[0-9]+'])->name('book-group.calendar.api.update-bible-text');
         Route::post('/{calendar}/images/{slot}', [CalendarApiController::class, 'uploadImage'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.upload-image');
+        Route::put('/{calendar}/images/{slot}/crop', [CalendarApiController::class, 'saveImageCrop'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.image-crop');
         Route::delete('/{calendar}/images/{slot}', [CalendarApiController::class, 'deleteImage'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.delete-image');
         Route::post('/{calendar}/holidays', [CalendarApiController::class, 'refreshHolidays'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.holidays');
         Route::put('/{calendar}/use-design', [CalendarApiController::class, 'useDesign'])->where('calendar', '[0-9]+')->name('book-group.calendar.api.use-design');

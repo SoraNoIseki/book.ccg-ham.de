@@ -11,6 +11,7 @@ use Soranoiseki\BookGroup\Models\Calendar\DesignRevision;
 use Soranoiseki\BookGroup\Services\CalendarDesigns;
 use Soranoiseki\BookGroup\Services\CalendarSettings;
 use Soranoiseki\BookGroup\Services\CalendarStyles;
+use Soranoiseki\BookGroup\Services\CalendarThemes;
 use Soranoiseki\Core\Controllers\Controller;
 
 /**
@@ -23,6 +24,7 @@ class CalendarDesignController extends Controller
         private CalendarDesigns $designs,
         private CalendarSettings $settings,
         private CalendarStyles $styles,
+        private CalendarThemes $themes,
     ) {
     }
 
@@ -38,7 +40,9 @@ class CalendarDesignController extends Controller
         return response()->json($this->payload($design));
     }
 
-    /** POST /api/calendar/designs  { name, copy_from? } */
+    /** POST /api/calendar/designs  { name, copy_from? | theme }
+     * Either a copy of an existing design (it keeps that design's theme) or a new one with defaults for the chosen
+     * theme. The theme is fixed from here on. */
     public function store(Request $request): JsonResponse
     {
         if ($denied = $this->denyUnlessDesigner($request)) {
@@ -47,19 +51,25 @@ class CalendarDesignController extends Controller
 
         $data = $request->validate([
             'name' => ['required', 'string', 'max:100', $this->uniqueName()],
-            'copy_from' => ['nullable', 'integer', Rule::exists('calendar_design', 'id')->whereNull('deleted_at')],
+            'copy_from' => ['nullable', 'integer', 'required_without:theme', Rule::exists('calendar_design', 'id')->whereNull('deleted_at')],
+            'theme' => ['nullable', 'string', 'required_without:copy_from', Rule::in($this->themes->keys())],
         ], $this->nameMessages());
 
         $source = !empty($data['copy_from']) ? Design::find($data['copy_from']) : null;
-        $settings = $source ? $this->settings->forDesign($source) : $this->settings->defaults();
+        $theme = $source ? ($source->theme ?: CalendarThemes::DEFAULT) : $data['theme'];
+        if ($source && !empty($data['theme']) && $data['theme'] !== $theme) {
+            return $this->fail('复制的外观沿用原来的主题，不能同时选择其他主题。', 422);
+        }
+        $settings = $source ? $this->settings->forDesign($source) : $this->settings->defaults($theme);
         $styles = $source ? (string) $source->styles : '';
 
-        $design = DB::transaction(function () use ($data, $request, $settings, $styles) {
+        $design = DB::transaction(function () use ($data, $request, $settings, $styles, $theme) {
             $design = Design::create([
                 'name' => trim($data['name']),
                 'created_by' => $request->user()?->id,
                 'settings' => $settings,
                 'styles' => $styles,
+                'theme' => $theme,
             ]);
             $this->designs->record($design, $request->user(), 'create', $settings, $styles);
 
@@ -91,7 +101,7 @@ class CalendarDesignController extends Controller
 
         $request->validate(['settings' => 'required|array', 'styles' => 'nullable|string']);
 
-        $settings = array_replace($this->settings->forDesign($design), $this->settings->validate($request->input('settings')));
+        $settings = array_replace($this->settings->forDesign($design), $this->settings->validate($request->input('settings'), $design->theme));
         $styles = $this->styles->validate($request->input('styles'));
 
         if ($this->designs->same($design, $settings, $styles)) {
@@ -138,8 +148,9 @@ class CalendarDesignController extends Controller
             return $this->fail('找不到这条修改记录。', 404);
         }
 
-        $settings = $this->settings->resolve($target->settings);
+        $settings = $this->settings->resolve($target->settings, $design->theme);
         $styles = $this->styles->validate((string) $target->styles); // the rules may have changed since it was saved
+
 
         if ($this->designs->same($design, $settings, $styles)) {
             return response()->json($this->payload($design) + ['message' => '该记录与当前外观相同，无需恢复。']);
@@ -185,6 +196,9 @@ class CalendarDesignController extends Controller
             'name.max' => '外观名称不能超过 100 个字符。',
             'name.unique' => '已经有同名的外观了。',
             'copy_from.exists' => '要复制的外观不存在。',
+            'copy_from.required_without' => '请选择主题，或选择一个要复制的外观。',
+            'theme.required_without' => '请选择主题，或选择一个要复制的外观。',
+            'theme.in' => '所选的主题不存在。',
         ];
     }
 }

@@ -25,6 +25,7 @@ function change(value: string): void {
                 <p class="mt-0.5 text-xs text-gray-500">
                     <template v-if="editable">生成 PDF 时使用这一套外观。</template>
                     <template v-else>历史版本不能更换外观，但可以在下面选择任意外观进行预览。</template>
+                    <template v-if="current?.theme">主题：{{ current.theme }}。</template>
                 </p>
             </div>
 

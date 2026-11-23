@@ -18,6 +18,7 @@ use Soranoiseki\BookGroup\Services\CalendarDesigns;
 use Soranoiseki\BookGroup\Services\CalendarImageService;
 use Soranoiseki\BookGroup\Services\CalendarSettings;
 use Soranoiseki\BookGroup\Services\CalendarStyles;
+use Soranoiseki\BookGroup\Services\CalendarThemes;
 use Soranoiseki\Core\Controllers\Controller;
 use Symfony\Component\Process\Process;
 
@@ -32,6 +33,7 @@ class CalendarApiController extends Controller
         private CalendarSettings $settings,
         private CalendarStyles $styles,
         private CalendarDesigns $designs,
+        private CalendarThemes $themes,
     ) {
     }
 
@@ -145,6 +147,149 @@ class CalendarApiController extends Controller
     }
 
     /**
+     * PUT /api/calendar/{calendar}/events/{event}  { date, name }
+     * Edit one imported entry of the year overview. Line breaks in the text are stored as "|" like in the CSV.
+     */
+    public function updateEvent(Request $request, Calendar $calendar, Event $event): JsonResponse
+    {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+        if ((int) $event->calendar_id !== (int) $calendar->id) {
+            return $this->fail('找不到这条大事历。', 404);
+        }
+
+        $data = $request->validate([
+            'date' => 'required|date_format:Y-m-d',
+            'name' => 'required|string',
+        ], [
+            'date.required' => '请填写日期。',
+            'date.date_format' => '日期格式应为 YYYY-MM-DD。',
+            'name.required' => '事件内容为空。',
+        ]);
+
+        $date = \Carbon\Carbon::createFromFormat('!Y-m-d', $data['date']);
+        $year = (int) $calendar->year;
+        [$min, $max] = $this->eventRange($year);
+        if ($date->lt($min) || $date->gt($max)) {
+            return $this->fail('日期不在 ' . $year . ' 年内。', 422);
+        }
+
+        $name = $this->normalizeLines($data['name']);
+        if ($name === '') {
+            return $this->fail('事件内容为空。', 422);
+        }
+        if (mb_strlen($name) > 255) {
+            return $this->fail('事件内容太长（最多 255 个字符）。', 422);
+        }
+
+        // One entry per day (the CSV import treats the date as the key as well)
+        $taken = Event::where('calendar_id', $calendar->id)
+            ->whereDate('date', $date->format('Y-m-d'))
+            ->where('id', '!=', $event->id)
+            ->exists();
+        if ($taken) {
+            return $this->fail('这一天已经有大事历，请直接编辑那一条。', 422);
+        }
+
+        $event->fill(['date' => $date->format('Y-m-d'), 'name' => $name])->save();
+
+        return response()->json($this->payload($year, $calendar) + ['message' => '大事历已保存。']);
+    }
+
+    /**
+     * PUT /api/calendar/{calendar}/bible-texts/{month}  { text, source }
+     * Edit (or set, if the month has none yet) the verse of one month.
+     */
+    public function updateBibleText(Request $request, Calendar $calendar, int $month): JsonResponse
+    {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+        if ($month < 1 || $month > 12) {
+            return $this->fail('月份应为 1 至 12。', 404);
+        }
+
+        $data = $request->validate([
+            'text' => 'required|string',
+            'source' => 'nullable|string|max:255',
+        ], [
+            'text.required' => '经文为空。',
+            'source.max' => '出处太长（最多 255 个字符）。',
+        ]);
+
+        $text = $this->normalizeLines($data['text']);
+        if ($text === '') {
+            return $this->fail('经文为空。', 422);
+        }
+
+        Detail::updateOrCreate(
+            ['calendar_id' => $calendar->id, 'year' => $calendar->year, 'month' => $month],
+            ['bible_text' => $text, 'bible_source' => trim((string) ($data['source'] ?? ''))],
+        );
+
+        return response()->json($this->payload((int) $calendar->year, $calendar) + ['message' => $month . ' 月经文已保存。']);
+    }
+
+    /**
+     * PUT /api/calendar/{calendar}/bible-texts/order  { order: [12 months] }
+     * Rearrange the verses: order[i] is the month whose verse moves to month i + 1 (a permutation of 1..12).
+     * Months without a verse move along (they just stay empty), so only existing rows change.
+     */
+    public function reorderBibleTexts(Request $request, Calendar $calendar): JsonResponse
+    {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+
+        $data = $request->validate([
+            'order' => 'required|array|size:12',
+            'order.*' => 'required|integer|between:1,12|distinct',
+        ], [
+            'order.*' => '顺序无效，请刷新页面后重试。',
+        ]);
+
+        // old month => new month
+        $target = [];
+        foreach (array_values($data['order']) as $i => $from) {
+            $target[(int) $from] = $i + 1;
+        }
+
+        DB::transaction(function () use ($calendar, $target) {
+            $rows = Detail::where('calendar_id', $calendar->id)->where('year', $calendar->year)->get();
+            foreach ($rows as $row) {
+                $new = $target[(int) $row->month] ?? null;
+                if ($new !== null && $new !== (int) $row->month) {
+                    $row->month = $new;
+                    $row->save();
+                }
+            }
+        });
+
+        return response()->json($this->payload((int) $calendar->year, $calendar) + ['message' => '经文顺序已保存。']);
+    }
+
+    /**
+     * Dates that can show up in the calendar of a year: the year itself plus the days that pad the weeks
+     * of January and December (weeks run Monday-Sunday). Same rule as eventRange.ts.
+     */
+    private function eventRange(int $year): array
+    {
+        return [
+            \Carbon\Carbon::create($year, 1, 1)->startOfWeek(\Carbon\Carbon::MONDAY)->startOfDay(),
+            \Carbon\Carbon::create($year, 12, 31)->endOfWeek(\Carbon\Carbon::SUNDAY)->endOfDay(),
+        ];
+    }
+
+    /** Text typed with real line breaks -> the "|" separated form used by the CSV files and the PDF. */
+    private function normalizeLines(string $text): string
+    {
+        $lines = preg_split('/\r\n|\r|\n|\|/', $text) ?: [];
+
+        return implode('|', array_values(array_filter(array_map('trim', $lines), fn ($l) => $l !== '')));
+    }
+
+    /**
      * POST /api/calendar/{calendar}/images/{slot}  (multipart: file)
      * slot = cover | 01..12 | overlay | footer
      */
@@ -167,8 +312,10 @@ class CalendarApiController extends Controller
         ]);
 
         $this->images->store($calendar->year, $slot, $request->file('file'));
+        // A new picture is a different picture: the range chosen for the old one no longer fits
+        $this->forgetCrop($calendar, $slot);
 
-        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year), 'message' => '图片已上传。']);
+        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year), 'crops' => $this->cropsOf($calendar), 'message' => '图片已上传。']);
     }
 
     /**
@@ -185,8 +332,94 @@ class CalendarApiController extends Controller
         }
 
         $this->images->remove($calendar->year, $slot);
+        $this->forgetCrop($calendar, $slot);
 
-        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year), 'message' => '图片已删除。']);
+        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year), 'crops' => $this->cropsOf($calendar), 'message' => '图片已删除。']);
+    }
+
+    /**
+     * PUT /api/calendar/{calendar}/images/{slot}/crop  { x, y, zoom }
+     * Which part of a monthly photo shows in the header: the centre (fractions of the image, 0..1) and a zoom of 1..3.
+     * The default (centred, no zoom) is stored as "nothing".
+     */
+    public function saveImageCrop(Request $request, Calendar $calendar, string $slot): JsonResponse
+    {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+        if (!in_array($slot, CalendarImageService::MONTH_SLOTS, true)) {
+            return $this->fail('只有每月图片可以调整显示范围。', 404);
+        }
+        if (!$this->images->find($calendar->year, $slot)) {
+            return $this->fail('请先上传这张图片。', 422);
+        }
+
+        $data = $request->validate([
+            'x' => 'required|numeric|between:0,1',
+            'y' => 'required|numeric|between:0,1',
+            'zoom' => 'required|numeric|between:1,3',
+        ], [
+            'x.*' => '范围无效。',
+            'y.*' => '范围无效。',
+            'zoom.*' => '缩放应在 1 至 3 之间。',
+        ]);
+
+        $crop = ['x' => round((float) $data['x'], 4), 'y' => round((float) $data['y'], 4), 'zoom' => round((float) $data['zoom'], 3)];
+        if ($crop === ['x' => 0.5, 'y' => 0.5, 'zoom' => 1.0]) {
+            $this->forgetCrop($calendar, $slot);
+        } else {
+            $crops = $calendar->image_crops ?? [];
+            $crops[$slot] = $crop;
+            $calendar->image_crops = $crops;
+            $calendar->save();
+        }
+
+        return response()->json(['success' => true, 'crops' => $this->cropsOf($calendar), 'message' => (int) $slot . ' 月图片的显示范围已保存。']);
+    }
+
+    private function forgetCrop(Calendar $calendar, string $slot): void
+    {
+        $crops = $calendar->image_crops ?? [];
+        if (!isset($crops[$slot])) {
+            return;
+        }
+        unset($crops[$slot]);
+        $calendar->image_crops = $crops ?: null;
+        $calendar->save();
+    }
+
+    /** Crops by month slot; an empty object (not an empty list) when there are none, so that the client gets a map. */
+    private function cropsOf(Calendar $calendar): array|\stdClass
+    {
+        return ($calendar->image_crops ?? []) ?: new \stdClass();
+    }
+
+    /**
+     * What the crop editor needs to draw the header like the PDF: the height/width ratio of the design the calendar
+     * uses, whether the overlay shows, and how the verse looks. The verse is only an approximation of the theme's
+     * stylesheet (custom CSS is not applied); the numbers are in rem, 1 rem = remRatio x the page width.
+     */
+    private function headerPreview(Calendar $calendar): array
+    {
+        $design = $calendar->effectiveDesign();
+        $s = $this->settings->forDesign($design);
+        $modern = ($design?->theme) === 'modern';
+
+        return [
+            'ratio' => (float) ($s['header_ratio'] ?? 0.5),
+            'showOverlay' => (bool) ($s['show_overlay'] ?? true),
+            'remRatio' => 35.36 / 3508, // as REM / PAGE_W in calendar_pdf.py
+            'verse' => [
+                'color' => (string) ($s['verse_color'] ?? '#ffffff'),
+                'size' => (float) ($s['verse_size'] ?? 2),
+                'sourceSize' => (float) ($s['verse_source_size'] ?? 1.75),
+                // padding top, right, bottom, left (rem), as in the stylesheets of the themes
+                'padding' => $modern ? [9, 6, 2, 6] : [1.5, 5, 1.5, 5],
+                'lineHeight' => $modern ? 1.55 : 1.5,
+                'sourceGap' => $modern ? 0.7 : 0.75,
+                'gradient' => $modern,
+            ],
+        ];
     }
 
     /**
@@ -256,7 +489,7 @@ class CalendarApiController extends Controller
         $styles = null;
         if ($this->designs->isDesigner($request->user())) {
             if ($request->has('settings')) {
-                $settings = array_replace($this->settings->forDesign($design), $this->settings->validate($request->input('settings')));
+                $settings = array_replace($this->settings->forDesign($design), $this->settings->validate($request->input('settings'), $design->theme));
             }
             if ($request->has('styles')) {
                 $styles = $this->styles->validate($request->input('styles'));
@@ -375,12 +608,14 @@ class CalendarApiController extends Controller
             'events' => $events,
             'details' => $details,
             'images' => $images,
+            'crops' => $calendar ? $this->cropsOf($calendar) : new \stdClass(),
+            'headerPreview' => $calendar ? $this->headerPreview($calendar) : null,
             'holidayCount' => Holiday::where('year', $year)->count(),
             'editable' => $calendar ? $this->isEditable($calendar) : $year >= $this->defaultYear(),
             'design_id' => $calendar?->effectiveDesign()?->id,
             'designs' => $this->designs->list(),
+            'themes' => $this->themes->list(),
             'canDesign' => $this->designs->isDesigner(request()->user()),
-            'settingsSchema' => $this->settings->schema(),
         ];
     }
 

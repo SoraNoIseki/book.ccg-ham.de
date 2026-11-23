@@ -9,42 +9,49 @@ use Soranoiseki\BookGroup\Models\Calendar\Design;
 /**
  * Design settings (colors, sizes, toggles) of an appearance design.
  *
- * The single source of truth is storage/scripts/calendar/settings_schema.json: the PDF script reads
- * its defaults, this class validates input against it, and the Vue "design" tab is generated from it.
- * Stored values live in calendar.settings (JSON). A calendar keeps its own copy, so changing a
- * default later never changes how an older year renders.
+ * Every theme has its own schema (the "settings" file named in its theme.json, see CalendarThemes). It is the single
+ * source of truth: the PDF script reads its defaults, this class validates input against it, and the Vue "design" tab
+ * is generated from it. A design stores its own values and uses the schema of its theme (which cannot change after
+ * the design is created); keys missing from the stored values fall back to the schema defaults.
  */
 class CalendarSettings
 {
-    public function schema(): array
+    public function __construct(private CalendarThemes $themes)
     {
-        static $schema = null;
+    }
 
-        return $schema ??= json_decode(file_get_contents(storage_path('scripts/calendar/settings_schema.json')), true);
+    /** The schema of a theme (groups and settings). */
+    public function schema(?string $theme = null): array
+    {
+        static $cache = [];
+        $path = $this->themes->schemaPath($theme);
+
+        return $cache[$path] ??= json_decode(file_get_contents($path), true);
     }
 
     /** @return array<string, array> items keyed by setting key */
-    private function items(): array
+    private function items(?string $theme): array
     {
         $items = [];
-        foreach ($this->schema()['settings'] as $item) {
+        foreach ($this->schema($theme)['settings'] as $item) {
             $items[$item['key']] = $item;
         }
 
         return $items;
     }
 
-    public function defaults(): array
+    public function defaults(?string $theme = null): array
     {
-        return array_map(fn ($item) => $item['default'], $this->items());
+        return array_map(fn ($item) => $item['default'], $this->items($theme));
     }
 
     /** Defaults overridden by the stored values; unknown or invalid stored keys fall back to defaults. */
-    public function resolve(?array $stored): array
+    public function resolve(?array $stored, ?string $theme = null): array
     {
-        $result = $this->defaults();
+        $items = $this->items($theme);
+        $result = $this->defaults($theme);
         foreach ((array) $stored as $key => $value) {
-            $item = $this->items()[$key] ?? null;
+            $item = $items[$key] ?? null;
             if ($item && $this->isValid($item, $value)) {
                 $result[$key] = $this->cast($item, $value);
             }
@@ -55,7 +62,7 @@ class CalendarSettings
 
     public function forDesign(?Design $design): array
     {
-        return $this->resolve($design && is_array($design->settings) ? $design->settings : null);
+        return $this->resolve($design && is_array($design->settings) ? $design->settings : null, $design?->theme);
     }
 
     /** Resolved settings of the design a calendar uses. */
@@ -69,9 +76,9 @@ class CalendarSettings
      *
      * @throws ValidationException
      */
-    public function validate(array $input): array
+    public function validate(array $input, ?string $theme = null): array
     {
-        $items = $this->items();
+        $items = $this->items($theme);
         $errors = [];
         $clean = [];
 

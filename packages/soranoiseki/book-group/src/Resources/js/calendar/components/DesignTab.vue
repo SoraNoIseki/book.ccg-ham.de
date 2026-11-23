@@ -126,7 +126,7 @@ const viewerSrc = computed(() => (previewUrl.value ? previewUrl.value + '#toolba
         <div v-if="canDesign">
             <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
                 <p class="text-sm text-gray-600 dark:text-gray-300">
-                    调整「{{ cal.designName }}」的颜色、字号和版面，必要时在下方补充自定义 CSS，然后点击右侧的「刷新预览」查看效果。
+                    调整「{{ cal.designName }}」（主题：{{ cal.themeName }}）的颜色、字号和版面，必要时在下方补充自定义 CSS，然后点击右侧的「刷新预览」查看效果。
                     修改会影响所有使用这一套外观的日历。
                 </p>
             </div>

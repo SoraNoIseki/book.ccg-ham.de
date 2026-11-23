@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { usePowerpointStore } from '@book/ppt/store/powerpoint';
 
+import TabBasic from './tabs/TabBasic.vue';
 import TabPray from './tabs/TabPray.vue';
 import TabScripture from './tabs/TabScripture.vue';
 import TabPreach from './tabs/TabPreach.vue';
@@ -16,6 +17,9 @@ const { activeTab } = storeToRefs(ppt);
 
 <template>
     <!-- Tab panels -->
+    <div v-show="activeTab === 'basic'">
+        <TabBasic />
+    </div>
     <div v-show="activeTab === 'pray'">
         <TabPray />
     </div>

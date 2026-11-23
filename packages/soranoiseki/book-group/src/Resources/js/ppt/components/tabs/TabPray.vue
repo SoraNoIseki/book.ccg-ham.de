@@ -4,7 +4,8 @@ import AlertBox from '../ui/AlertBox.vue';
 </script>
 
 <template>
-    <ContentField tab="pray" item="item1" label="代祷事项（汉堡教会）" :rows="15">
+    <ContentField tab="pray" item="item1" label="代祷事项（汉堡教会）" :rows="15"
+        tip="每行一条代祷事项，无需编号">
         <template #hint>
             <AlertBox title="格式范例：（无需编号）">
                 <li>代祷事项1</li>
@@ -14,7 +15,8 @@ import AlertBox from '../ui/AlertBox.vue';
         </template>
     </ContentField>
 
-    <ContentField tab="pray" item="item2" label="代祷事项（姐妹团契1）">
+    <ContentField tab="pray" item="item2" label="代祷事项（姐妹团契1）"
+        tip="第一行教会名，第二行聚会人数，之后按“1. ”编号，编号数字后请加空格">
         <template #hint>
             <AlertBox title="格式范例：">
                 <li>慕尼黑信义华人教会 (München)</li>
@@ -29,7 +31,8 @@ import AlertBox from '../ui/AlertBox.vue';
         </template>
     </ContentField>
 
-    <ContentField tab="pray" item="item3" label="代祷事项（姐妹团契2）">
+    <ContentField tab="pray" item="item3" label="代祷事项（姐妹团契2）"
+        tip="第一行教会名，第二行聚会人数，之后按“1. ”编号，编号数字后请加空格">
         <template #hint>
             <AlertBox title="格式范例：">
                 <li>慕尼黑信义华人教会 (München)</li>

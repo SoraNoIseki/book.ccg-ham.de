@@ -6,7 +6,7 @@ import { useCalendarStore } from '../store/calendar';
 // The designs that exist. Click one to look at it (and, with the design role, edit it).
 // Creating, renaming and deleting are only offered to users who may edit designs.
 const cal = useCalendarStore();
-const { designs, designId, designName, calendarDesignId, canDesign, designDirty, isLoadingDesign } = storeToRefs(cal);
+const { designs, themes, designId, designName, themeName, calendarDesignId, canDesign, designDirty, isLoadingDesign } = storeToRefs(cal);
 
 async function select(id: number): Promise<void> {
     if (id === designId.value) return;
@@ -19,10 +19,14 @@ const mode = ref<'create' | 'rename' | null>(null);
 const name = ref('');
 const input = ref<HTMLInputElement | null>(null);
 const busy = ref(false);
+// What a new design starts from: a copy of the selected design (keeps its theme), or a fresh one with a theme.
+// The theme cannot be changed once the design exists.
+const source = ref('copy');
 
 async function open(m: 'create' | 'rename'): Promise<void> {
     mode.value = m;
     name.value = m === 'rename' ? designName.value : `${designName.value} 副本`;
+    source.value = 'copy';
     await nextTick();
     input.value?.focus();
     input.value?.select();
@@ -32,7 +36,9 @@ async function submit(): Promise<void> {
     const value = name.value.trim();
     if (!value || busy.value) return;
     busy.value = true;
-    const ok = mode.value === 'create' ? await cal.createDesign(value) : await cal.renameDesign(value);
+    const ok = mode.value === 'create'
+        ? await cal.createDesign(value, source.value === 'copy' ? { copyFrom: designId.value as number } : { theme: source.value })
+        : await cal.renameDesign(value);
     busy.value = false;
     if (ok) mode.value = null;
 }
@@ -87,12 +93,20 @@ function usedBy(years: number[]): string {
                 {{ mode === 'create' ? '创建' : '保存名称' }}
             </button>
             <button type="button" class="h-10 px-3 rounded-lg text-sm text-gray-500 hover:text-gray-800" @click="mode = null">取消</button>
-            <span v-if="mode === 'create'" class="text-xs text-gray-400">会以当前选中的「{{ designName }}」为基础复制一份。</span>
+            <template v-if="mode === 'create'">
+                <label class="sr-only" for="design-source">新外观的来源</label>
+                <select id="design-source" v-model="source"
+                    class="h-10 pl-3 pr-8 rounded-lg border border-gray-200 bg-white text-sm outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100">
+                    <option value="copy">复制「{{ designName }}」（主题：{{ themeName }}）</option>
+                    <option v-for="t in themes" :key="t.key" :value="t.key">全新，主题：{{ t.name }}</option>
+                </select>
+                <span class="basis-full text-xs text-gray-400">主题决定版式和可调的参数，创建之后不能更换。</span>
+            </template>
         </form>
 
         <!-- Actions on the selected design -->
         <div v-if="canDesign && mode === null && designId" class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
-            <span class="text-gray-500">当前选中：<b class="text-gray-700">{{ designName }}</b></span>
+            <span class="text-gray-500">当前选中：<b class="text-gray-700">{{ designName }}</b>（主题：{{ themeName }}）</span>
             <button type="button" class="font-medium text-primary-700 hover:underline dark:text-primary-300" @click="open('rename')">重命名</button>
             <button type="button" class="font-medium text-gray-500 hover:text-red-600" @click="remove">删除</button>
         </div>

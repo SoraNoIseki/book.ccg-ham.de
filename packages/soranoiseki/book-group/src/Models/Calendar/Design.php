@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * A named appearance (parameters + custom CSS). Calendars choose one; see CalendarSettings for the parameters.
+ * A named appearance (theme + parameters + custom CSS). Calendars choose one; see CalendarSettings for the parameters.
  */
 class Design extends Model
 {
@@ -15,7 +15,7 @@ class Design extends Model
 
     protected $table = 'calendar_design';
 
-    protected $fillable = ['name', 'created_by', 'settings', 'styles'];
+    protected $fillable = ['name', 'created_by', 'theme', 'settings', 'styles'];
 
     protected $casts = [
         'settings' => 'array',

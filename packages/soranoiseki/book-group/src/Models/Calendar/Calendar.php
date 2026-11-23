@@ -20,6 +20,7 @@ class Calendar extends Model
 
     protected $casts = [
         'settings' => 'array',
+        'image_crops' => 'array',
     ];
 
     public function events() {

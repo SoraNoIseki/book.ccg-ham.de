@@ -20,6 +20,7 @@ class DesignRevision extends Model
         'user_name',
         'action',
         'restored_from_id',
+        'theme',
         'settings',
         'styles',
     ];

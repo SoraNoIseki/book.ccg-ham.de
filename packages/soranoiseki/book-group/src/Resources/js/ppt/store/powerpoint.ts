@@ -13,6 +13,7 @@ export interface PowerpointEndpoints {
     download: string;
     songs: string;
     song: string;
+    responseScriptures: string;
     taskText: string;
 }
 
@@ -24,6 +25,13 @@ export interface PowerpointState {
     versions: string[];
     saveEnabled: boolean;
     content: AllContent;
+
+    // Holy communion song/slide set: "1" or "2"; null = not chosen yet, use the month default
+    songVersion: "1" | "2" | null;
+    // Add the bell video slide at the beginning
+    includeVideo: boolean;
+    // Add the communion flow even if the date is not in the first week of the month
+    forceHolyDinner: boolean;
 
     // UI state
     selectedDate: string;
@@ -65,7 +73,7 @@ export const usePowerpointStore = defineStore("powerpoint", {
     state: (): PowerpointState => {
         setupAxiosCsrf();
 
-        const tabFromUrl = (getQueryParam("tab") as TabId | null) || "pray";
+        const tabFromUrl = (getQueryParam("tab") as TabId | null) || "basic";
         const vFromUrl = getQueryParam("v") || "";
 
         return {
@@ -75,6 +83,9 @@ export const usePowerpointStore = defineStore("powerpoint", {
             versions: [],
             saveEnabled: false,
             content: {},
+            songVersion: null,
+            includeVideo: true,
+            forceHolyDinner: false,
 
             selectedDate: vFromUrl,
             activeTab: tabFromUrl,
@@ -92,6 +103,7 @@ export const usePowerpointStore = defineStore("powerpoint", {
                 download: "/api/powerpoint/download",
                 songs: "/api/powerpoint/songs",
                 song: "/api/powerpoint/song",
+                responseScriptures: "/api/powerpoint/response-scriptures",
                 taskText: "/api/planer/plans/text",
             },
         };
@@ -105,9 +117,11 @@ export const usePowerpointStore = defineStore("powerpoint", {
          */
         tabProgress(state): Record<TabId, { filled: number; total: number }> {
             const result = {} as Record<TabId, { filled: number; total: number }>;
-            for (const tab of ["pray", "scripture", "preach", "song", "report", "worker"] as TabId[]) {
+            for (const tab of ["basic", "pray", "scripture", "preach", "song", "report", "worker"] as TabId[]) {
                 result[tab] = { filled: 0, total: 0 };
             }
+            // Basic settings always have valid defaults, so the tab always shows the check mark.
+            result.basic.filled = 1;
             result.report.filled = Object.values(state.content.report ?? {}).filter(
                 (v) => (v ?? "").trim() !== "",
             ).length;
@@ -135,6 +149,36 @@ export const usePowerpointStore = defineStore("powerpoint", {
                     value: d,
                     label: d === state.defaultDate ? `${d}（本周）` : d,
                 }));
+        },
+
+        /**
+         * Communion is held on the first Sunday of the month; ppt_worker uses the same rule (day <= 7).
+         */
+        isHolyDinner(state): boolean {
+            const day = Number((state.date || "").split("-")[2]);
+            return day >= 1 && day <= 7;
+        },
+
+        /**
+         * The communion flow is added on the first Sunday of the month, or whenever it is forced.
+         */
+        willHaveHolyDinner(): boolean {
+            return this.isHolyDinner || this.forceHolyDinner;
+        },
+
+        /**
+         * Month based default for the communion set: odd months use "2", even months use "1".
+         */
+        defaultSongVersion(state): "1" | "2" {
+            const month = Number((state.date || "").split("-")[1]);
+            return month % 2 === 0 ? "1" : "2";
+        },
+
+        /**
+         * The set that is sent to the backend: the user's choice, else the month default.
+         */
+        effectiveSongVersion(): "1" | "2" {
+            return this.songVersion ?? this.defaultSongVersion;
         },
 
         /**
@@ -173,6 +217,11 @@ export const usePowerpointStore = defineStore("powerpoint", {
                 this.versions = data.versions ?? [];
                 this.saveEnabled = !!data.saveEnabled;
                 this.content = data.content ?? {};
+                // Basic settings are stored per date; without saved ones use the defaults
+                // (communion set by month, bell video on, no extra communion).
+                this.songVersion = data.settings?.song_v ?? null;
+                this.includeVideo = data.settings?.include_video ?? true;
+                this.forceHolyDinner = data.settings?.force_holy_dinner ?? false;
                 this.infoMessage = data.infoMessage ?? null;
 
                 // Keep selectedDate in sync for the selector UI
@@ -229,6 +278,9 @@ export const usePowerpointStore = defineStore("powerpoint", {
         buildPayload(): Record<string, any> {
             return {
                 date: this.date,
+                song_v: this.effectiveSongVersion,
+                include_video: this.includeVideo,
+                force_holy_dinner: this.forceHolyDinner,
                 pray: this.content.pray ?? {},
                 scripture: this.content.scripture ?? {},
                 preach: this.content.preach ?? {},

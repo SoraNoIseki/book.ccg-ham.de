@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
-import type { CalendarDetail, CalendarEvent, CalendarPayload, DesignPayload, DesignSummary, HistoryEntry, ImageSlots, SettingsMap, SettingsSchema, TabId } from "../types";
+import type { CalendarDetail, CalendarEvent, CalendarPayload, DesignPayload, DesignSummary, HeaderPreview, HistoryEntry, ImageCrop, ImageSlots, SettingsMap, SettingsSchema, TabId, ThemeInfo } from "../types";
 import { setupAxiosCsrf, extractErrors } from "../../shared/http";
 
 const FALLBACK_ERROR = "有错误发生，请稍后重试。";
@@ -27,18 +27,24 @@ export interface CalendarState {
     events: CalendarEvent[];
     details: CalendarDetail[];
     images: ImageSlots;
+    crops: Record<string, ImageCrop>;
+    headerPreview: HeaderPreview | null;
     holidayCount: number;
     /** False for calendars of earlier years (read only) */
     editable: boolean;
     /** May create, edit, rename and delete designs */
     canDesign: boolean;
     designs: DesignSummary[];
+    /** All themes (template + stylesheet) a design can use */
+    themes: ThemeInfo[];
     /** The design this calendar renders with */
     calendarDesignId: number | null;
     /** The design shown in the design tab (to preview and, for designers, to edit) */
     designId: number | null;
     designName: string;
     isLoadingDesign: boolean;
+    /** Display name of the theme of the shown design */
+    themeName: string;
     /** Saved settings of that design (resolved with defaults) and what the form currently shows */
     settings: SettingsMap;
     draft: SettingsMap;
@@ -73,14 +79,18 @@ export const useCalendarStore = defineStore("calendar", {
             events: [],
             details: [],
             images: {},
+            crops: {},
+            headerPreview: null,
             holidayCount: 0,
             editable: true,
             canDesign: false,
             designs: [],
+            themes: [],
             calendarDesignId: null,
             designId: null,
             designName: "",
             isLoadingDesign: false,
+            themeName: "",
             settings: {},
             draft: {},
             settingsSchema: { groups: [], settings: [] },
@@ -143,12 +153,14 @@ export const useCalendarStore = defineStore("calendar", {
             this.events = data.events ?? [];
             this.details = data.details ?? [];
             this.images = data.images ?? {};
+            this.crops = data.crops ?? {};
+            this.headerPreview = data.headerPreview ?? null;
             this.holidayCount = data.holidayCount ?? 0;
             this.editable = data.editable ?? true;
             this.canDesign = !!data.canDesign;
             this.designs = data.designs ?? [];
+            this.themes = data.themes ?? [];
             this.calendarDesignId = data.design_id ?? null;
-            this.settingsSchema = data.settingsSchema ?? this.settingsSchema;
             this.selectedYear = String(data.year);
             setQueryParam("year", String(data.year));
         },
@@ -199,6 +211,8 @@ export const useCalendarStore = defineStore("calendar", {
         applyDesignPayload(data: DesignPayload): void {
             this.designId = data.design.id;
             this.designName = data.design.name;
+            this.themeName = data.design.theme_name;
+            this.settingsSchema = data.design.settingsSchema ?? { groups: [], settings: [] };
             this.settings = data.design.settings ?? {};
             this.draft = { ...this.settings };
             this.styles = data.design.styles ?? "";
@@ -258,11 +272,11 @@ export const useCalendarStore = defineStore("calendar", {
             }
         },
 
-        /** New design as a copy of the shown one (or of `copyFrom`). Returns true on success. */
-        async createDesign(name: string, copyFrom: number | null = this.designId): Promise<boolean> {
+        /** New design: a copy of `copyFrom` (same theme), or a fresh one with the chosen theme. Returns true on success. */
+        async createDesign(name: string, source: { copyFrom: number } | { theme: string }): Promise<boolean> {
             this.clearMessages();
             try {
-                const { data } = await axios.post<DesignPayload>("/api/calendar/designs", { name, copy_from: copyFrom });
+                const { data } = await axios.post<DesignPayload>("/api/calendar/designs", { name, ...("copyFrom" in source ? { copy_from: source.copyFrom } : { theme: source.theme }) });
                 this.applyDesignPayload(data);
                 this.successMessage = data.message ?? "已创建。";
                 return true;
@@ -348,6 +362,7 @@ export const useCalendarStore = defineStore("calendar", {
                 form.append("file", file);
                 const { data } = await axios.post(`/api/calendar/${this.calendarId}/images/${slot}`, form);
                 this.images = data.images;
+                this.crops = data.crops ?? this.crops;
                 return true;
             } catch (e) {
                 const messages = await extractErrors(e, "图片上传失败。");
@@ -368,10 +383,32 @@ export const useCalendarStore = defineStore("calendar", {
             try {
                 const { data } = await axios.delete(`/api/calendar/${this.calendarId}/images/${slot}`);
                 this.images = data.images;
+                this.crops = data.crops ?? this.crops;
             } catch (e) {
                 this.errors = await extractErrors(e, "删除失败。");
             } finally {
                 this.busySlots[slot] = false;
+            }
+        },
+
+        /** Save which part of a monthly photo shows in the header. Returns true on success. */
+        async saveCrop(slot: string, crop: ImageCrop): Promise<boolean> {
+            if (!this.calendarId) return false;
+            this.clearMessages();
+            this.isImporting = true;
+            try {
+                const { data } = await axios.put<{ crops: Record<string, ImageCrop>; message?: string }>(
+                    `/api/calendar/${this.calendarId}/images/${slot}/crop`,
+                    crop,
+                );
+                this.crops = data.crops ?? {};
+                this.successMessage = data.message ?? "已保存。";
+                return true;
+            } catch (e) {
+                this.errors = await extractErrors(e, "保存范围失败。");
+                return false;
+            } finally {
+                this.isImporting = false;
             }
         },
 
@@ -389,6 +426,60 @@ export const useCalendarStore = defineStore("calendar", {
                 return true;
             } catch (e) {
                 this.errors = await extractErrors(e, "导入失败，请检查 CSV 文件。");
+                return false;
+            } finally {
+                this.isImporting = false;
+            }
+        },
+
+        /** Edit one imported entry of the year overview. Returns true on success. */
+        async updateEvent(id: number, date: string, name: string): Promise<boolean> {
+            if (!this.calendarId) return false;
+            this.clearMessages();
+            this.isImporting = true;
+            try {
+                const { data } = await axios.put<CalendarPayload>(`/api/calendar/${this.calendarId}/events/${id}`, { date, name });
+                this.applyPayload(data);
+                this.successMessage = data.message ?? "已保存。";
+                return true;
+            } catch (e) {
+                this.errors = await extractErrors(e, "保存失败。");
+                return false;
+            } finally {
+                this.isImporting = false;
+            }
+        },
+
+        /** Edit (or set) the verse of one month. Returns true on success. */
+        async updateBibleText(month: number, text: string, source: string): Promise<boolean> {
+            if (!this.calendarId) return false;
+            this.clearMessages();
+            this.isImporting = true;
+            try {
+                const { data } = await axios.put<CalendarPayload>(`/api/calendar/${this.calendarId}/bible-texts/${month}`, { text, source });
+                this.applyPayload(data);
+                this.successMessage = data.message ?? "已保存。";
+                return true;
+            } catch (e) {
+                this.errors = await extractErrors(e, "保存失败。");
+                return false;
+            } finally {
+                this.isImporting = false;
+            }
+        },
+
+        /** Rearrange the verses: order[i] is the month whose verse moves to month i + 1. Returns true on success. */
+        async reorderBibleTexts(order: number[]): Promise<boolean> {
+            if (!this.calendarId) return false;
+            this.clearMessages();
+            this.isImporting = true;
+            try {
+                const { data } = await axios.put<CalendarPayload>(`/api/calendar/${this.calendarId}/bible-texts/order`, { order });
+                this.applyPayload(data);
+                this.successMessage = data.message ?? "已保存。";
+                return true;
+            } catch (e) {
+                this.errors = await extractErrors(e, "保存顺序失败。");
                 return false;
             } finally {
                 this.isImporting = false;

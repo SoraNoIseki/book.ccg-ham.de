@@ -71,6 +71,8 @@ class CalendarDataBuilder
             $details[(int) $detail->month] = $detail;
         }
 
+        $crops = $calendar->image_crops ?? [];
+
         $months = [];
         foreach ($onlyMonth ? [$onlyMonth] : range(1, 12) as $month) {
             $slot = str_pad((string) $month, 2, '0', STR_PAD_LEFT);
@@ -82,6 +84,8 @@ class CalendarDataBuilder
                 'title_zh' => $year . '年' . $month . '月',
                 'title_de' => self::MONTH_DE[$month - 1],
                 'image' => $this->images->absolutePath($year, $slot),
+                // Part of the photo to show (centre x/y as fractions and zoom); null = centred. calendar_pdf.py applies it.
+                'image_crop' => $crops[$slot] ?? null,
                 'bible_lines' => $detail ? array_values(array_filter(array_map('trim', explode('|', (string) $detail->bible_text)), 'strlen')) : [],
                 'bible_source' => $detail->bible_source ?? '',
                 'days' => $weeks,
@@ -91,8 +95,9 @@ class CalendarDataBuilder
 
         return [
             'year' => $year,
+            'theme' => $design?->theme ?: CalendarThemes::DEFAULT,
             'weekdays' => self::WEEKDAYS,
-            'settings' => $settings !== null ? $this->settings->resolve(array_replace($base, $settings)) : $base,
+            'settings' => $settings !== null ? $this->settings->resolve(array_replace($base, $settings), $design?->theme) : $base,
             'styles' => $styles ?? (string) ($design->styles ?? ''),
             'images_dir' => $this->images->directory($year),
             'cover' => $onlyMonth ? null : $this->images->absolutePath($year, 'cover'),

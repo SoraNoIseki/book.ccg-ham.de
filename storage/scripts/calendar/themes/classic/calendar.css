@@ -1,0 +1,73 @@
+/* Classic theme: the original look of the calendar (frozen, see README).
+   Page structure, fonts and reset come from base.css. Tunable values are CSS variables (--accent, --day-size, ...)
+   injected from this theme's settings_schema.json plus the design's settings. */
+@import "../../base.css";
+
+body { color: #212529; }
+
+.page { background: #fff; }
+
+.red { color: var(--weekend); }
+
+/* Header photo */
+.header { background: #ddd; }
+.header .photo.missing { background: #cfcfcf; }
+
+.verse {
+    padding: 1.5rem 5rem;
+    color: var(--verse-color);
+    font-size: var(--verse-size);
+    line-height: 1.5;
+}
+.verse-source { margin-top: 0.75rem; font-size: var(--verse-source-size); letter-spacing: 0.1rem; opacity: 0.85; }
+
+/* Month title */
+.title-inner {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 1.2rem 7rem 1.1rem;
+    font-size: var(--title-size);
+    letter-spacing: 1rem;
+    border-top: 0.25mm solid #999;
+    border-bottom: 0.25mm solid #999;
+}
+.title .de { margin-left: 1rem; color: #777; text-transform: uppercase; }
+
+/* Weekday bar */
+.weekdays { border-radius: 1.7mm 1.7mm 0 0; }
+.weekday {
+    background: var(--accent);
+    color: #fff;
+    font-size: var(--weekday-size);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+    line-height: 5rem;
+}
+.weekday.weekend { background: var(--weekend); }
+
+/* Day grid */
+.days {
+    border: 0.25mm solid #ccc;
+    border-top: none;
+    border-radius: 0 0 1.7mm 1.7mm;
+}
+.day-cell { border: 0.12mm solid #ccc; background: var(--cell-bg); }
+.day { position: absolute; left: var(--cell-pad); top: 0.8rem; font-size: var(--day-size); font-weight: var(--day-weight); line-height: 1.1; }
+.lunar { position: absolute; top: 1.3rem; right: var(--cell-pad); font-size: var(--lunar-size); text-align: left; }
+.holiday { position: absolute; left: var(--cell-pad); right: var(--cell-pad); top: 4rem; font-size: var(--holiday-size); }
+.events {
+    position: absolute;
+    left: 0; right: var(--cell-pad); bottom: 1rem;
+    text-align: right;
+    font-size: var(--event-size);
+    line-height: var(--event-line-height);
+    color: var(--event-color);
+}
+.event + .event { margin-top: 0.3rem; }
+
+.day-cell.other-month .day,
+.day-cell.other-month .lunar,
+.day-cell.other-month .holiday,
+.day-cell.other-month .events { color: #999; }

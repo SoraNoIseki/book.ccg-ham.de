@@ -1,0 +1,131 @@
+/* Modern theme: bright page, very large day number, lunar date and weekday so that they can be read from a distance.
+   Page structure, fonts and reset come from base.css; the look is below. Values are CSS variables from this theme's
+   settings_schema.json plus the design's settings. The stars and the moon are drawn by the template (.deco). */
+@import "../../base.css";
+
+body { color: var(--text-color); }
+
+.page { background: var(--page-bg); }
+
+.red { color: var(--weekend); }
+
+/* Header photo: the verse sits on a dark gradient so that it stays readable on any photo */
+.header { background: #c9d2e0; border-radius: 0 0 4mm 4mm; }
+.header .photo.missing { background: #b4bfd1; }
+
+.verse {
+    padding: 9rem 6rem 2rem;
+    /* the dark gradient behind the verse is an image set in the template (see scrim there) */
+    color: var(--verse-color);
+    font-size: var(--verse-size);
+    font-weight: 400;
+    line-height: 1.55;
+}
+.verse-source { margin-top: 0.7rem; font-size: var(--verse-source-size); font-weight: 400; letter-spacing: 0.12rem; opacity: 0.92; }
+
+/* Month title */
+.title-inner {
+    display: inline-block;
+    margin-top: 0.8rem;
+    padding: 0.6rem 4rem 0.9rem;
+    font-size: var(--title-size);
+    font-weight: 400;
+    letter-spacing: 0.35rem;
+    color: var(--accent);
+    border-bottom: 0.9mm solid var(--decor-color);
+}
+.title .de {
+    margin-left: 1.4rem;
+    font-size: 0.5em;
+    font-weight: 400;
+    letter-spacing: 0.3rem;
+    color: var(--lunar-color);
+    text-transform: uppercase;
+}
+
+/* Weekday bar: the Chinese weekday large, the German one small below it */
+.weekdays { border-radius: 2.5mm 2.5mm 0 0; background: var(--accent); }
+.weekday {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: #fff;
+    text-align: center;
+}
+.weekday .zh { font-size: var(--weekday-size); font-weight: 400; letter-spacing: 0.1em; line-height: 1.2; }
+.weekday .de { font-size: 1rem; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.9; line-height: 1.2; }
+.weekday.weekend { background: var(--weekend); }
+
+/* Day grid: every day is a card; weekends and holidays get a tinted card */
+.days { grid-template-columns: repeat(7, minmax(0, 1fr)); border-radius: 0 0 2.5mm 2.5mm; }
+.day-cell {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    margin: var(--cell-gap);
+    padding: 0.5rem var(--cell-pad);
+    background: var(--cell-bg);
+    border: 0.3mm solid #d9e0ec;
+    border-radius: var(--cell-radius);
+}
+/* first and last column sit flush with the weekday bar above */
+.day-cell:nth-child(7n+1) { margin-left: 0; }
+.day-cell:nth-child(7n) { margin-right: 0; }
+.day-cell.red-day { background: var(--weekend-bg); border-color: #f0c9c6; }
+
+.day {
+    display: block;
+    font-size: var(--day-size);
+    font-weight: var(--day-weight);
+    line-height: 1.1;
+    color: var(--text-color);
+}
+.day.red { color: var(--weekend); }
+
+.lunar {
+    position: absolute;
+    top: 0.9rem;
+    right: var(--cell-pad);
+    font-size: var(--lunar-size);
+    font-weight: 400;
+    color: var(--lunar-color);
+}
+.lunar.red { color: var(--weekend); }
+
+.holiday {
+    display: block;
+    align-self: stretch;
+    margin-top: 0.4rem;
+    padding-left: 0.6rem;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: var(--holiday-size);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--weekend);
+    border-left: 0.8mm solid var(--weekend);
+}
+
+/* Events sit at the bottom of the cell (WeasyPrint has no auto margins in flex, so absolute); they grow upwards */
+.events {
+    position: absolute;
+    left: var(--cell-pad);
+    right: var(--cell-pad);
+    bottom: 0.7rem;
+    font-size: var(--event-size);
+    font-weight: 400;
+    line-height: var(--event-line-height);
+    color: var(--event-color);
+}
+.event { padding-left: 0.6rem; border-left: 0.8mm solid var(--decor-color); }
+.event + .event { margin-top: 0.3rem; }
+
+/* Days of the neighbouring months stay visible but quiet */
+.day-cell.other-month { opacity: 0.4; }
+
+/* Months with six rows have shorter cells: the template scales the sizes down a little (--day-size etc. on the page) */
+.weeks-6 .holiday { margin-top: 0.2rem; }
+.weeks-6 .events { line-height: 1.15; }

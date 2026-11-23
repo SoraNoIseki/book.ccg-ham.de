@@ -27,7 +27,8 @@ async function loadPlan(item: 'item1' | 'item2', planDate: string): Promise<void
 </script>
 
 <template>
-    <ContentField tab="worker" item="item1" label="服事列表（本周）" :rows="12">
+    <ContentField tab="worker" item="item1" label="服事列表（本周）" :rows="12"
+        tip="主题中必须包含英文加号“+”，用于分隔主题和经文">
         <template #toolbar>
             <button type="button" :disabled="!!loading" @click="loadPlan('item1', date)"
                 class="mb-3 inline-flex items-center gap-2 h-10 px-4 rounded-xl text-sm font-semibold text-primary-800 bg-white ring-1 ring-primary-600/40 hover:bg-primary-100/60 active:scale-95 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-primary-600 disabled:opacity-50 disabled:cursor-not-allowed dark:text-primary-200 dark:bg-gray-800 dark:ring-primary-400/50 dark:hover:bg-gray-700">

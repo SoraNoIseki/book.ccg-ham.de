@@ -20,6 +20,32 @@ export interface ImageInfo {
     size: number | null;
 }
 
+/** Part of a monthly photo that shows in the header (centre as fractions of the photo, zoom 1..3) */
+export interface ImageCrop {
+    x: number;
+    y: number;
+    zoom: number;
+}
+
+/** What the crop editor needs to draw the header like the PDF (the verse is only an approximation of the theme) */
+export interface HeaderPreview {
+    /** height / width of the header */
+    ratio: number;
+    showOverlay: boolean;
+    /** 1 rem = remRatio x the page width */
+    remRatio: number;
+    verse: {
+        color: string;
+        size: number;
+        sourceSize: number;
+        /** top, right, bottom, left in rem */
+        padding: [number, number, number, number];
+        lineHeight: number;
+        sourceGap: number;
+        gradient: boolean;
+    };
+}
+
 /** cover | 01..12 | overlay | footer */
 export type ImageSlots = Record<string, ImageInfo>;
 
@@ -42,9 +68,18 @@ export interface HistoryEntry {
     styles_changed: boolean;
 }
 
+/** A theme = template + stylesheet, provided as files by the developer */
+export interface ThemeInfo {
+    key: string;
+    name: string;
+    description: string;
+}
+
 export interface DesignSummary {
     id: number;
     name: string;
+    /** Display name of its theme */
+    theme: string;
     /** Years of the calendars that use this design */
     used_by: number[];
 }
@@ -53,6 +88,12 @@ export interface DesignSummary {
 export interface DesignDetail {
     id: number;
     name: string;
+    /** Key and display name of its theme (fixed when the design is created) */
+    theme: string;
+    theme_name: string;
+    /** The parameters this design's theme offers */
+    settingsSchema: SettingsSchema;
+    /** Saved parameter values */
     settings: SettingsMap;
     styles: string;
     history: HistoryEntry[];
@@ -76,14 +117,17 @@ export interface CalendarPayload {
     events: CalendarEvent[];
     details: CalendarDetail[];
     images: ImageSlots;
+    /** Chosen crop per month slot ("01".."12"); months without an entry are centred */
+    crops: Record<string, ImageCrop>;
+    headerPreview: HeaderPreview | null;
     holidayCount: number;
     /** False for calendars of earlier years: they can be looked at and previewed, but not changed */
     editable: boolean;
     /** The design this calendar renders with */
     design_id: number | null;
     designs: DesignSummary[];
+    themes: ThemeInfo[];
     /** Whether the user may create, edit, rename and delete designs */
     canDesign: boolean;
-    settingsSchema: SettingsSchema;
     message?: string;
 }

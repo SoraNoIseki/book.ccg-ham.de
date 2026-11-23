@@ -2,7 +2,6 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import Sortable from 'sortablejs';
 import { usePowerpointStore } from '../../store/powerpoint';
-import AlertBox from '../ui/AlertBox.vue';
 
 const ppt = usePowerpointStore();
 const listEl = ref<HTMLElement | null>(null);
@@ -61,10 +60,16 @@ onBeforeUnmount(() => sortable?.destroy());
 
 <template>
     <div class="mb-5">
-        <label class="mb-3 block text-base font-medium text-main dark:text-light">报告</label>
+        <label class="mb-1 block text-base font-medium text-main dark:text-light">报告</label>
+        <p class="mb-3 flex items-start gap-1.5 text-sm text-primary-800 dark:text-primary-300">
+            <svg class="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-6h2v6Zm0-8h-2V7h2v2Z" />
+            </svg>
+            <span>每个输入框为一页报告事项，可以换行；无需编号</span>
+        </p>
 
-        <div class="w-full grid grid-cols-1 lg:grid-cols-4 gap-4">
-            <div ref="listEl" class="col-span-3">
+        <div class="w-full">
+            <div ref="listEl">
                 <div v-for="(text, i) in items" :key="i" class="flex mb-3">
                     <textarea rows="3" :value="text" placeholder="请填写报告事项..."
                         @input="update(i, ($event.target as HTMLTextAreaElement).value)"
@@ -81,12 +86,6 @@ onBeforeUnmount(() => sortable?.destroy());
                         </button>
                     </div>
                 </div>
-            </div>
-            <div>
-                <AlertBox title="格式范例：（无需编号）">
-                    <li>每个输入框为一页报告事项</li>
-                    <li>可以换行</li>
-                </AlertBox>
             </div>
         </div>
     </div>

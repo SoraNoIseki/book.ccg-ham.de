@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { ImageInfo } from '../types';
+import type { ImageCrop, ImageInfo } from '../types';
+import CroppedImage from './CroppedImage.vue';
 
 const props = defineProps<{
     label: string;
@@ -14,12 +15,17 @@ const props = defineProps<{
     aspect?: string;
     /** cover = fill and crop; contain = show the whole image (wide or transparent artwork) */
     fit?: 'cover' | 'contain';
+    /** Monthly photos: height / width of the header. The preview then shows the part that is really used. */
+    ratio?: number;
+    /** The chosen part of the photo (centred when empty) */
+    crop?: ImageCrop | null;
 }>();
 
 const emit = defineEmits<{
     (e: 'upload', file: File): void;
     (e: 'remove'): void;
     (e: 'view', url: string): void;
+    (e: 'crop'): void;
 }>();
 
 const input = ref<HTMLInputElement | null>(null);
@@ -59,11 +65,12 @@ function formatSize(bytes: number | null | undefined): string {
         :class="dragging ? 'ring-primary-500 ring-2 bg-primary-100/40' : 'ring-gray-200 dark:ring-gray-700'"
         @dragover.prevent="!readonly && (dragging = true)" @dragleave.prevent="dragging = false" @drop.prevent="onDrop">
         <!-- Preview -->
-        <div class="relative overflow-hidden rounded-t-2xl bg-gray-100 dark:bg-gray-900" :class="aspect ?? 'aspect-[2/1]'"
-            :style="fit === 'contain' && info?.exists ? checker : undefined">
+        <div class="relative overflow-hidden rounded-t-2xl bg-gray-100 dark:bg-gray-900" :class="ratio ? '' : (aspect ?? 'aspect-[2/1]')"
+            :style="[ratio ? { aspectRatio: `1 / ${ratio}` } : {}, fit === 'contain' && info?.exists ? checker : {}]">
             <button v-if="info?.exists && info.url" type="button" class="absolute inset-0 w-full h-full cursor-zoom-in"
                 :title="'查看大图：' + label" @click="emit('view', info.url!)">
-                <img :src="info.url" :alt="label" loading="lazy" class="w-full h-full"
+                <CroppedImage v-if="ratio" :src="info.url" :ratio="ratio" :crop="crop" :alt="label" class="absolute inset-0" />
+                <img v-else :src="info.url" :alt="label" loading="lazy" class="w-full h-full"
                     :class="fit === 'contain' ? 'object-contain' : 'object-cover'" />
             </button>
 
@@ -93,7 +100,7 @@ function formatSize(bytes: number | null | undefined): string {
                 <div class="min-w-0">
                     <div class="text-sm font-semibold text-main dark:text-gray-100 truncate">{{ label }}</div>
                     <div class="text-xs mt-0.5" :class="info?.exists ? 'text-green-700' : required ? 'text-orange-600' : 'text-gray-400'">
-                        <template v-if="info?.exists">已上传 · {{ formatSize(info.size) }}</template>
+                        <template v-if="info?.exists">已上传 · {{ formatSize(info.size) }}<template v-if="crop"> · 已调整范围</template></template>
                         <template v-else-if="readonly">未上传</template>
                         <template v-else>{{ required ? '未上传（必需）' : '未上传（可选）' }}</template>
                     </div>
@@ -103,6 +110,14 @@ function formatSize(bytes: number | null | undefined): string {
                     <button type="button" :disabled="busy" @click="pick"
                         class="h-8 px-3 rounded-lg text-xs font-semibold text-primary-800 bg-primary-100/70 hover:bg-primary-100 dark:text-primary-200 dark:bg-primary-900/50 dark:hover:bg-primary-900/80 disabled:opacity-50 transition">
                         {{ info?.exists ? '替换' : '上传' }}
+                    </button>
+                    <button v-if="ratio && info?.exists" type="button" :disabled="busy" title="调整显示范围" aria-label="调整显示范围"
+                        @click="emit('crop')"
+                        class="h-8 w-8 inline-flex items-center justify-center rounded-lg text-primary-800 dark:text-primary-300 hover:bg-primary-100/70 dark:hover:bg-primary-900/50 disabled:opacity-50 transition">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14" />
+                        </svg>
                     </button>
                     <button v-if="info?.exists" type="button" :disabled="busy" title="删除"
                         @click="emit('remove')"
