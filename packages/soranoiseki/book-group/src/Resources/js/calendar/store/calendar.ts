@@ -391,6 +391,25 @@ export const useCalendarStore = defineStore("calendar", {
             }
         },
 
+        /** Rearrange the monthly photos: order[i] is the month whose photo moves to month i + 1. Returns true on success. */
+        async reorderImages(order: number[]): Promise<boolean> {
+            if (!this.calendarId) return false;
+            this.clearMessages();
+            this.isImporting = true;
+            try {
+                const { data } = await axios.put(`/api/calendar/${this.calendarId}/images/order`, { order });
+                this.images = data.images;
+                this.crops = data.crops ?? {};
+                this.successMessage = data.message ?? "已保存。";
+                return true;
+            } catch (e) {
+                this.errors = await extractErrors(e, "保存顺序失败。");
+                return false;
+            } finally {
+                this.isImporting = false;
+            }
+        },
+
         /** Save which part of a monthly photo shows in the header. Returns true on success. */
         async saveCrop(slot: string, crop: ImageCrop): Promise<boolean> {
             if (!this.calendarId) return false;

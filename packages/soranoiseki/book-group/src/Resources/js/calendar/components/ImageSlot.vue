@@ -19,6 +19,14 @@ const props = defineProps<{
     ratio?: number;
     /** The chosen part of the photo (centred when empty) */
     crop?: ImageCrop | null;
+    /** Small reference text under the name (monthly photos: the verse of that month) */
+    note?: string;
+    /** Rearranging: the card only shows a swap button instead of the upload actions */
+    swappable?: boolean;
+    /** This card is the first one chosen for a swap */
+    picked?: boolean;
+    /** Rearranging: where the photo of this card was before (shown when it moved) */
+    movedFrom?: string;
 }>();
 
 const emit = defineEmits<{
@@ -26,6 +34,7 @@ const emit = defineEmits<{
     (e: 'remove'): void;
     (e: 'view', url: string): void;
     (e: 'crop'): void;
+    (e: 'swap'): void;
 }>();
 
 const input = ref<HTMLInputElement | null>(null);
@@ -61,8 +70,8 @@ function formatSize(bytes: number | null | undefined): string {
 </script>
 
 <template>
-    <div class="group rounded-2xl bg-white dark:bg-gray-800 ring-1 transition"
-        :class="dragging ? 'ring-primary-500 ring-2 bg-primary-100/40' : 'ring-gray-200 dark:ring-gray-700'"
+    <div class="group flex flex-col rounded-2xl bg-white dark:bg-gray-800 ring-1 transition"
+        :class="dragging ? 'ring-primary-500 ring-2 bg-primary-100/40' : picked ? 'ring-primary-600 ring-2' : movedFrom ? 'ring-amber-400 dark:ring-amber-500' : 'ring-gray-200 dark:ring-gray-700'"
         @dragover.prevent="!readonly && (dragging = true)" @dragleave.prevent="dragging = false" @drop.prevent="onDrop">
         <!-- Preview -->
         <div class="relative overflow-hidden rounded-t-2xl bg-gray-100 dark:bg-gray-900" :class="ratio ? '' : (aspect ?? 'aspect-[2/1]')"
@@ -94,42 +103,47 @@ function formatSize(bytes: number | null | undefined): string {
             </div>
         </div>
 
-        <!-- Footer: name, status, actions -->
-        <div class="px-3 py-2.5">
-            <div class="flex items-center justify-between gap-2">
-                <div class="min-w-0">
-                    <div class="text-sm font-semibold text-main dark:text-gray-100 truncate">{{ label }}</div>
-                    <div class="text-xs mt-0.5" :class="info?.exists ? 'text-green-700' : required ? 'text-orange-600' : 'text-gray-400'">
-                        <template v-if="info?.exists">已上传 · {{ formatSize(info.size) }}<template v-if="crop"> · 已调整范围</template></template>
-                        <template v-else-if="readonly">未上传</template>
-                        <template v-else>{{ required ? '未上传（必需）' : '未上传（可选）' }}</template>
-                    </div>
-                </div>
-
-                <div v-if="!readonly" class="flex items-center gap-1 shrink-0">
-                    <button type="button" :disabled="busy" @click="pick"
-                        class="h-8 px-3 rounded-lg text-xs font-semibold text-primary-800 bg-primary-100/70 hover:bg-primary-100 dark:text-primary-200 dark:bg-primary-900/50 dark:hover:bg-primary-900/80 disabled:opacity-50 transition">
-                        {{ info?.exists ? '替换' : '上传' }}
-                    </button>
-                    <button v-if="ratio && info?.exists" type="button" :disabled="busy" title="调整显示范围" aria-label="调整显示范围"
-                        @click="emit('crop')"
-                        class="h-8 w-8 inline-flex items-center justify-center rounded-lg text-primary-800 dark:text-primary-300 hover:bg-primary-100/70 dark:hover:bg-primary-900/50 disabled:opacity-50 transition">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14" />
-                        </svg>
-                    </button>
-                    <button v-if="info?.exists" type="button" :disabled="busy" title="删除"
-                        @click="emit('remove')"
-                        class="h-8 w-8 inline-flex items-center justify-center rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-50 transition">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6" />
-                        </svg>
-                    </button>
+        <!-- Footer: name + status, actions, reference text at the bottom -->
+        <div class="flex flex-1 flex-col gap-2 px-3 py-2.5">
+            <div class="flex items-baseline justify-between gap-2">
+                <div class="text-sm font-semibold text-main dark:text-gray-100 truncate">{{ label }}</div>
+                <div class="text-xs text-right" :class="info?.exists ? 'text-green-700' : required ? 'text-orange-600' : 'text-gray-400'">
+                    <template v-if="info?.exists">已上传 · {{ formatSize(info.size) }}<template v-if="crop"> · 已调整范围</template></template>
+                    <template v-else-if="readonly">未上传</template>
+                    <template v-else>{{ required ? '未上传（必需）' : '未上传（可选）' }}</template>
                 </div>
             </div>
-            <p v-if="hint" class="mt-1 text-[11px] leading-snug text-gray-400">{{ hint }}</p>
+            <div v-if="movedFrom" class="text-xs text-amber-700 dark:text-amber-400">原 {{ movedFrom }}</div>
+
+            <button v-if="swappable" type="button" :aria-pressed="picked" :aria-label="`对调 ${label}`" @click="emit('swap')"
+                :class="picked ? 'bg-primary-600 text-white' : 'text-primary-800 dark:text-primary-300 ring-1 ring-primary-600/40 hover:bg-primary-100/60 dark:hover:bg-gray-700'"
+                class="h-8 px-3 self-end rounded-lg text-xs font-semibold whitespace-nowrap active:scale-95 transition outline-none focus-visible:ring-2 focus-visible:ring-primary-600">对调</button>
+
+            <div v-else-if="!readonly" class="flex items-center justify-end gap-1">
+                <button type="button" :disabled="busy" @click="pick"
+                    class="h-8 px-3 rounded-lg text-xs font-semibold text-primary-800 bg-primary-100/70 hover:bg-primary-100 dark:text-primary-200 dark:bg-primary-900/50 dark:hover:bg-primary-900/80 disabled:opacity-50 transition">
+                    {{ info?.exists ? '替换' : '上传' }}
+                </button>
+                <button v-if="ratio && info?.exists" type="button" :disabled="busy" title="调整显示范围" aria-label="调整显示范围"
+                    @click="emit('crop')"
+                    class="h-8 w-8 inline-flex items-center justify-center rounded-lg text-primary-800 dark:text-primary-300 hover:bg-primary-100/70 dark:hover:bg-primary-900/50 disabled:opacity-50 transition">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14" />
+                    </svg>
+                </button>
+                <button v-if="info?.exists" type="button" :disabled="busy" title="删除" aria-label="删除"
+                    @click="emit('remove')"
+                    class="h-8 w-8 inline-flex items-center justify-center rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 disabled:opacity-50 transition">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6" />
+                    </svg>
+                </button>
+            </div>
+
+            <p v-if="hint" class="text-[11px] leading-snug text-gray-400">{{ hint }}</p>
+            <p v-if="note" class="mt-auto text-[11px] leading-snug text-gray-500 dark:text-gray-400 whitespace-pre-line">{{ note }}</p>
         </div>
 
         <input ref="input" type="file" class="hidden" accept="image/jpeg,image/png" @change="onFile" />

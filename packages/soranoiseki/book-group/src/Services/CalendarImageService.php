@@ -116,4 +116,35 @@ class CalendarImageService
             }
         }
     }
+
+    /**
+     * Rearrange the monthly photos: $order[i] is the month whose photo moves to month i + 1 (a permutation of 1..12).
+     * Files are parked under a temporary name first so that two months can swap without overwriting each other.
+     */
+    public function reorderMonths(int|string $year, array $order): void
+    {
+        $moves = []; // old month => new month
+        foreach (array_values($order) as $i => $from) {
+            if ((int) $from !== $i + 1) {
+                $moves[(int) $from] = $i + 1;
+            }
+        }
+
+        $parked = [];
+        foreach ($moves as $from => $to) {
+            $slot = sprintf('%02d', $from);
+            $path = $this->find($year, $slot);
+            if ($path) {
+                $tmp = $this->dir($year) . '/.swap-' . $slot . '.' . strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                $this->disk()->move($path, $tmp);
+                $parked[$tmp] = $to;
+            }
+            // Clears leftovers of the slot (e.g. a second file with another extension)
+            $this->remove($year, $slot);
+        }
+
+        foreach ($parked as $tmp => $to) {
+            $this->disk()->move($tmp, $this->dir($year) . '/' . sprintf('%02d', $to) . '.' . pathinfo($tmp, PATHINFO_EXTENSION));
+        }
+    }
 }
