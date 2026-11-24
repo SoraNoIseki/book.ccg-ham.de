@@ -208,6 +208,98 @@ class CalendarEditTest extends TestCase
         $this->actingAs($user)->putJson("/api/calendar/{$c->id}/images/order", ['order' => [1, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]])->assertStatus(422);
     }
 
+    public function test_uploaded_photos_are_scaled_down_and_converted_to_jpg(): void
+    {
+        Storage::fake('public');
+        $c = $this->calendar();
+        $user = $this->user();
+        $dir = "images/calendar/{$c->year}";
+        $disk = Storage::disk('public');
+        $post = fn (string $slot, UploadedFile $file) => $this->actingAs($user)->post("/api/calendar/{$c->id}/images/$slot", ['file' => $file], ['Accept' => 'application/json'])->assertOk();
+
+        // A big PNG photo becomes a JPEG of at most 3508 px width
+        $post('05', UploadedFile::fake()->image('big.png', 4200, 2800));
+        $this->assertTrue($disk->exists("$dir/05.jpg"));
+        $this->assertFalse($disk->exists("$dir/05.png"));
+        $this->assertSame([3508, 2339, IMAGETYPE_JPEG], array_slice(getimagesizefromstring($disk->get("$dir/05.jpg")), 0, 3));
+
+        // A small photo keeps its size (never scaled up), but is converted
+        $post('06', UploadedFile::fake()->image('small.png', 800, 600));
+        $this->assertSame([800, 600], array_slice(getimagesizefromstring($disk->get("$dir/06.jpg")), 0, 2));
+
+        // Cover, overlay and footer are stored as uploaded
+        $big = UploadedFile::fake()->image('o.png', 4000, 2000);
+        $post('overlay', $big);
+        $post('cover', UploadedFile::fake()->image('c.png', 4000, 5000));
+        $this->assertSame([4000, 2000, IMAGETYPE_PNG], array_slice(getimagesizefromstring($disk->get("$dir/overlay.png")), 0, 3));
+        $this->assertSame([4000, 5000, IMAGETYPE_PNG], array_slice(getimagesizefromstring($disk->get("$dir/cover.png")), 0, 3));
+    }
+
+    public function test_previews_are_made_on_first_use_and_cached(): void
+    {
+        Storage::fake('public');
+        Storage::fake('local');
+        $c = $this->calendar();
+        $user = $this->user();
+        $dir = "images/calendar/{$c->year}";
+        Storage::disk('public')->put("$dir/05.jpg", UploadedFile::fake()->image('a.jpg', 3000, 2000)->get());
+        Storage::disk('public')->put("$dir/06.jpg", UploadedFile::fake()->image('b.jpg', 600, 400)->get());
+        Storage::disk('public')->put("$dir/overlay.png", UploadedFile::fake()->image('o.png', 3000, 1500)->get());
+        $get = fn (string $url) => $this->actingAs($user)->get(preg_replace('/\?.*/', '', $url));
+
+        $info = $this->actingAs($user)->getJson("/api/calendar?year={$c->year}")->json('images');
+        $this->assertStringStartsWith("/api/calendar/{$c->id}/images/05/preview/thumb?v=", $info['05']['thumb']);
+        $this->assertNull($info['07']['thumb']);
+
+        $thumb = $get($info['05']['thumb'])->assertOk();
+        $this->assertSame([1000, 667, IMAGETYPE_JPEG], array_slice(getimagesizefromstring($thumb->baseResponse->getFile()->getContent()), 0, 3));
+        $view = $get($info['05']['preview'])->assertOk();
+        $this->assertSame(2000, getimagesizefromstring($view->baseResponse->getFile()->getContent())[0]);
+        $this->assertCount(2, Storage::disk('local')->files("calendar-previews/{$c->year}"));
+
+        // A small image is served as it is; the overlay keeps its format
+        $this->assertSame(600, getimagesizefromstring($get($info['06']['thumb'])->baseResponse->getFile()->getContent())[0]);
+        $this->assertSame(IMAGETYPE_PNG, getimagesizefromstring($get($info['overlay']['thumb'])->baseResponse->getFile()->getContent())[2]);
+
+        // A new upload replaces the copies
+        $this->actingAs($user)->post("/api/calendar/{$c->id}/images/05", ['file' => UploadedFile::fake()->image('n.jpg', 3000, 3000)], ['Accept' => 'application/json'])->assertOk();
+        $this->assertSame([], array_values(preg_grep('/05-/', Storage::disk('local')->files("calendar-previews/{$c->year}"))));
+
+        $this->actingAs($user)->get("/api/calendar/{$c->id}/images/05/preview/huge")->assertNotFound();
+        $this->actingAs($user)->get("/api/calendar/{$c->id}/images/09/preview/thumb")->assertNotFound();
+    }
+
+    public function test_command_optimizes_existing_images(): void
+    {
+        Storage::fake('public');
+        $disk = Storage::disk('public');
+        $png = UploadedFile::fake()->image('a.png', 4200, 2800)->get();
+        $jpgBig = UploadedFile::fake()->image('b.jpg', 4000, 1000)->get();
+        $jpgOk = UploadedFile::fake()->image('c.jpg', 1000, 500)->get();
+        $disk->put('images/calendar/2031/01.png', $png);
+        $disk->put('images/calendar/2031/02.jpg', $jpgBig);
+        $disk->put('images/calendar/2031/03.jpg', $jpgOk);
+        $disk->put('images/calendar/2032/04.png', $png);
+        $disk->put('images/calendar/2032/cover.png', $png);
+
+        // Dry run: reports, but changes nothing
+        $this->artisan('book:optimize-calendar-images', ['--dry-run' => true])->assertSuccessful();
+        $this->assertTrue($disk->exists('images/calendar/2031/01.png'));
+        $this->assertSame($jpgBig, $disk->get('images/calendar/2031/02.jpg'));
+
+        $this->artisan('book:optimize-calendar-images', ['year' => 2031])->assertSuccessful();
+        $this->assertFalse($disk->exists('images/calendar/2031/01.png'));
+        $this->assertSame([3508, 2339, IMAGETYPE_JPEG], array_slice(getimagesizefromstring($disk->get('images/calendar/2031/01.jpg')), 0, 3));
+        $this->assertSame(3508, getimagesizefromstring($disk->get('images/calendar/2031/02.jpg'))[0]);
+        $this->assertSame($jpgOk, $disk->get('images/calendar/2031/03.jpg')); // already fine: untouched
+        $this->assertTrue($disk->exists('images/calendar/2032/04.png')); // other year not asked for
+
+        $this->artisan('book:optimize-calendar-images')->assertSuccessful();
+        $this->assertTrue($disk->exists('images/calendar/2032/04.jpg'));
+        $this->assertFalse($disk->exists('images/calendar/2032/04.png'));
+        $this->assertTrue($disk->exists('images/calendar/2032/cover.png')); // the cover is not touched
+    }
+
     public function test_history_calendars_and_users_without_the_role_cannot_edit(): void
     {
         $old = $this->calendar((int) date('Y') - 1);

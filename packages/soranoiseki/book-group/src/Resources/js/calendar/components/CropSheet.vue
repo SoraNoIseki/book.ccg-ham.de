@@ -110,7 +110,7 @@ async function save(): Promise<void> {
 const round = (n: number): number => Math.round(n * 10000) / 10000;
 
 // ---- overlay and verse, drawn the way the stylesheet of the theme does (approximately) ----
-const overlayUrl = computed(() => (showOverlay.value && headerPreview.value?.showOverlay && images.value.overlay?.exists ? images.value.overlay.url : null));
+const overlayUrl = computed(() => (showOverlay.value && headerPreview.value?.showOverlay && images.value.overlay?.exists ? (images.value.overlay.preview ?? images.value.overlay.url) : null));
 const detail = computed(() => details.value.find((d) => d.month === shown.value));
 const verseLines = computed(() => (detail.value?.bible_text ?? '').split('|').map((l) => l.trim()).filter(Boolean));
 const unit = computed(() => frameW.value * (headerPreview.value?.remRatio ?? 0.01));
@@ -158,7 +158,7 @@ const btn = 'h-12 rounded-xl text-sm font-semibold active:scale-95 transition';
                 class="relative w-full overflow-hidden rounded-xl bg-gray-200 dark:bg-gray-900 ring-1 ring-gray-300 dark:ring-gray-600 select-none touch-none cursor-grab active:cursor-grabbing outline-none focus-visible:ring-2 focus-visible:ring-primary-600"
                 :style="{ aspectRatio: `1 / ${ratio}` }"
                 @pointerdown="onDown" @pointermove="onMove" @pointerup="onUp" @pointercancel="onUp" @keydown="onKey">
-                <img v-if="info?.url" :key="info.url" :src="info.url" alt="" draggable="false"
+                <img v-if="info?.url" :key="info.preview ?? info.url" :src="info.preview ?? info.url" alt="" draggable="false"
                     class="absolute left-0 top-0 max-w-none pointer-events-none" :style="g.imgStyle.value" @load="onLoad" />
                 <img v-if="overlayUrl" :src="overlayUrl" alt="" draggable="false"
                     class="absolute inset-0 w-full h-full object-contain pointer-events-none" />
@@ -194,7 +194,7 @@ const btn = 'h-12 rounded-xl text-sm font-semibold active:scale-95 transition';
                 <!-- Whole photo with the visible part marked -->
                 <div v-if="info?.url" class="sm:w-48">
                     <div class="relative inline-block max-w-full overflow-hidden rounded-lg ring-1 ring-gray-300 dark:ring-gray-600">
-                        <img :src="info.url" alt="" draggable="false" class="block max-h-36 max-w-full" />
+                        <img :src="info.thumb ?? info.url" alt="" draggable="false" class="block max-h-36 max-w-full" />
                         <div v-if="mapRect" class="absolute ring-2 ring-white pointer-events-none" :style="{ ...mapRect, boxShadow: '0 0 0 999px rgba(0,0,0,0.5)' }"></div>
                     </div>
                     <p class="mt-1 text-[11px] text-gray-400">整张图片，亮出的是显示的部分</p>

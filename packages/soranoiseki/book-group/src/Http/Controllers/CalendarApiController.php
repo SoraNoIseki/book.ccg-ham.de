@@ -315,7 +315,7 @@ class CalendarApiController extends Controller
         // A new picture is a different picture: the range chosen for the old one no longer fits
         $this->forgetCrop($calendar, $slot);
 
-        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year), 'crops' => $this->cropsOf($calendar), 'message' => '图片已上传。']);
+        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year, $calendar->id), 'crops' => $this->cropsOf($calendar), 'message' => '图片已上传。']);
     }
 
     /**
@@ -351,7 +351,26 @@ class CalendarApiController extends Controller
             $calendar->save();
         }
 
-        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year), 'crops' => $this->cropsOf($calendar), 'message' => '图片顺序已保存。']);
+        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year, $calendar->id), 'crops' => $this->cropsOf($calendar), 'message' => '图片顺序已保存。']);
+    }
+
+    /**
+     * GET /api/calendar/{calendar}/images/{slot}/preview/{size}   (size: thumb | view)
+     * A small or medium copy of an image for the page, made on first use and cached. The URL carries a version
+     * (?v=), so browsers may keep the copy for a long time.
+     */
+    public function imagePreview(Calendar $calendar, string $slot, string $size): \Symfony\Component\HttpFoundation\BinaryFileResponse|JsonResponse
+    {
+        if (!$this->images->isValidSlot($slot) || !$this->images->isValidPreviewSize($size)) {
+            return $this->fail('未知的图片。', 404);
+        }
+
+        $path = $this->images->preview($calendar->year, $slot, $size);
+        if (!$path) {
+            return $this->fail('图片不存在。', 404);
+        }
+
+        return response()->file($path, ['Cache-Control' => 'private, max-age=31536000, immutable']);
     }
 
     /**
@@ -370,7 +389,7 @@ class CalendarApiController extends Controller
         $this->images->remove($calendar->year, $slot);
         $this->forgetCrop($calendar, $slot);
 
-        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year), 'crops' => $this->cropsOf($calendar), 'message' => '图片已删除。']);
+        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year, $calendar->id), 'crops' => $this->cropsOf($calendar), 'message' => '图片已删除。']);
     }
 
     /**
@@ -632,7 +651,7 @@ class CalendarApiController extends Controller
                     'bible_source' => (string) $d->bible_source,
                 ])->values();
 
-            $images = $this->images->all($year);
+            $images = $this->images->all($year, $calendar->id);
         }
 
         return [

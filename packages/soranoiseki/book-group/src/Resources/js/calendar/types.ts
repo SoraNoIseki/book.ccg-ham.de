@@ -18,6 +18,9 @@ export interface ImageInfo {
     exists: boolean;
     url: string | null;
     size: number | null;
+    /** Small and medium copies for the page (the big print file is only for the PDF) */
+    thumb?: string | null;
+    preview?: string | null;
 }
 
 /** Part of a monthly photo that shows in the header (centre as fractions of the photo, zoom 1..3) */

@@ -66,6 +66,7 @@ class BookGroupServiceProvider extends ServiceProvider
             \Soranoiseki\BookGroup\Console\Commands\SyncSongs::class,
             \Soranoiseki\BookGroup\Console\Commands\FetchDropboxPublicLinks::class,
             \Soranoiseki\BookGroup\Console\Commands\ImportOpenBiblio::class,
+            \Soranoiseki\BookGroup\Console\Commands\OptimizeCalendarImages::class,
         ]);
     }
 
