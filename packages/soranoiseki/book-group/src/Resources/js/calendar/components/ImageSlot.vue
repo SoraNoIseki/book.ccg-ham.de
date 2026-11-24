@@ -77,9 +77,9 @@ function formatSize(bytes: number | null | undefined): string {
         <div class="relative overflow-hidden rounded-t-2xl bg-gray-100 dark:bg-gray-900" :class="ratio ? '' : (aspect ?? 'aspect-[2/1]')"
             :style="[ratio ? { aspectRatio: `1 / ${ratio}` } : {}, fit === 'contain' && info?.exists ? checker : {}]">
             <button v-if="info?.exists && info.url" type="button" class="absolute inset-0 w-full h-full cursor-zoom-in"
-                :title="'查看大图：' + label" @click="emit('view', info.url!)">
-                <CroppedImage v-if="ratio" :src="info.url" :ratio="ratio" :crop="crop" :alt="label" class="absolute inset-0" />
-                <img v-else :src="info.url" :alt="label" loading="lazy" class="w-full h-full"
+                :title="'查看大图：' + label" @click="emit('view', info.preview ?? info.url!)">
+                <CroppedImage v-if="ratio" :src="info.thumb ?? info.url" :ratio="ratio" :crop="crop" :alt="label" class="absolute inset-0" />
+                <img v-else :src="info.thumb ?? info.url" :alt="label" loading="lazy" class="w-full h-full"
                     :class="fit === 'contain' ? 'object-contain' : 'object-cover'" />
             </button>
 
@@ -113,7 +113,7 @@ function formatSize(bytes: number | null | undefined): string {
                     <template v-else>{{ required ? '未上传（必需）' : '未上传（可选）' }}</template>
                 </div>
             </div>
-            <div v-if="movedFrom" class="text-xs text-amber-700 dark:text-amber-400">原 {{ movedFrom }}</div>
+            <div v-if="movedFrom" class="text-xs text-amber-700 dark:text-amber-400">{{ movedFrom }}</div>
 
             <button v-if="swappable" type="button" :aria-pressed="picked" :aria-label="`对调 ${label}`" @click="emit('swap')"
                 :class="picked ? 'bg-primary-600 text-white' : 'text-primary-800 dark:text-primary-300 ring-1 ring-primary-600/40 hover:bg-primary-100/60 dark:hover:bg-gray-700'"

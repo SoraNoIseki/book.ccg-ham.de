@@ -82,37 +82,57 @@ function verseOf(month: number): string {
 }
 
 // --- Rearranging -----------------------------------------------------------------------------
-// The month labels stay where they are; the photos, the verses or both are swapped (the two boxes).
-// Changes are made on a draft and saved at once.
+// The month labels stay where they are. Photos and verses each have their own draft; a swap changes the
+// draft(s) of the ticked box(es), so earlier swaps stay when the boxes change. Saved at once.
 const moveImages = ref(true);
 const moveVerses = ref(true);
-const draft = ref<number[] | null>(null);
-const ordering = computed(() => draft.value !== null);
-const order = computed<number[]>(() => draft.value ?? MONTH_SLOTS.map(Number));
-const changed = computed(() => (moveImages.value || moveVerses.value) && !!draft.value?.some((from, i) => from !== i + 1));
+const identity = (): number[] => MONTH_SLOTS.map(Number);
+const imageDraft = ref<number[] | null>(null);
+const verseDraft = ref<number[] | null>(null);
+const ordering = computed(() => imageDraft.value !== null);
+const imageOrder = computed<number[]>(() => imageDraft.value ?? identity());
+const verseOrder = computed<number[]>(() => verseDraft.value ?? identity());
+const imagesChanged = computed(() => imageOrder.value.some((from, i) => from !== i + 1));
+const versesChanged = computed(() => verseOrder.value.some((from, i) => from !== i + 1));
+const changed = computed(() => imagesChanged.value || versesChanged.value);
 /** Index of the card chosen for a swap, waiting for the second one */
 const swapFrom = ref<number | null>(null);
 const canOrder = computed(() => MONTH_SLOTS.some((s) => images.value[s]?.exists) || cal.monthDetailsDone > 0);
-/** What moves, for the texts: 图片 / 经文 / 图片和经文 */
 const noun = computed(() => [moveImages.value && '图片', moveVerses.value && '经文'].filter(Boolean).join('和'));
 
 /** Month of the photo / of the verse shown on the card of month i + 1 */
-const imageMonth = (i: number): number => (ordering.value && moveImages.value ? order.value[i] : i + 1);
-const verseMonth = (i: number): number => (ordering.value && moveVerses.value ? order.value[i] : i + 1);
+const imageMonth = (i: number): number => imageOrder.value[i];
+const verseMonth = (i: number): number => verseOrder.value[i];
+
+/** Shown on a card that no longer holds its own photo / verse */
+function movedLabel(i: number): string | undefined {
+    const parts: string[] = [];
+    if (imageOrder.value[i] !== i + 1) parts.push(`图片原 ${imageOrder.value[i]} 月`);
+    if (verseOrder.value[i] !== i + 1) parts.push(`经文原 ${verseOrder.value[i]} 月`);
+    return parts.length ? parts.join('，') : undefined;
+}
 
 function startOrdering(): void {
     cal.clearMessages();
     swapFrom.value = null;
-    draft.value = MONTH_SLOTS.map(Number);
+    imageDraft.value = identity();
+    verseDraft.value = identity();
 }
 
 function stopOrdering(): void {
-    draft.value = null;
+    imageDraft.value = null;
+    verseDraft.value = null;
     swapFrom.value = null;
 }
 
+function swapIn(list: number[], i: number, j: number): number[] {
+    const next = [...list];
+    [next[i], next[j]] = [next[j], next[i]];
+    return next;
+}
+
 function swap(i: number): void {
-    if (!draft.value) return;
+    if (!ordering.value) return;
     if (swapFrom.value === null) {
         swapFrom.value = i;
         return;
@@ -120,18 +140,16 @@ function swap(i: number): void {
     const j = swapFrom.value;
     swapFrom.value = null;
     if (j === i) return;
-    const next = [...draft.value];
-    [next[i], next[j]] = [next[j], next[i]];
-    draft.value = next;
+    if (moveImages.value) imageDraft.value = swapIn(imageOrder.value, i, j);
+    if (moveVerses.value) verseDraft.value = swapIn(verseOrder.value, i, j);
 }
 
 async function saveOrder(): Promise<void> {
-    if (!draft.value || !changed.value) return;
-    const order = [...draft.value];
-    // Photos first; if that fails nothing is changed, so the draft stays for another try
-    if (moveImages.value && !(await cal.reorderImages(order))) return;
-    if (moveVerses.value && !(await cal.reorderBibleTexts(order))) return;
-    cal.successMessage = `${noun.value}顺序已保存。`;
+    if (!changed.value) return;
+    // Photos first; if that fails nothing is changed, so the drafts stay for another try
+    if (imagesChanged.value && !(await cal.reorderImages([...imageOrder.value]))) return;
+    if (versesChanged.value && !(await cal.reorderBibleTexts([...verseOrder.value]))) return;
+    cal.successMessage = [imagesChanged.value && '图片', versesChanged.value && '经文'].filter(Boolean).join('和') + '顺序已保存。';
     stopOrdering();
 }
 
@@ -158,7 +176,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
                     历史版本只能查看已上传的图片（{{ requiredImagesDone }}/13），点击预览图可查看大图。
                 </p>
                 <AlertBox v-if="editable" type="tip" title="批量上传">
-                    一次选择多张图片，系统会按文件名自动归位：cover、01 至 12、overlay、footer（例如 03.jpg 会放到 3 月）。
+                    一次选择多张图片，系统会按文件名自动归位：cover、01 至 12、overlay、footer（例如 03.jpg 会放到 3 月）。每月图片会自动转为 JPG，并缩小到 A3 印刷所需的大小（宽度不超过 3508 像素），不会放大。
                 </AlertBox>
             </div>
             <div v-if="editable">
@@ -224,10 +242,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
                 <p v-else>点一个月份的「对调」，再点另一个月份的「对调」，两个月的{{ noun }}就会互换。改完点「保存顺序」。</p>
             </div>
             <div class="grid gap-4 grid-cols-1 sm:grid-cols-3 lg:grid-cols-4">
-                <ImageSlot v-for="(_, i) in order" :key="MONTH_SLOTS[i]" :readonly="!editable || ordering" :label="slotLabel(MONTH_SLOTS[i])"
+                <ImageSlot v-for="(_, i) in imageOrder" :key="MONTH_SLOTS[i]" :readonly="!editable || ordering" :label="slotLabel(MONTH_SLOTS[i])"
                     :ratio="headerPreview?.ratio" :crop="crops[MONTH_SLOTS[imageMonth(i) - 1]]" :info="images[MONTH_SLOTS[imageMonth(i) - 1]]"
                     :busy="busySlots[MONTH_SLOTS[i]]" :required="REQUIRED_SLOTS.includes(MONTH_SLOTS[i])" :note="verseOf(verseMonth(i))"
-                    :swappable="ordering && (moveImages || moveVerses)" :picked="swapFrom === i" :moved-from="ordering && order[i] !== i + 1 ? `${order[i]} 月（${noun}）` : undefined"
+                    :swappable="ordering && (moveImages || moveVerses)" :picked="swapFrom === i" :moved-from="movedLabel(i)"
                     @upload="upload(MONTH_SLOTS[i], $event)" @remove="remove(MONTH_SLOTS[i])" @view="lightbox = $event"
                     @crop="cropping = i + 1" @swap="swap(i)" />
             </div>
