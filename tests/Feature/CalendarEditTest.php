@@ -177,6 +177,37 @@ class CalendarEditTest extends TestCase
         $this->actingAs($user)->deleteJson("/api/calendar/{$c->id}/images/04")->assertOk()->assertJsonCount(0, 'crops');
     }
 
+    public function test_monthly_images_can_be_rearranged_together_with_their_crops(): void
+    {
+        Storage::fake('public');
+        $c = $this->calendar();
+        $user = $this->user();
+        $dir = "images/calendar/{$c->year}";
+        Storage::disk('public')->put("$dir/01.jpg", 'jan');
+        Storage::disk('public')->put("$dir/03.png", 'mar');
+        Storage::disk('public')->put("$dir/cover.jpg", 'cover');
+        $this->actingAs($user)->putJson("/api/calendar/{$c->id}/images/03/crop", ['x' => 0.2, 'y' => 0.5, 'zoom' => 2])->assertOk();
+
+        // Swap January and March (the photo moves together with its range)
+        $this->actingAs($user)->putJson("/api/calendar/{$c->id}/images/order", ['order' => [3, 2, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12]])
+            ->assertOk()->assertJsonPath('crops.01.x', 0.2)->assertJsonMissingPath('crops.03');
+        $disk = Storage::disk('public');
+        $this->assertSame('mar', $disk->get("$dir/01.png"));
+        $this->assertSame('jan', $disk->get("$dir/03.jpg"));
+        $this->assertSame('cover', $disk->get("$dir/cover.jpg"));
+        $this->assertFalse($disk->exists("$dir/01.jpg"));
+        $this->assertFalse($disk->exists("$dir/03.png"));
+
+        // Move a photo into an empty month
+        $this->actingAs($user)->putJson("/api/calendar/{$c->id}/images/order", ['order' => [2, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]])->assertOk();
+        $this->assertSame('mar', $disk->get("$dir/02.png"));
+        $this->assertFalse($disk->exists("$dir/01.png"));
+        $this->assertCount(3, $disk->files($dir));
+
+        // Not a permutation of 1..12
+        $this->actingAs($user)->putJson("/api/calendar/{$c->id}/images/order", ['order' => [1, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]])->assertStatus(422);
+    }
+
     public function test_history_calendars_and_users_without_the_role_cannot_edit(): void
     {
         $old = $this->calendar((int) date('Y') - 1);

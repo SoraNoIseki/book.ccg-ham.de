@@ -319,6 +319,42 @@ class CalendarApiController extends Controller
     }
 
     /**
+     * PUT /api/calendar/{calendar}/images/order  { order: [12 months] }
+     * Rearrange the monthly photos (and the display ranges that belong to them). order[i] is the month whose photo moves to month i + 1.
+     */
+    public function reorderImages(Request $request, Calendar $calendar): JsonResponse
+    {
+        if ($locked = $this->lockedResponse($calendar)) {
+            return $locked;
+        }
+
+        $data = $request->validate([
+            'order' => 'required|array|size:12',
+            'order.*' => 'required|integer|between:1,12|distinct',
+        ], [
+            'order.*' => '顺序无效，请刷新页面后重试。',
+        ]);
+
+        $order = array_map('intval', array_values($data['order']));
+        $this->images->reorderMonths($calendar->year, $order);
+
+        $crops = $calendar->image_crops ?? [];
+        if ($crops) {
+            $moved = [];
+            foreach ($order as $i => $from) {
+                $old = sprintf('%02d', $from);
+                if (isset($crops[$old])) {
+                    $moved[sprintf('%02d', $i + 1)] = $crops[$old];
+                }
+            }
+            $calendar->image_crops = $moved ?: null;
+            $calendar->save();
+        }
+
+        return response()->json(['success' => true, 'images' => $this->images->all($calendar->year), 'crops' => $this->cropsOf($calendar), 'message' => '图片顺序已保存。']);
+    }
+
+    /**
      * DELETE /api/calendar/{calendar}/images/{slot}
      */
     public function deleteImage(Calendar $calendar, string $slot): JsonResponse

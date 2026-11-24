@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { MONTH_SLOTS, REQUIRED_SLOTS, useCalendarStore } from '../store/calendar';
 import ImageSlot from './ImageSlot.vue';
@@ -7,7 +7,7 @@ import CropSheet from './CropSheet.vue';
 import AlertBox from '../../ppt/components/ui/AlertBox.vue';
 
 const cal = useCalendarStore();
-const { images, crops, headerPreview, busySlots, year, requiredImagesDone, editable } = storeToRefs(cal);
+const { images, crops, headerPreview, busySlots, year, requiredImagesDone, editable, details, isImporting } = storeToRefs(cal);
 
 const bulkInput = ref<HTMLInputElement | null>(null);
 const lightbox = ref<string | null>(null);
@@ -74,6 +74,70 @@ const monthHint = computed(() => {
     return `横版，高度是宽度的 ${r.toFixed(2)} 倍（当前外观设定），图片按此比例显示。` + (editable.value ? '点卡片下方的裁切图标可以调整显示的范围。' : '');
 });
 
+/** Verse of a month, shown small under its photo for reference (line breaks are "|" in the data) */
+function verseOf(month: number): string {
+    const d = details.value.find((x) => x.month === month);
+    if (!d?.bible_text) return '';
+    return d.bible_text.replace(/\|/g, ' ') + (d.bible_source ? `（${d.bible_source}）` : '');
+}
+
+// --- Rearranging -----------------------------------------------------------------------------
+// The month labels stay where they are; the photos, the verses or both are swapped (the two boxes).
+// Changes are made on a draft and saved at once.
+const moveImages = ref(true);
+const moveVerses = ref(true);
+const draft = ref<number[] | null>(null);
+const ordering = computed(() => draft.value !== null);
+const order = computed<number[]>(() => draft.value ?? MONTH_SLOTS.map(Number));
+const changed = computed(() => (moveImages.value || moveVerses.value) && !!draft.value?.some((from, i) => from !== i + 1));
+/** Index of the card chosen for a swap, waiting for the second one */
+const swapFrom = ref<number | null>(null);
+const canOrder = computed(() => MONTH_SLOTS.some((s) => images.value[s]?.exists) || cal.monthDetailsDone > 0);
+/** What moves, for the texts: 图片 / 经文 / 图片和经文 */
+const noun = computed(() => [moveImages.value && '图片', moveVerses.value && '经文'].filter(Boolean).join('和'));
+
+/** Month of the photo / of the verse shown on the card of month i + 1 */
+const imageMonth = (i: number): number => (ordering.value && moveImages.value ? order.value[i] : i + 1);
+const verseMonth = (i: number): number => (ordering.value && moveVerses.value ? order.value[i] : i + 1);
+
+function startOrdering(): void {
+    cal.clearMessages();
+    swapFrom.value = null;
+    draft.value = MONTH_SLOTS.map(Number);
+}
+
+function stopOrdering(): void {
+    draft.value = null;
+    swapFrom.value = null;
+}
+
+function swap(i: number): void {
+    if (!draft.value) return;
+    if (swapFrom.value === null) {
+        swapFrom.value = i;
+        return;
+    }
+    const j = swapFrom.value;
+    swapFrom.value = null;
+    if (j === i) return;
+    const next = [...draft.value];
+    [next[i], next[j]] = [next[j], next[i]];
+    draft.value = next;
+}
+
+async function saveOrder(): Promise<void> {
+    if (!draft.value || !changed.value) return;
+    const order = [...draft.value];
+    // Photos first; if that fails nothing is changed, so the draft stays for another try
+    if (moveImages.value && !(await cal.reorderImages(order))) return;
+    if (moveVerses.value && !(await cal.reorderBibleTexts(order))) return;
+    cal.successMessage = `${noun.value}顺序已保存。`;
+    stopOrdering();
+}
+
+// A draft belongs to one calendar: drop it when another year is shown
+watch(year, stopOrdering);
+
 function onKey(e: KeyboardEvent): void {
     if (e.key === 'Escape') lightbox.value = null;
 }
@@ -129,11 +193,43 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey));
 
         <!-- Monthly photos -->
         <section>
-            <h3 class="mb-3 text-sm font-bold text-main dark:text-gray-100">每月图片</h3>
+            <div class="mb-2 flex flex-wrap items-center justify-between gap-3">
+                <h3 class="text-sm font-bold text-main dark:text-gray-100">每月图片</h3>
+                <div v-if="ordering" class="flex gap-2">
+                    <button type="button" @click="stopOrdering"
+                        class="h-9 px-4 rounded-xl text-sm font-semibold text-gray-600 dark:text-gray-300 ring-1 ring-gray-300 dark:ring-gray-600 active:scale-95 transition">取消</button>
+                    <button type="button" :disabled="!changed || isImporting" @click="saveOrder"
+                        class="h-9 px-5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-primary-500 to-primary-700 shadow-md shadow-primary-700/25 disabled:opacity-50 active:scale-95 transition">
+                        {{ isImporting ? '保存中...' : '保存顺序' }}
+                    </button>
+                </div>
+                <button v-else-if="editable" type="button" :disabled="!canOrder" @click="startOrdering"
+                    class="inline-flex items-center gap-2 whitespace-nowrap h-9 px-4 rounded-xl text-sm font-semibold text-primary-800 bg-white ring-1 ring-primary-600/40 dark:text-primary-200 dark:bg-gray-800 dark:ring-primary-400/50 dark:hover:bg-gray-700 hover:bg-primary-100/60 transition disabled:opacity-50 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-primary-600">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M7 4v16M7 4 3.5 7.5M7 4l3.5 3.5M17 20V4M17 20l-3.5-3.5M17 20l3.5-3.5" />
+                    </svg>
+                    调整顺序
+                </button>
+            </div>
+            <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">{{ monthHint }}</p>
+            <div v-if="ordering" class="mb-3 space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                <div class="flex flex-wrap items-center gap-x-5 gap-y-1">
+                    <span>要对调的内容：</span>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer"><input v-model="moveImages" type="checkbox" class="rounded accent-primary-600" />图片</label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer"><input v-model="moveVerses" type="checkbox" class="rounded accent-primary-600" />经文</label>
+                </div>
+                <p v-if="!moveImages && !moveVerses" class="text-orange-600">请至少选择一项。</p>
+                <p v-else-if="swapFrom !== null">请选择要与 <b>{{ swapFrom + 1 }} 月</b> 对调的月份（再点一次取消）。</p>
+                <p v-else>点一个月份的「对调」，再点另一个月份的「对调」，两个月的{{ noun }}就会互换。改完点「保存顺序」。</p>
+            </div>
             <div class="grid gap-4 grid-cols-1 sm:grid-cols-3 lg:grid-cols-4">
-                <ImageSlot :readonly="!editable" v-for="slot in MONTH_SLOTS" :key="slot" :label="slotLabel(slot)" :hint="slot === '01' ? monthHint : undefined" :ratio="headerPreview?.ratio" :crop="crops[slot]"
-                    :info="images[slot]" :busy="busySlots[slot]" :required="REQUIRED_SLOTS.includes(slot)"
-                    @upload="upload(slot, $event)" @remove="remove(slot)" @view="lightbox = $event" @crop="cropping = Number(slot)" />
+                <ImageSlot v-for="(_, i) in order" :key="MONTH_SLOTS[i]" :readonly="!editable || ordering" :label="slotLabel(MONTH_SLOTS[i])"
+                    :ratio="headerPreview?.ratio" :crop="crops[MONTH_SLOTS[imageMonth(i) - 1]]" :info="images[MONTH_SLOTS[imageMonth(i) - 1]]"
+                    :busy="busySlots[MONTH_SLOTS[i]]" :required="REQUIRED_SLOTS.includes(MONTH_SLOTS[i])" :note="verseOf(verseMonth(i))"
+                    :swappable="ordering && (moveImages || moveVerses)" :picked="swapFrom === i" :moved-from="ordering && order[i] !== i + 1 ? `${order[i]} 月（${noun}）` : undefined"
+                    @upload="upload(MONTH_SLOTS[i], $event)" @remove="remove(MONTH_SLOTS[i])" @view="lightbox = $event"
+                    @crop="cropping = i + 1" @swap="swap(i)" />
             </div>
         </section>
 
